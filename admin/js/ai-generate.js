@@ -5,10 +5,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   AdminCommon.renderLayout(
-    "generate",
-    "AI 內容生成",
-    "使用本機 Ollama 生成文章草稿，再套用為可發布內容。"
-  );
+  "generate",
+  "AI SEO 文章生成",
+  "使用本機 Ollama 生成具備 SEO 結構的文章草稿，並可直接套用為草稿或發布。"
+);
 
   const root = document.getElementById("page-root");
   if (!root) {
@@ -39,61 +39,61 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   root.innerHTML = `
-    <section class="split">
-      <div class="card">
-        <div class="card__body">
-          <h3 class="card__title">生成條件</h3>
-          <form id="generate-form" class="form-grid">
-            <div>
-              <label>產業</label>
-              <input class="input" name="industry" value="虛擬攝影棚" required>
-            </div>
+  <section class="split">
+    <div class="card">
+      <div class="card__body">
+        <h3 class="card__title">生成條件</h3>
+        <form id="generate-form" class="form-grid">
+          <div>
+            <label>產業</label>
+            <input class="input" name="industry" value="企業服務" required>
+          </div>
 
-            <div>
-              <label>地區</label>
-              <input class="input" name="location" value="台北" required>
-            </div>
+          <div>
+            <label>目標地區</label>
+            <input class="input" name="location" value="台灣" required>
+          </div>
 
-            <div class="full">
-              <label>主題</label>
-              <input class="input" name="topic" value="攝影棚租借流程" required>
-            </div>
+          <div class="full">
+            <label>文章主題 / 關鍵字</label>
+            <input class="input" name="topic" value="AI SEO 是什麼" required>
+          </div>
 
-            <div>
-              <label>語氣</label>
-              <select class="select" name="tone">
-                <option>專業</option>
-                <option>商務</option>
-                <option>親切</option>
-              </select>
-            </div>
+          <div>
+            <label>語氣</label>
+            <select class="select" name="tone">
+              <option>專業</option>
+              <option>商務</option>
+              <option>清楚易懂</option>
+            </select>
+          </div>
 
-            <div>
-              <label>分類</label>
-              <input class="input" name="category" value="租棚指南">
-            </div>
+          <div>
+            <label>分類</label>
+            <input class="input" name="category" value="AI SEO">
+          </div>
 
-            <div class="full">
-              <label>CTA 文案</label>
-              <input class="input" name="cta" value="立即洽詢 Aplus 攝影棚方案">
-            </div>
+          <div class="full">
+            <label>CTA 文案</label>
+            <input class="input" name="cta" value="預約 AI SEO 系統展示">
+          </div>
 
-            <div class="full">
-              <button class="btn btn--primary" id="generate-btn" type="submit">生成內容</button>
-            </div>
-          </form>
-        </div>
+          <div class="full">
+            <button class="btn btn--primary" id="generate-btn" type="submit">生成內容</button>
+          </div>
+        </form>
       </div>
+    </div>
 
-      <div class="preview" id="generate-preview">
-        <div class="preview__eyebrow">AI PREVIEW</div>
-        <h2 class="preview__title">尚未生成內容</h2>
-        <p class="preview__summary">
-          填寫左側欄位後，這裡會顯示文章標題、摘要、內文與 SEO 欄位預覽。
-        </p>
-      </div>
-    </section>
-  `;
+    <div class="preview" id="generate-preview">
+      <div class="preview__eyebrow">AI PREVIEW</div>
+      <h2 class="preview__title">尚未生成內容</h2>
+      <p class="preview__summary">
+        填寫左側欄位後，這裡會顯示文章標題、摘要、內文與 SEO 欄位預覽。
+      </p>
+    </div>
+  </section>
+`;
 
   const form = document.getElementById("generate-form");
   const preview = document.getElementById("generate-preview");
