@@ -43,27 +43,13 @@ async function generateWithOllama({ industry, location, topic, tone, cta }) {
     throw new Error("Node API 回傳欄位不完整");
   }
 
-  const normalized = {
+  return {
     title: String(parsed.title).trim(),
     summary: String(parsed.summary).trim(),
     content: String(parsed.content).trim(),
     seoTitle: String(parsed.seoTitle).trim(),
     seoDescription: String(parsed.seoDescription).trim()
   };
-
-  if (!normalized.content.includes("<h2>")) {
-    throw new Error("生成內容缺少 h2 結構");
-  }
-
-  if (!normalized.content.includes('article-inline-cta')) {
-    throw new Error("生成內容缺少 CTA 區塊");
-  }
-
-  if (!normalized.content.includes("常見問題")) {
-    throw new Error("生成內容缺少 FAQ 區塊");
-  }
-
-  return normalized;
 }
 
 window.OllamaClient = {
