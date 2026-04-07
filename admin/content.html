@@ -3,22 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aplus Admin｜內容管理</title>
-  <link rel="stylesheet" href="./css/admin.css" />
+  <title>文章管理｜AI SEO 後台</title>
+
+  <link rel="stylesheet" href="./css/admin-base.css" />
+  <link rel="stylesheet" href="./css/admin-layout.css" />
+  <link rel="stylesheet" href="./css/admin-components.css" />
 </head>
 <body>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script src="./js/supabase.js"></script>
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar__brand">
+        <div class="admin-sidebar__logo">A</div>
+        <div>
+          <strong>AI SEO</strong>
+          <p>Admin</p>
+        </div>
+      </div>
 
-<script src="./js/auth-guard.js"></script>
-<script>
-  window.__adminGuardPromise = window.AdminAuth.requireAdminAuth();
-</script>
+      <nav class="admin-nav">
+        <a href="./index.html">Dashboard</a>
+        <a href="./content.html" class="is-active">文章管理</a>
+        <a href="./generate.html">AI 生成</a>
+      </nav>
+    </aside>
 
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div>
+          <h1>文章管理</h1>
+          <p>管理所有文章（草稿 / 已發布）</p>
+        </div>
+      </header>
+
+      <main class="admin-content">
+        <div class="card">
+          <div class="card__body">
+
+            <div style="margin-bottom:16px;">
+              <select id="filter-status" class="input">
+                <option value="all">全部</option>
+                <option value="published">已發布</option>
+                <option value="draft">草稿</option>
+              </select>
+            </div>
+
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>標題</th>
+                    <th>分類</th>
+                    <th>狀態</th>
+                    <th>時間</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="article-table"></tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./js/supabase.js"></script>
   <script src="./js/article-store.js"></script>
-  <script src="./js/admin-common.js"></script>
-  <script src="./js/content.js"></script>
-
-
+  <script src="./js/pages/content.js"></script>
 </body>
 </html>
