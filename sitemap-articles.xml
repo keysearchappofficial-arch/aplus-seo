@@ -1,0 +1,29 @@
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./admin/js/supabase.js"></script>
+
+<script>
+async function generateSitemap() {
+  const supabase = window.supabaseClient;
+
+  const { data } = await supabase
+    .from("articles")
+    .select("slug, updated_at")
+    .eq("status", "published");
+
+  const urls = data.map(article => `
+    <url>
+      <loc>https://www.sentrum.com.tw/article.html?slug=${article.slug}</loc>
+      <lastmod>${article.updated_at}</lastmod>
+    </url>
+  `).join("");
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    ${urls}
+  </urlset>`;
+
+  document.body.innerText = xml;
+}
+
+generateSitemap();
+</script>

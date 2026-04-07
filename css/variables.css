@@ -1,0 +1,62 @@
+:root {
+  --color-primary: #12385b;
+  --color-primary-strong: #0d2b47;
+  --color-primary-soft: #edf4f9;
+
+  --color-accent: #b68a4c;
+  --color-accent-soft: #f6efe4;
+
+  --color-bg: #ffffff;
+  --color-bg-soft: #f7f9fc;
+  --color-bg-muted: #eef3f7;
+  --color-bg-dark: #0c1622;
+
+  --color-surface: #ffffff;
+  --color-surface-2: #fbfcfe;
+
+  --color-text: #16212b;
+  --color-text-soft: #536170;
+  --color-text-muted: #7b8997;
+  --color-text-light: #d9e3ee;
+
+  --color-border: #dbe3eb;
+  --color-border-soft: #e8edf2;
+
+  --shadow-xs: 0 4px 14px rgba(10, 22, 35, 0.04);
+  --shadow-sm: 0 10px 30px rgba(10, 22, 35, 0.06);
+  --shadow-md: 0 18px 48px rgba(10, 22, 35, 0.1);
+  --shadow-lg: 0 28px 72px rgba(10, 22, 35, 0.14);
+
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+
+  --container: 1200px;
+  --header-height: 84px;
+
+  --font-sans:
+    "Inter",
+    "Noto Sans TC",
+    "PingFang TC",
+    "Microsoft JhengHei",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+
+  --fs-xs: 0.8125rem;
+  --fs-sm: 0.9375rem;
+  --fs-base: 1rem;
+  --fs-md: 1.125rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.5rem;
+  --fs-2xl: clamp(2rem, 3vw, 3rem);
+  --fs-3xl: clamp(2.6rem, 5vw, 4.8rem);
+
+  --lh-tight: 1.18;
+  --lh-base: 1.75;
+
+  --section-space: clamp(72px, 10vw, 120px);
+  --transition: 220ms ease;
+}

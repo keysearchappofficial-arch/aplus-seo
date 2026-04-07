@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>文章｜Aplus AI SEO</title>
+  <meta name="description" content="" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+
+  <link rel="stylesheet" href="./css/variables.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/layout.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/pages/article.css" />
+</head>
+
+<body>
+  <div id="site-header"></div>
+
+  <main class="section-shell">
+    <div class="container article">
+
+      <div class="article-header">
+        <span class="article-label">Article</span>
+        <h1 id="article-title"></h1>
+      </div>
+
+      <div id="article-content" class="article-content"></div>
+
+      <section class="article-hook">
+        <strong>你現在看到這篇文章，本身就是 SEO 的效果。</strong>
+        <p>
+          當網站持續累積內容，就有機會被搜尋引擎收錄與排名，
+          進而把流量帶進你的網站與服務頁。
+        </p>
+      </section>
+
+      <section class="article-related">
+        <h3>延伸閱讀</h3>
+        <ul id="related-articles"></ul>
+      </section>
+
+      <section class="article-cta">
+        <h3>想讓你的網站也透過 SEO 持續帶來客戶？</h3>
+        <p>
+          我們可以協助你建立 AI SEO 內容系統，從主題規劃、文章生成、
+          發佈到名單轉換，形成完整的內容獲客流程。
+        </p>
+      </section>
+
+      <form id="lead-form" class="lead-form">
+        <div class="lead-form__grid">
+          <input type="text" name="name" placeholder="姓名" required />
+          <input type="text" name="contact" placeholder="Email 或聯絡方式" required />
+        </div>
+
+        <div class="lead-form__grid">
+          <input type="text" name="website" placeholder="你的網站（選填）" />
+          <select name="status">
+            <option value="">目前狀況（選填）</option>
+            <option value="沒有流量">沒有流量</option>
+            <option value="有網站但很少更新">有網站但很少更新</option>
+            <option value="主要靠廣告">主要靠廣告</option>
+            <option value="想做SEO但不會規劃">想做 SEO 但不會規劃</option>
+          </select>
+        </div>
+
+        <textarea
+          name="message"
+          placeholder="請簡單描述你的產業、網站現況或想達成的目標"
+        ></textarea>
+
+        <button type="submit" class="btn btn--primary">取得免費 SEO 評估</button>
+      </form>
+
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./admin/js/supabase.js"></script>
+  <script src="./admin/js/article-store.js"></script>
+  <script src="./assets/js/layout.js"></script>
+
+  <script>
+    function getSlug() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("slug");
+    }
+
+    function getSource() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("source") || "direct";
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    async function loadArticle() {
+      const supabase = window.supabaseClient;
+      if (!supabase) {
+        throw new Error("Supabase client 未載入");
+      }
+
+      const slug = getSlug();
+
+      const { data, error } = await supabase
+        .from("articles")
+        .select("*")
+        .eq("slug", slug)
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    }
+
+    function setSEO(article) {
+      document.title = article.seo_title || article.title || "文章｜Aplus AI SEO";
+
+      const meta = document.querySelector("meta[name='description']");
+      if (meta) {
+        meta.setAttribute(
+          "content",
+          article.seo_description || article.summary || ""
+        );
+      }
+    }
+
+    async function renderArticle() {
+      const titleEl = document.getElementById("article-title");
+      const contentEl = document.getElementById("article-content");
+
+      try {
+        const article = await loadArticle();
+
+        if (!article) {
+          titleEl.innerText = "找不到文章";
+          contentEl.innerHTML = "<p>目前找不到這篇文章內容。</p>";
+          return null;
+        }
+
+        titleEl.innerText = article.title || "未命名文章";
+        contentEl.innerHTML = article.content || "<p>目前尚無內容。</p>";
+
+        setSEO(article);
+        return article;
+      } catch (error) {
+        console.error("載入文章失敗：", error);
+        titleEl.innerText = "載入失敗";
+        contentEl.innerHTML = `<p>文章載入失敗：${escapeHtml(error.message)}</p>`;
+        return null;
+      }
+    }
+
+    async function trackPageView(article) {
+      if (!article) return;
+
+      try {
+        await ArticleStore.trackEvent({
+          articleId: article.id,
+          eventType: "page_view",
+          source: getSource()
+        });
+      } catch (error) {
+        console.error("記錄 PV 失敗：", error);
+      }
+    }
+
+    function bindForm(article) {
+      const form = document.getElementById("lead-form");
+      if (!form || !article) return;
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        const status = formData.get("status");
+        const website = formData.get("website");
+        const message = formData.get("message");
+
+        const mergedMessage = [
+          website ? `網站：${website}` : "",
+          status ? `目前狀況：${status}` : "",
+          message ? `需求：${message}` : ""
+        ].filter(Boolean).join("\n");
+
+        try {
+          await ArticleStore.createLead({
+            name: formData.get("name"),
+            contactValue: formData.get("contact"),
+            message: mergedMessage,
+            sourceArticleId: article.id,
+            sourceArticleTitle: article.title,
+            sourceChannel: getSource()
+          });
+
+          alert("已送出，我們會盡快與你聯繫！");
+          form.reset();
+        } catch (error) {
+          console.error("送出詢問失敗：", error);
+          alert(`送出失敗：${error.message}`);
+        }
+      });
+    }
+
+    async function renderRelatedArticles(currentSlug) {
+      const articles = await ArticleStore.getArticles();
+
+      const list = articles
+        .filter(a => a.slug !== currentSlug && a.status === "published")
+        .slice(0, 5);
+
+      const el = document.getElementById("related-articles");
+
+      if (!list.length) {
+        el.innerHTML = "<li>目前沒有其他文章</li>";
+        return;
+      }
+
+      el.innerHTML = list.map(a => `
+        <li>
+          <a href="./article.html?slug=${encodeURIComponent(a.slug)}&source=article">
+            ${escapeHtml(a.title)}
+          </a>
+        </li>
+      `).join("");
+    }
+
+    async function initArticlePage() {
+      const article = await renderArticle();
+      if (!article) return;
+
+      await trackPageView(article);
+      await renderRelatedArticles(article.slug);
+      bindForm(article);
+    }
+
+    initArticlePage();
+  </script>
+
+</body>
+</html>

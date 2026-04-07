@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="product-detail-title">產品詳情｜Aplus</title>
+  <meta
+    name="description"
+    content="查看 Aplus 產品模組詳情，包括核心功能、適用場景、整合方式與系統價值。"
+  />
+  <link rel="stylesheet" href="./css/variables.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/layout.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/pages/product-detail.css" />
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main>
+    <section class="page-hero page-hero--product-detail">
+      <div class="container">
+        <a href="./products.html" class="back-link" data-i18n="productDetail.back">← 返回產品模組</a>
+        <span class="page-hero__eyebrow" id="productCategory">Product</span>
+        <h1 class="page-hero__title" id="productName">Product Name</h1>
+        <p class="page-hero__desc" id="productSummary">
+          Product summary.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container product-detail-hero">
+        <div class="product-detail-hero__content">
+          <div class="product-highlight-list" id="productHighlights"></div>
+        </div>
+        <div class="product-detail-hero__media" id="productVisual"></div>
+      </div>
+    </section>
+
+    <section class="section section--muted">
+      <div class="container">
+        <div class="section-heading">
+          <span class="section-heading__eyebrow" data-i18n="productDetail.features.eyebrow">Core Features</span>
+          <h2 class="section-heading__title" data-i18n="productDetail.features.title">核心功能</h2>
+        </div>
+        <div class="feature-grid" id="productFeatures"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container detail-two-column">
+        <article class="detail-panel">
+          <span class="section-heading__eyebrow" data-i18n="productDetail.usecases.eyebrow">Use Cases</span>
+          <h2 data-i18n="productDetail.usecases.title">適用場景</h2>
+          <div class="content-list-wrap">
+            <ul class="content-list" id="productUseCases"></ul>
+          </div>
+        </article>
+
+        <article class="detail-panel">
+          <span class="section-heading__eyebrow" data-i18n="productDetail.integration.eyebrow">Integration</span>
+          <h2 data-i18n="productDetail.integration.title">整合方式</h2>
+          <div class="content-list-wrap">
+            <ul class="content-list" id="productIntegration"></ul>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section section--dark">
+      <div class="container">
+        <div class="section-heading section-heading--center">
+          <span class="section-heading__eyebrow" data-i18n="productDetail.value.eyebrow">Why It Matters</span>
+          <h2 class="section-heading__title" data-i18n="productDetail.value.title">產品價值</h2>
+        </div>
+        <div class="timeline" id="productValues"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-heading">
+          <span class="section-heading__eyebrow" data-i18n="productDetail.related.eyebrow">Related Modules</span>
+          <h2 class="section-heading__title" data-i18n="productDetail.related.title">相關模組</h2>
+        </div>
+        <div class="related-products" id="relatedProducts"></div>
+      </div>
+    </section>
+
+    <section class="section cta-section">
+      <div class="container cta-box">
+        <div class="cta-box__content">
+          <span class="section-heading__eyebrow" data-i18n="productDetail.cta.eyebrow">Consultation</span>
+          <h2 id="ctaTitle">想了解這個產品如何整合到你的專案？</h2>
+          <p id="ctaText">歡迎與我們聯繫，我們可依需求提供模組配置與整體規劃建議。</p>
+        </div>
+        <div class="cta-box__actions">
+          <a href="./contact.html" class="btn btn--primary btn--lg" data-i18n="productDetail.cta.primaryBtn">聯絡我們</a>
+          <a href="./system.html" class="btn btn--secondary btn--lg" data-i18n="productDetail.cta.secondaryBtn">查看系統架構</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="./assets/js/layout.js"></script>
+
+  <script src="./js/main.js"></script>
+  <script src="./js/i18n.js"></script>
+  <script src="./js/products.js"></script>
+  <script>
+    window.initI18n && window.initI18n();
+  </script>
+</body>
+</html>

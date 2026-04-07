@@ -1,0 +1,78 @@
+<urlset>
+  <!-- Home -->
+  <url>
+    <loc>https://www.sentrum.com.tw/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://www.sentrum.com.tw/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sentrum.com.tw/en/" />
+  </url>
+
+  <!-- Products -->
+  <url>
+    <loc>https://www.sentrum.com.tw/products.html</loc>
+    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://www.sentrum.com.tw/products.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sentrum.com.tw/en/products.html" />
+  </url>
+
+  <!-- U-Hub -->
+  <url>
+    <loc>https://www.sentrum.com.tw/u-hub.html</loc>
+    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://www.sentrum.com.tw/u-hub.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sentrum.com.tw/en/u-hub.html" />
+  </url>
+
+  <!-- U-Show -->
+  <url>
+    <loc>https://www.sentrum.com.tw/u-show.html</loc>
+    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://www.sentrum.com.tw/u-show.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sentrum.com.tw/en/u-show.html" />
+  </url>
+
+  <!-- U-TP -->
+  <url>
+    <loc>https://www.sentrum.com.tw/u-tp.html</loc>
+    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://www.sentrum.com.tw/u-tp.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sentrum.com.tw/en/u-tp.html" />
+  </url>
+
+  <!-- UE Virtual -->
+  <url>
+    <loc>https://www.sentrum.com.tw/ue-virtual.html</loc>
+    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://www.sentrum.com.tw/ue-virtual.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sentrum.com.tw/en/ue-virtual.html" />
+  </url>
+
+  <!-- Solutions -->
+  <url>
+    <loc>https://www.sentrum.com.tw/solutions.html</loc>
+    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://www.sentrum.com.tw/solutions.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sentrum.com.tw/en/solutions.html" />
+  </url>
+
+  <!-- Rental -->
+  <url>
+    <loc>https://www.sentrum.com.tw/rental.html</loc>
+    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://www.sentrum.com.tw/rental.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sentrum.com.tw/en/rental.html" />
+  </url>
+
+  <!-- Cases -->
+  <url>
+    <loc>https://www.sentrum.com.tw/cases.html</loc>
+    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://www.sentrum.com.tw/cases.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sentrum.com.tw/en/cases.html" />
+  </url>
+
+  <!-- About -->
+  <url>
+    <loc>https://www.sentrum.com.tw/about.html</loc>
+    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://www.sentrum.com.tw/about.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sentrum.com.tw/en/about.html" />
+  </url>
+
+  <!-- Contact -->
+  <url>
+    <loc>https://www.sentrum.com.tw/contact.html</loc>
+    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://www.sentrum.com.tw/contact.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sentrum.com.tw/en/contact.html" />
+  </url>
+</urlset>

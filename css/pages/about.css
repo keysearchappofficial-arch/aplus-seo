@@ -1,0 +1,5 @@
+.page-hero--about {
+  background:
+    radial-gradient(circle at top right, rgba(182, 138, 76, 0.12), transparent 28%),
+    linear-gradient(180deg, #f8fbfd 0%, #eef3f8 100%);
+}

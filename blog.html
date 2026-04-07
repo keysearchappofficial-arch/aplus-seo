@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>文章專欄｜AI SEO、內容行銷與自然流量成長｜Aplus</title>
+  <meta
+    name="description"
+    content="Aplus AI SEO 文章專欄，分享 SEO 內容策略、關鍵字佈局、自然流量成長、內容行銷與企業網站獲客相關知識。"
+  />
+  <meta
+    name="keywords"
+    content="AI SEO, SEO文章, 關鍵字佈局, 自然流量, 內容行銷, 企業網站SEO, SEO教學, AI內容生成"
+  />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+
+  <link rel="canonical" href="https://www.keysearch-app.com/blog.html" />
+
+  <meta property="og:locale" content="zh_TW" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Aplus AI SEO" />
+  <meta property="og:title" content="文章專欄｜AI SEO、內容行銷與自然流量成長" />
+  <meta
+    property="og:description"
+    content="從 SEO 文章策略到 AI 內容生成，幫助企業網站持續累積自然流量與潛在客戶。"
+  />
+  <meta property="og:url" content="https://www.keysearch-app.com/blog.html" />
+  <meta property="og:image" content="https://www.keysearch-app.com/assets/images/og/blog-og.jpg" />
+  <meta property="og:image:alt" content="Aplus AI SEO 文章專欄" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="文章專欄｜AI SEO、內容行銷與自然流量成長" />
+  <meta
+    name="twitter:description"
+    content="分享 SEO 內容策略、關鍵字佈局、自然流量成長與內容獲客相關知識。"
+  />
+  <meta name="twitter:image" content="https://www.keysearch-app.com/assets/images/og/blog-og.jpg" />
+
+  <link rel="stylesheet" href="./css/variables.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/layout.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/pages/blog.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "Aplus AI SEO 文章專欄",
+    "url": "https://www.keysearch-app.com/blog.html",
+    "description": "分享 SEO 內容策略、關鍵字佈局、AI 內容生成與自然流量成長相關知識。",
+    "inLanguage": "zh-Hant"
+  }
+  </script>
+</head>
+
+<body>
+  <div id="site-header"></div>
+
+  <main class="section-shell">
+    <div class="container">
+
+      <div class="section-heading">
+        <span class="section-heading__eyebrow">Blog</span>
+        <h1 class="section-title">AI SEO 文章專欄</h1>
+        <p class="section-subtitle">
+          分享 SEO 內容策略、關鍵字佈局、AI 文章生成與自然流量成長方法，
+          幫助企業網站從靜態展示頁，變成持續帶來流量與客戶的內容引擎。
+        </p>
+      </div>
+
+      <div class="blog-intro-card">
+        <strong>這裡的每一篇文章，都是一個搜尋入口。</strong>
+        <p>
+          當網站持續累積內容，就有機會被搜尋引擎收錄、排名，
+          並把流量導向你的服務與商機。
+        </p>
+      </div>
+
+      <div id="blog-list" class="blog-grid"></div>
+
+      <section class="section cta-section" style="padding-top: 48px;">
+        <div class="cta-box">
+          <div class="cta-box__content">
+            <span class="section-heading__eyebrow">Next Step</span>
+            <h2>想讓你的網站也透過文章持續帶來客戶？</h2>
+            <p>
+              我們可以協助你建立 AI SEO 內容系統，
+              從主題規劃、文章生成到流量轉換，形成完整流程。
+            </p>
+          </div>
+          <div class="cta-box__actions">
+            <a href="./contact.html" class="btn btn--primary btn--lg">預約展示</a>
+            <a href="./system.html" class="btn btn--secondary btn--lg">了解系統</a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="./assets/js/layout.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./admin/js/supabase.js"></script>
+
+  <script>
+    async function loadArticles() {
+      const supabase = window.supabaseClient;
+      if (!supabase) {
+        throw new Error("文章未載入");
+      }
+
+      const { data, error } = await supabase
+        .from("articles")
+        .select("*")
+        .eq("status", "published")
+        .order("published_at", { ascending: false });
+
+      if (error) throw error;
+
+      return data || [];
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return "";
+      const date = new Date(dateString);
+      if (Number.isNaN(date.getTime())) return "";
+
+      return date.toLocaleDateString("zh-TW", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function buildArticleCard(article) {
+      const title = escapeHtml(article.title || "未命名文章");
+      const summary = escapeHtml(article.summary || "查看這篇文章，了解更多 SEO 內容策略與流量成長方法。");
+      const category = escapeHtml(article.category || "SEO 文章");
+      const dateText = formatDate(article.published_at || article.created_at);
+      const slug = encodeURIComponent(article.slug || "");
+
+      return `
+        <a class="blog-card" href="./article.html?slug=${slug}&source=blog">
+          <div class="blog-card__body">
+            <div class="inline-meta" style="margin-bottom:10px;">
+              <span>${category}</span>
+              <span>${dateText}</span>
+            </div>
+            <h3>${title}</h3>
+            <p>${summary}</p>
+            <span class="blog-card__more">閱讀全文 →</span>
+          </div>
+        </a>
+      `;
+    }
+
+    async function renderBlog() {
+      const listEl = document.getElementById("blog-list");
+
+      try {
+        const articles = await loadArticles();
+
+        if (!articles.length) {
+          listEl.innerHTML = `
+            <div class="empty-state">
+              <h3>目前尚無文章</h3>
+              <p>文章準備中，之後這裡會持續更新 SEO 與內容獲客相關內容。</p>
+            </div>
+          `;
+          return;
+        }
+
+        listEl.innerHTML = articles.map(buildArticleCard).join("");
+      } catch (error) {
+        console.error("載入文章失敗：", error);
+        listEl.innerHTML = `
+          <div class="empty-state">
+            <h3>文章載入失敗</h3>
+            <p>${escapeHtml(error.message)}</p>
+          </div>
+        `;
+      }
+    }
+
+    renderBlog();
+  </script>
+</body>
+</html>

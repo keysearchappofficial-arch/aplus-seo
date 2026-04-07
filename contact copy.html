@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="contact-title">聯絡我們｜Aplus</title>
+  <meta name="description" content="聯絡我們，洽詢虛擬攝影棚系統、場地租賃與專案合作。" />
+  <link rel="stylesheet" href="./css/variables.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/layout.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/pages/contact.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a href="./index.html" class="site-logo">Aplus</a>
+
+      <nav class="site-nav" aria-label="主選單">
+        <a href="./index.html" data-i18n="nav.home">首頁</a>
+        <a href="./system.html" data-i18n="nav.system">系統介紹</a>
+        <a href="./products.html" data-i18n="nav.products">產品模組</a>
+        <a href="./solutions.html" data-i18n="nav.solutions">解決方案</a>
+        <a href="./rental.html" data-i18n="nav.rental">場地租賃</a>
+        <a href="./cases.html" data-i18n="nav.cases">案例展示</a>
+        <a href="./about.html" data-i18n="nav.about">關於我們</a>
+        <a href="./contact.html" class="btn btn--primary is-active" data-i18n="nav.contact">聯絡我們</a>
+      </nav>
+
+      <div class="lang-switcher">
+        <button type="button" data-lang-switch="zh-TW">繁中</button>
+        <button type="button" data-lang-switch="en">EN</button>
+      </div>
+
+      <button class="nav-toggle" type="button" aria-label="開啟選單">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero page-hero--contact">
+      <div class="container">
+        <span class="page-hero__eyebrow" data-i18n="contact.hero.eyebrow">Contact</span>
+        <h1 class="page-hero__title" data-i18n="contact.hero.title">聯絡我們</h1>
+        <p class="page-hero__desc" data-i18n="contact.hero.desc">
+          無論是虛擬攝影棚系統規劃、場地租賃、專案合作或需求討論，
+          都歡迎與我們聯繫。
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container contact-layout">
+        <div class="contact-panel">
+          <span class="section-heading__eyebrow" data-i18n="contact.info.eyebrow">Get In Touch</span>
+          <h2 data-i18n="contact.info.title">告訴我們你的需求</h2>
+          <p data-i18n="contact.info.desc">
+            可先提供拍攝內容、使用日期、系統方向或預算範圍，
+            我們會協助你更快釐清可行的方案。
+          </p>
+
+          <div class="contact-info-list">
+            <div class="contact-info-item">
+              <h3 data-i18n="contact.info.items.email">Email</h3>
+              <p><a href="mailto:hello@Aplus.com">hello@Aplus.com</a></p>
+            </div>
+            <div class="contact-info-item">
+              <h3 data-i18n="contact.info.items.phone">Phone</h3>
+              <p><a href="tel:+886000000000">+886 00 0000 0000</a></p>
+            </div>
+            <div class="contact-info-item">
+              <h3 data-i18n="contact.info.items.location">Location</h3>
+              <p data-i18n="contact.info.items.locationValue">台北市中山區（可依實際地址調整）</p>
+            </div>
+            <div class="contact-info-item">
+              <h3 data-i18n="contact.info.items.service">Service</h3>
+              <p data-i18n="contact.info.items.serviceValue">虛擬攝影棚系統整合、場地租賃、直播與內容製播支援</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-form-card">
+          <form class="contact-form">
+            <div class="form-row">
+              <div class="form-field">
+                <label for="name" data-i18n="contact.form.name.label">姓名</label>
+                <input id="name" name="name" type="text" data-i18n-placeholder="contact.form.name.placeholder" placeholder="請輸入姓名" />
+              </div>
+              <div class="form-field">
+                <label for="company" data-i18n="contact.form.company.label">公司 / 單位</label>
+                <input id="company" name="company" type="text" data-i18n-placeholder="contact.form.company.placeholder" placeholder="請輸入公司或單位名稱" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label for="email" data-i18n="contact.form.email.label">Email</label>
+                <input id="email" name="email" type="email" data-i18n-placeholder="contact.form.email.placeholder" placeholder="you@example.com" />
+              </div>
+              <div class="form-field">
+                <label for="phone" data-i18n="contact.form.phone.label">電話</label>
+                <input id="phone" name="phone" type="tel" data-i18n-placeholder="contact.form.phone.placeholder" placeholder="請輸入聯絡電話" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label for="service" data-i18n="contact.form.service.label">需求類型</label>
+                <select id="service" name="service">
+                  <option value="" data-i18n="contact.form.service.option0">請選擇</option>
+                  <option data-i18n="contact.form.service.option1">虛擬攝影棚系統規劃</option>
+                  <option data-i18n="contact.form.service.option2">場地租賃</option>
+                  <option data-i18n="contact.form.service.option3">直播 / 錄製專案</option>
+                  <option data-i18n="contact.form.service.option4">其他合作洽詢</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="date" data-i18n="contact.form.date.label">預計日期</label>
+                <input id="date" name="date" type="text" data-i18n-placeholder="contact.form.date.placeholder" placeholder="例如：2026/04/15" />
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="message" data-i18n="contact.form.message.label">需求說明</label>
+              <textarea id="message" name="message" rows="6" data-i18n-placeholder="contact.form.message.placeholder" placeholder="請描述你的使用情境、拍攝形式、預算方向或其他需求"></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn--primary btn--lg" data-i18n="contact.form.submit">送出詢問</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--muted">
+      <div class="container">
+        <div class="section-heading section-heading--center">
+          <span class="section-heading__eyebrow" data-i18n="contact.visit.eyebrow">Visit & Meeting</span>
+          <h2 class="section-heading__title-" data-i18n="contact.visit.title">歡迎預約諮詢或場地參觀</h2>
+          <p class="section-heading__desc" data-i18n="contact.visit.desc">
+            若你希望先了解場地、系統方向或專案可行性，也可以先預約洽談。
+          </p>
+        </div>
+
+        <div class="map-placeholder"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <div class="site-footer__brand">
+        <div class="site-logo">Aplus</div>
+        <p data-i18n="footer.brand">虛擬攝影棚系統整合｜專業攝影棚租賃｜企業影像解決方案</p>
+      </div>
+      <div class="site-footer__links">
+        <div>
+          <h4 data-i18n="footer.navTitle">網站導覽</h4>
+          <a href="./system.html" data-i18n="nav.system">系統介紹</a>
+          <a href="./solutions.html" data-i18n="nav.solutions">解決方案</a>
+          <a href="./rental.html" data-i18n="nav.rental">場地租賃</a>
+          <a href="./cases.html" data-i18n="nav.cases">案例展示</a>
+        </div>
+        <div>
+          <h4 data-i18n="footer.contactTitle">聯絡資訊</h4>
+          <a href="./contact.html" data-i18n="nav.contact">聯絡我們</a>
+          <a href="mailto:hello@Aplus.com">hello@Aplus.com</a>
+          <a href="tel:+886000000000">+886 00 0000 0000</a>
+        </div>
+      </div>
+    </div>
+    <div class="site-footer__bottom">
+      <div class="container">
+        <p data-i18n="footer.copyright">© 2026 Aplus. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./js/main.js"></script>
+  <script src="./js/i18n.js"></script>
+  <script>
+    window.initI18n && window.initI18n();
+  </script>
+</body>
+</html>
