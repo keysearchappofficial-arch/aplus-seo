@@ -3,22 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aplus Admin｜詢問名單</title>
-  <link rel="stylesheet" href="./css/admin.css" />
+  <title>名單管理｜AI SEO 後台</title>
+
+  <link rel="stylesheet" href="./css/admin-base.css" />
+  <link rel="stylesheet" href="./css/admin-layout.css" />
+  <link rel="stylesheet" href="./css/admin-components.css" />
 </head>
+
 <body>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script src="./js/supabase.js"></script>
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar__brand">
+        <div class="admin-sidebar__logo">A</div>
+        <div>
+          <strong>AI SEO</strong>
+          <p>Admin</p>
+        </div>
+      </div>
 
-<script src="./js/auth-guard.js"></script>
-<script>
-  window.__adminGuardPromise = window.AdminAuth.requireAdminAuth();
-</script>
+      <nav class="admin-nav">
+        <a href="./index.html">Dashboard</a>
+        <a href="./content.html">文章管理</a>
+        <a href="./generate.html">AI 生成</a>
+        <a href="./leads.html" class="is-active">名單管理</a>
+      </nav>
+    </aside>
 
-  <script src="./js/article-store.js"></script>
-  <script src="./js/admin-common.js"></script>
-  <script src="./js/leads.js"></script>
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div>
+          <h1>名單管理</h1>
+          <p>查看網站收集到的潛在客戶</p>
+        </div>
+      </header>
 
+      <main class="admin-content">
+        <div class="card">
+          <div class="card__body">
 
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>姓名</th>
+                    <th>聯絡方式</th>
+                    <th>來源文章</th>
+                    <th>狀態</th>
+                    <th>時間</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="lead-table"></tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./js/supabase.js"></script>
+  <script src="./js/pages/leads.js"></script>
 </body>
 </html>
