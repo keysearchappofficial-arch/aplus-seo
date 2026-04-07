@@ -3,22 +3,57 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aplus Admin｜Dashboard</title>
-  <link rel="stylesheet" href="./css/admin.css" />
+  <title>AI SEO 後台｜Dashboard</title>
+
+  <link rel="stylesheet" href="./css/admin-base.css" />
+  <link rel="stylesheet" href="./css/admin-layout.css" />
+  <link rel="stylesheet" href="./css/admin-components.css" />
+  <link rel="stylesheet" href="./css/pages/dashboard.css" />
 </head>
 <body>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script src="./js/supabase.js"></script>
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="admin-sidebar__brand">
+        <div class="admin-sidebar__logo">Aplus</div>
+        <div>
+          <strong>AI SEO 後台</strong>
+          <p>Content Growth System</p>
+        </div>
+      </div>
 
-<script src="./js/auth-guard.js"></script>
-<script>
-  window.__adminGuardPromise = window.AdminAuth.requireAdminAuth();
-</script>
+      <nav class="admin-nav">
+        <a href="./index.html" class="is-active">Dashboard</a>
+        <a href="./content.html">文章管理</a>
+        <a href="./generate.html">AI 生成</a>
+        <a href="./topics.html">題庫管理</a>
+        <a href="./leads.html">名單管理</a>
+        <a href="./analytics.html">成效分析</a>
+        <a href="./settings.html">系統設定</a>
+      </nav>
+    </aside>
 
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div>
+          <h1 id="page-title">Dashboard</h1>
+          <p id="page-desc">掌握文章、流量、名單與轉換表現。</p>
+        </div>
+
+        <div class="admin-topbar__actions">
+          <span class="admin-user">AI SEO Admin</span>
+          <button id="logout-btn" class="btn btn--soft" type="button">登出</button>
+        </div>
+      </header>
+
+      <main class="admin-content" id="page-root"></main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./js/supabase.js"></script>
+  <script src="./js/auth.js"></script>
   <script src="./js/article-store.js"></script>
   <script src="./js/admin-common.js"></script>
-  <script src="./js/dashboard.js"></script>
-
-
+  <script src="./js/pages/dashboard.js"></script>
 </body>
 </html>
