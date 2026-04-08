@@ -44,13 +44,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         <td>${a.status}</td>
         <td>${formatDate(a.created_at)}</td>
         <td>
-          ${
-            a.status !== "published"
-              ? `<button onclick="publish('${a.id}')">發布</button>`
-              : ""
-          }
-          <button onclick="deleteArticle('${a.id}')">刪除</button>
-        </td>
+  <button onclick="editArticle('${a.id}')">編輯</button>
+  ${
+    a.status !== "published"
+      ? `<button onclick="publish('${a.id}')">發布</button>`
+      : ""
+  }
+  <button onclick="deleteArticle('${a.id}')">刪除</button>
+</td>
       </tr>
     `).join("");
   }
@@ -74,6 +75,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     alert("已發布");
     loadArticles();
   };
+  
+  window.editArticle = (id) => {
+  window.location.href = `./edit.html?id=${id}`;
+};
 
   window.deleteArticle = async (id) => {
     if (!confirm("確定刪除？")) return;
