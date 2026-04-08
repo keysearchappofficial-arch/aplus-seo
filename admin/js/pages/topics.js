@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   AdminCommon.renderLayout(
     "topics",
     "題庫管理",
-    "集中管理 AI SEO 主題，建立可持續產文的內容題庫。"
+    "建立、查看與管理 AI 自動產生的 SEO 主題。"
   );
 
   const root = document.getElementById("page-root");
@@ -16,15 +16,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   root.innerHTML = `
     <section class="card">
       <div class="card__body">
-        <div class="form-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
           <div>
             <label class="form-label">產業</label>
-            <input id="topic-industry" class="input" type="text" value="企業服務" placeholder="例如：企業服務" />
+            <input id="topic-industry" class="input" type="text" placeholder="例如：企業服務" value="企業服務" />
           </div>
 
           <div>
             <label class="form-label">地區</label>
-            <input id="topic-location" class="input" type="text" value="台灣" placeholder="例如：台灣" />
+            <input id="topic-location" class="input" type="text" placeholder="例如：台灣" value="台灣" />
           </div>
 
           <div>
@@ -34,8 +34,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         </div>
 
         <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;">
-          <button id="generate-topics-btn" class="btn btn--primary">自動產主題</button>
-          <button id="clear-topics-btn" class="btn btn--ghost">清空題庫</button>
+          <button id="generate-topics-btn" class="btn btn--primary">AI 自動產主題</button>
+          <button id="clear-topics-btn" class="btn btn--ghost">清空列表</button>
         </div>
       </div>
     </section>
@@ -45,12 +45,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
           <div>
             <h3 style="margin:0;font-size:18px;">主題列表</h3>
-            <p style="margin:6px 0 0;color:#64748b;font-size:14px;">AI 生成的主題會直接加入這裡。</p>
+            <p style="margin:6px 0 0;color:#64748b;font-size:14px;">這裡會顯示 AI 產出的主題。</p>
           </div>
-          <div id="topic-count-badge" style="font-size:14px;color:#64748b;">共 0 筆</div>
+          <div id="topic-total" style="font-size:14px;color:#64748b;">共 0 筆</div>
         </div>
 
-        <div id="topic-library-list"></div>
+        <div id="topic-list"></div>
       </div>
     </section>
   `;
@@ -80,7 +80,60 @@ document.addEventListener("DOMContentLoaded", async () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(topics));
   }
 
-  async function generateTopicsWithAI({ industry, location, count }) {
+  function renderTopics() {
+    const list = document.getElementById("topic-list");
+    const total = document.getElementById("topic-total");
+    if (!list) return;
+
+    const topics = readTopics();
+
+    if (total) {
+      total.textContent = `共 ${topics.length} 筆`;
+    }
+
+    if (!topics.length) {
+      list.innerHTML = `
+        <div style="padding:20px;border:1px dashed #cbd5e1;border-radius:16px;color:#64748b;">
+          目前還沒有主題，請先點「AI 自動產主題」。
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = `
+      <div style="display:grid;gap:14px;">
+        ${topics.map(item => `
+          <article style="border:1px solid #e2e8f0;border-radius:16px;padding:18px;background:#fff;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:240px;">
+                <h4 style="margin:0 0 8px;font-size:18px;line-height:1.5;color:#0f172a;">
+                  ${escapeHtml(item.topic)}
+                </h4>
+                <div style="font-size:13px;color:#64748b;">
+                  ${escapeHtml(item.location || "台灣")}｜${escapeHtml(item.industry || "企業服務")}｜${escapeHtml(item.source || "ai")}
+                </div>
+              </div>
+
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn btn--ghost delete-topic-btn" data-id="${escapeHtml(item.id)}">刪除</button>
+              </div>
+            </div>
+          </article>
+        `).join("")}
+      </div>
+    `;
+
+    list.querySelectorAll(".delete-topic-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.id;
+        const next = readTopics().filter(item => item.id !== id);
+        writeTopics(next);
+        renderTopics();
+      });
+    });
+  }
+
+  async function requestTopicsFromApi({ industry, location, count }) {
     const response = await fetch("http://localhost:3000/api/topics/generate", {
       method: "POST",
       headers: {
@@ -108,74 +161,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       throw new Error(message);
     }
 
-    const parsed = await response.json();
-    return Array.isArray(parsed.topics) ? parsed.topics : [];
-  }
+    const data = await response.json();
 
-  async function renderTopicLibrary() {
-    const container = document.getElementById("topic-library-list");
-    const badge = document.getElementById("topic-count-badge");
-    if (!container) return;
-
-    const topics = readTopics();
-
-    if (badge) {
-      badge.textContent = `共 ${topics.length} 筆`;
+    if (!Array.isArray(data.topics)) {
+      throw new Error("API 回傳格式錯誤，缺少 topics");
     }
 
-    if (!topics.length) {
-      container.innerHTML = `
-        <div class="empty-state" style="padding:24px;border:1px dashed #cbd5e1;border-radius:16px;color:#64748b;">
-          目前還沒有題目，點上方「自動產主題」開始建立題庫。
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = `
-      <div style="display:grid;gap:14px;">
-        ${topics.map(item => `
-          <article class="topic-card" data-id="${escapeHtml(item.id)}" style="border:1px solid #e2e8f0;border-radius:16px;padding:18px;background:#fff;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
-              <div style="flex:1;min-width:240px;">
-                <h4 style="margin:0 0 8px;font-size:18px;line-height:1.5;color:#0f172a;">
-                  ${escapeHtml(item.topic)}
-                </h4>
-                <div style="display:flex;gap:10px;flex-wrap:wrap;color:#64748b;font-size:13px;">
-                  <span>${escapeHtml(item.location || "台灣")}</span>
-                  <span>｜</span>
-                  <span>${escapeHtml(item.industry || "企業服務")}</span>
-                  <span>｜</span>
-                  <span>${escapeHtml(item.source || "ai")}</span>
-                </div>
-              </div>
-
-              <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <button class="btn btn--ghost use-topic-btn" data-topic="${escapeHtml(item.topic)}">拿去產文</button>
-                <button class="btn btn--ghost delete-topic-btn" data-id="${escapeHtml(item.id)}">刪除</button>
-              </div>
-            </div>
-          </article>
-        `).join("")}
-      </div>
-    `;
-
-    container.querySelectorAll(".delete-topic-btn").forEach(btn => {
-      btn.onclick = async () => {
-        const id = btn.dataset.id;
-        const topics = readTopics().filter(item => item.id !== id);
-        writeTopics(topics);
-        await renderTopicLibrary();
-      };
-    });
-
-    container.querySelectorAll(".use-topic-btn").forEach(btn => {
-      btn.onclick = () => {
-        const topic = btn.dataset.topic || "";
-        localStorage.setItem("selected_ai_topic", topic);
-        window.location.href = "./generate.html";
-      };
-    });
+    return data.topics;
   }
 
   document.getElementById("generate-topics-btn")?.addEventListener("click", async () => {
@@ -189,35 +181,29 @@ document.addEventListener("DOMContentLoaded", async () => {
       const location = document.getElementById("topic-location")?.value?.trim() || "台灣";
       const count = Number(document.getElementById("topic-count")?.value) || 10;
 
-      const newTopics = await generateTopicsWithAI({
+      const topics = await requestTopicsFromApi({
         industry,
         location,
         count
       });
 
-      const current = readTopics();
-      const merged = [...newTopics, ...current];
+      writeTopics(topics);
+      renderTopics();
 
-      writeTopics(merged);
-      await renderTopicLibrary();
-
-      alert(`已新增 ${newTopics.length} 個主題到題庫`);
+      alert(`已生成 ${topics.length} 個主題`);
     } catch (error) {
-      console.error("自動產主題失敗：", error);
-      alert(error.message || "自動產主題失敗");
+      console.error("AI 自動產主題失敗：", error);
+      alert(error.message || "AI 自動產主題失敗");
     } finally {
       btn.disabled = false;
-      btn.textContent = "自動產主題";
+      btn.textContent = "AI 自動產主題";
     }
   });
 
-  document.getElementById("clear-topics-btn")?.addEventListener("click", async () => {
-    const yes = confirm("確定要清空整個題庫嗎？");
-    if (!yes) return;
-
+  document.getElementById("clear-topics-btn")?.addEventListener("click", () => {
     writeTopics([]);
-    await renderTopicLibrary();
+    renderTopics();
   });
 
-  await renderTopicLibrary();
+  renderTopics();
 });
