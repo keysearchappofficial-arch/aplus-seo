@@ -161,27 +161,38 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       list.innerHTML = `
-        <div style="display:grid;gap:14px;">
-          ${topics.map(item => `
-            <article style="border:1px solid #e2e8f0;border-radius:16px;padding:18px;background:#fff;">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
-                <div style="flex:1;min-width:240px;">
-                  <h4 style="margin:0 0 8px;font-size:18px;line-height:1.5;color:#0f172a;">
-                    ${escapeHtml(item.topic)}
-                  </h4>
-                  <div style="font-size:13px;color:#64748b;">
-                    ${escapeHtml(item.location || "台灣")}｜${escapeHtml(item.industry || "企業服務")}｜${escapeHtml(item.source || "ai")}
-                  </div>
-                </div>
+  <div style="display:grid;gap:14px;">
+    ${topics.map(item => `
+      <article style="border:1px solid #e2e8f0;border-radius:16px;padding:18px;background:#fff;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:240px;">
+            <h4 style="margin:0 0 8px;font-size:18px;line-height:1.5;color:#0f172a;">
+              ${escapeHtml(item.topic)}
+            </h4>
 
-                <div>
-                  <button class="btn btn--ghost delete-topic-btn" data-id="${escapeHtml(item.id)}">刪除</button>
-                </div>
-              </div>
-            </article>
-          `).join("")}
+            <div style="font-size:13px;color:#64748b;display:flex;gap:8px;flex-wrap:wrap;">
+              <span>${escapeHtml(item.location || "台灣")}</span>
+              <span>｜</span>
+              <span>${escapeHtml(item.industry || "企業服務")}</span>
+              <span>｜</span>
+              <span>${escapeHtml(item.category || "AI SEO")}</span>
+              <span>｜</span>
+              <span>${escapeHtml(item.tone || "專業")}</span>
+            </div>
+
+            <div style="margin-top:8px;font-size:13px;color:#475569;">
+              CTA：${escapeHtml(item.cta || "預約 AI SEO 系統展示")}
+            </div>
+          </div>
+
+          <div>
+            <button class="btn btn--ghost delete-topic-btn" data-id="${escapeHtml(item.id)}">刪除</button>
+          </div>
         </div>
-      `;
+      </article>
+    `).join("")}
+  </div>
+`;
 
       list.querySelectorAll(".delete-topic-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
