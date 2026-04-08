@@ -1,7 +1,59 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  const supabase = window.supabaseClient;
-  const table = document.getElementById("lead-table");
+  await window.loadAdminLayout();
 
+  AdminCommon.renderLayout(
+    "leads",
+    "名單管理",
+    "查看網站收集到的潛在客戶"
+  );
+
+  const root = document.getElementById("page-root");
+  if (!root) return;
+
+  root.innerHTML = `
+    <div class="card">
+      <div class="card__body">
+
+        <div style="margin-bottom:16px;display:flex;gap:12px;">
+          <select id="filter-status" class="input" style="max-width:200px;">
+            <option value="all">全部</option>
+            <option value="new">新名單</option>
+            <option value="contacted">已聯絡</option>
+            <option value="closed">已成交</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>姓名</th>
+                <th>聯絡方式</th>
+                <th>來源文章</th>
+                <th>狀態</th>
+                <th>時間</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="lead-table"></tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  const supabase = window.supabaseClient;
+  const filter = document.getElementById("filter-status");
+
+  let leads = [];
+
+  // ✅ 等 DOM 真正 render 完再開始
+  requestAnimationFrame(() => {
+    loadLeads();
+  });
+
+  // ===== 載入資料 =====
   async function loadLeads() {
     const { data, error } = await supabase
       .from("leads")
@@ -9,42 +61,62 @@ document.addEventListener("DOMContentLoaded", async () => {
       .order("created_at", { ascending: false });
 
     if (error) {
-      alert("載入失敗：" + error.message);
-      return;
-    }
-
-    render(data || []);
-  }
-
-  function render(leads) {
-    if (!leads.length) {
-      table.innerHTML = `
-        <tr><td colspan="6">目前沒有名單</td></tr>
+      root.innerHTML = `
+        <div class="card">
+          <div class="card__body">
+            載入失敗：${AdminCommon.escapeHtml(error.message)}
+          </div>
+        </div>
       `;
       return;
     }
 
-    table.innerHTML = leads.map(lead => `
+    leads = data || [];
+    render();
+  }
+
+  // ===== 渲染 =====
+  function render() {
+    const table = document.getElementById("lead-table");
+
+    if (!table) {
+      console.warn("⚠️ lead-table 尚未出現");
+      return;
+    }
+
+    const status = filter.value;
+
+    const filtered =
+      status === "all"
+        ? leads
+        : leads.filter(l => l.status === status);
+
+    if (!filtered.length) {
+      table.innerHTML = `
+        <tr>
+          <td colspan="6">沒有資料</td>
+        </tr>
+      `;
+      return;
+    }
+
+    table.innerHTML = filtered.map(l => `
       <tr>
-        <td>${escapeHtml(lead.name)}</td>
-        <td>${escapeHtml(lead.contact)}</td>
-        <td>${escapeHtml(lead.source_article_title || "-")}</td>
-        <td>
-          <select onchange="updateStatus('${lead.id}', this.value)">
-            <option value="new" ${lead.status === "new" ? "selected" : ""}>新名單</option>
-            <option value="contacted" ${lead.status === "contacted" ? "selected" : ""}>已聯絡</option>
-            <option value="closed" ${lead.status === "closed" ? "selected" : ""}>已成交</option>
-          </select>
-        </td>
-        <td>${formatDate(lead.created_at)}</td>
-        <td>
-          <button onclick="deleteLead('${lead.id}')">刪除</button>
+        <td>${AdminCommon.escapeHtml(l.name || "-")}</td>
+        <td>${AdminCommon.escapeHtml(l.contact || "-")}</td>
+        <td>${AdminCommon.escapeHtml(l.source_article_title || "-")}</td>
+        <td><span class="badge">${l.status || "new"}</span></td>
+        <td>${formatDate(l.created_at)}</td>
+        <td style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn btn--soft" onclick="setStatus('${l.id}','contacted')">已聯絡</button>
+          <button class="btn btn--primary" onclick="setStatus('${l.id}','closed')">成交</button>
         </td>
       </tr>
     `).join("");
   }
 
-  window.updateStatus = async (id, status) => {
+  // ===== 更新狀態 =====
+  window.setStatus = async (id, status) => {
     const { error } = await supabase
       .from("leads")
       .update({ status })
@@ -52,36 +124,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (error) {
       alert("更新失敗：" + error.message);
-    }
-  };
-
-  window.deleteLead = async (id) => {
-    if (!confirm("確定刪除？")) return;
-
-    const { error } = await supabase
-      .from("leads")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      alert("刪除失敗：" + error.message);
       return;
     }
 
     loadLeads();
   };
 
-  function formatDate(date) {
-    if (!date) return "-";
-    return new Date(date).toLocaleString("zh-TW");
-  }
+  // ===== 篩選 =====
+  filter.addEventListener("change", render);
 
-  function escapeHtml(str = "") {
-    return str
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;");
+  function formatDate(value) {
+    if (!value) return "-";
+    return new Date(value).toLocaleString("zh-TW");
   }
-
-  loadLeads();
 });
