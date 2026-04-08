@@ -82,8 +82,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       </section>
     `;
 
-    let topicProgressTimer = null;
-
     function escapeHtml(str = "") {
       return String(str)
         .replace(/&/g, "&amp;")
@@ -122,54 +120,23 @@ document.addEventListener("DOMContentLoaded", async () => {
       `;
     }
 
-    function startFakeTopicProgress() {
-      stopFakeTopicProgress();
-
-      const list = document.getElementById("topic-list");
-      if (!list) return;
-
-      let percent = 6;
-      const steps = [
+    const topicProgress = window.UIProgress.create({
+      render(percent, text) {
+        const list = document.getElementById("topic-list");
+        if (!list) return;
+        list.innerHTML = renderGeneratingState(percent, text);
+      },
+      initialPercent: 6,
+      steps: [
         { until: 18, text: "正在分析產業與地區..." },
         { until: 36, text: "正在規劃主題方向..." },
         { until: 58, text: "正在生成 SEO 主題..." },
         { until: 76, text: "正在整理分類與語氣..." },
         { until: 90, text: "正在完成主題輸出..." }
-      ];
-
-      let stepIndex = 0;
-      list.innerHTML = renderGeneratingState(percent, steps[stepIndex].text);
-
-      topicProgressTimer = setInterval(() => {
-        const step = steps[stepIndex];
-        if (!step) return;
-
-        if (percent < step.until) {
-          percent += Math.floor(Math.random() * 3) + 1;
-          if (percent > step.until) percent = step.until;
-        } else if (stepIndex < steps.length - 1) {
-          stepIndex += 1;
-        }
-
-        list.innerHTML = renderGeneratingState(percent, steps[stepIndex].text);
-      }, 700);
-    }
-
-    function finishFakeTopicProgress(text = "主題生成完成，正在更新題庫...") {
-      stopFakeTopicProgress();
-
-      const list = document.getElementById("topic-list");
-      if (!list) return;
-
-      list.innerHTML = renderGeneratingState(100, text);
-    }
-
-    function stopFakeTopicProgress() {
-      if (topicProgressTimer) {
-        clearInterval(topicProgressTimer);
-        topicProgressTimer = null;
-      }
-    }
+      ],
+      finishingText: "正在整理輸出內容...",
+      finishedText: "生成完成"
+    });
 
     async function fetchTopics() {
       const response = await fetch("http://localhost:3000/api/topics");
@@ -332,7 +299,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const cta = document.getElementById("topic-cta")?.value?.trim() || "預約 AI SEO 系統展示";
         const count = Number(document.getElementById("topic-count")?.value) || 10;
 
-        startFakeTopicProgress();
+        topicProgress.start();
 
         const topics = await generateTopics({
           industry,
@@ -343,14 +310,12 @@ document.addEventListener("DOMContentLoaded", async () => {
           count
         });
 
-        finishFakeTopicProgress("主題生成完成，正在更新題庫...");
+        await topicProgress.finishSmooth();
+        await renderTopics();
 
-        setTimeout(async () => {
-          await renderTopics();
-          alert(`已新增 ${topics.length} 個主題到題庫`);
-        }, 450);
+        alert(`已新增 ${topics.length} 個主題到題庫`);
       } catch (error) {
-        stopFakeTopicProgress();
+        topicProgress.stop();
         console.error(error);
 
         const list = document.getElementById("topic-list");
