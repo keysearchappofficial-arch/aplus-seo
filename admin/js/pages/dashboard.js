@@ -1,9 +1,15 @@
 document.addEventListener("DOMContentLoaded", async () => {
+
+  // ✅ 一定要先載入 layout
+  await window.loadAdminLayout();
+
+  // ✅ 再做登入驗證
   if (window.__adminGuardPromise) {
     const session = await window.__adminGuardPromise;
     if (!session) return;
   }
 
+  // ✅ 再 render layout
   AdminCommon.renderLayout(
     "dashboard",
     "Dashboard",
@@ -11,7 +17,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   );
 
   const root = document.getElementById("page-root");
-  if (!root) return;
+  if (!root) {
+    console.error("❌ page-root 不存在");
+    return;
+  }
 
   root.innerHTML = `
     <div class="dashboard-stack">
@@ -54,102 +63,69 @@ document.addEventListener("DOMContentLoaded", async () => {
     </div>
   `;
 
-  const statsGrid = document.getElementById("stats-grid");
-  const topArticlesEl = document.getElementById("top-articles");
-  const latestLeadsEl = document.getElementById("latest-leads");
-  const tableBody = document.getElementById("article-table-body");
+  // ✅ 等 DOM render 完再抓元素（關鍵）
+  requestAnimationFrame(initDashboard);
 
-  try {
-    const stats = await ArticleStore.getDashboardStats();
+  async function initDashboard() {
+    const statsGrid = document.getElementById("stats-grid");
+    const topArticlesEl = document.getElementById("top-articles");
+    const latestLeadsEl = document.getElementById("latest-leads");
+    const tableBody = document.getElementById("article-table-body");
 
-    statsGrid.innerHTML = `
-      <div class="stat-card">
-        <div class="stat-card__label">總文章數</div>
-        <div class="stat-card__value">${stats.articles.length}</div>
-        <div class="stat-card__hint">含草稿、排程與已發布</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-card__label">已發布文章</div>
-        <div class="stat-card__value">${stats.published.length}</div>
-        <div class="stat-card__hint">可在前台看到</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-card__label">總 PV</div>
-        <div class="stat-card__value">${stats.totalPv}</div>
-        <div class="stat-card__hint">文章瀏覽總量</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-card__label">總名單數</div>
-        <div class="stat-card__value">${stats.totalLeads}</div>
-        <div class="stat-card__hint">轉換率 ${stats.conversionRate}%</div>
-      </div>
-    `;
-
-    if (!stats.topArticles.length) {
-      topArticlesEl.innerHTML = `<div class="empty-state">目前沒有熱門文章資料</div>`;
-    } else {
-      topArticlesEl.innerHTML = `
-        <div class="dashboard-list">
-          ${stats.topArticles.map(item => `
-            <div class="dashboard-list__item">
-              <div>
-                <strong>${AdminCommon.escapeHtml(item.article.title)}</strong>
-                <span>PV ${item.analytics.pv} ／ Leads ${item.analytics.leads}</span>
-              </div>
-              <span>${item.analytics.conversionRate}%</span>
-            </div>
-          `).join("")}
-        </div>
-      `;
+    if (!statsGrid || !topArticlesEl || !latestLeadsEl || !tableBody) {
+      console.warn("⚠️ Dashboard DOM 尚未準備好");
+      return;
     }
 
-    if (!stats.latestLeads.length) {
-      latestLeadsEl.innerHTML = `<div class="empty-state">目前沒有新名單</div>`;
-    } else {
-      latestLeadsEl.innerHTML = `
-        <div class="dashboard-list">
-          ${stats.latestLeads.map(lead => `
-            <div class="dashboard-list__item">
-              <div>
-                <strong>${AdminCommon.escapeHtml(lead.name || "未命名")}</strong>
-                <span>${AdminCommon.escapeHtml(lead.sourceArticleTitle || "未知來源")}</span>
-              </div>
-              <span>${AdminCommon.formatDateTime(lead.createdAt)}</span>
-            </div>
-          `).join("")}
+    try {
+      const stats = await ArticleStore.getDashboardStats();
+
+      statsGrid.innerHTML = `
+        <div class="stat-card">
+          <div class="stat-card__label">總文章數</div>
+          <div class="stat-card__value">${stats.articles.length}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__label">已發布</div>
+          <div class="stat-card__value">${stats.published.length}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__label">總 PV</div>
+          <div class="stat-card__value">${stats.totalPv}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__label">名單數</div>
+          <div class="stat-card__value">${stats.totalLeads}</div>
         </div>
       `;
-    }
 
-    if (!stats.articles.length) {
-      tableBody.innerHTML = `
+      topArticlesEl.innerHTML = stats.topArticles.length
+        ? stats.topArticles.map(item => `
+            <div>
+              ${AdminCommon.escapeHtml(item.article.title)} (${item.analytics.pv})
+            </div>
+          `).join("")
+        : "沒有資料";
+
+      latestLeadsEl.innerHTML = stats.leads.slice(0, 5).map(l => `
+        <div>${AdminCommon.escapeHtml(l.name || "-")}</div>
+      `).join("");
+
+      tableBody.innerHTML = stats.articles.map(a => `
         <tr>
-          <td colspan="4">
-            <div class="empty-state">目前還沒有文章</div>
-          </td>
-        </tr>
-      `;
-    } else {
-      tableBody.innerHTML = stats.articles.map(article => `
-        <tr>
-          <td>${AdminCommon.escapeHtml(article.title)}</td>
-          <td>${AdminCommon.escapeHtml(article.category || "-")}</td>
-          <td><span class="badge">${AdminCommon.escapeHtml(article.status)}</span></td>
-          <td>${AdminCommon.formatDateTime(article.publishedAt || article.createdAt)}</td>
+          <td>${AdminCommon.escapeHtml(a.title)}</td>
+          <td>${AdminCommon.escapeHtml(a.category || "-")}</td>
+          <td>${a.status}</td>
+          <td>${new Date(a.createdAt).toLocaleString()}</td>
         </tr>
       `).join("");
+
+    } catch (error) {
+      console.error("Dashboard error:", error);
+      root.innerHTML = `<p>載入失敗：${error.message}</p>`;
     }
-  } catch (error) {
-    console.error("Dashboard 載入失敗：", error);
-    root.innerHTML = `
-      <div class="card">
-        <div class="card__body">
-          Dashboard 載入失敗：${AdminCommon.escapeHtml(error.message)}
-        </div>
-      </div>
-    `;
   }
 });
