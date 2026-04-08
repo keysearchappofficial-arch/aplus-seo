@@ -9,12 +9,7 @@ window.AdminCommon = {
     const navLinks = document.querySelectorAll(".admin-nav a");
     navLinks.forEach(link => {
       link.classList.remove("is-active");
-      const href = link.getAttribute("href") || "";
-      const matched =
-        (pageKey === "dashboard" && href.includes("index.html")) ||
-        href.includes(`${pageKey}.html`);
-
-      if (matched) {
+      if (link.dataset.page === pageKey) {
         link.classList.add("is-active");
       }
     });
