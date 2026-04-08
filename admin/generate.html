@@ -33,17 +33,27 @@
     </aside>
 
     <div class="admin-main">
+      
+      
       <header class="admin-topbar">
+      <div class="admin-topbar__left">
+        <button id="menu-toggle" class="menu-toggle" type="button" aria-label="開啟選單">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
         <div>
           <h1 id="page-title">AI SEO 文章生成</h1>
           <p id="page-desc">使用 Ollama 生成具備 SEO 結構的文章草稿，並可直接套用為草稿或發布。</p>
         </div>
+      </div>
 
-        <div class="admin-topbar__actions">
-          <span class="admin-user">AI SEO Admin</span>
-          <button id="logout-btn" class="btn btn--soft" type="button">登出</button>
-        </div>
-      </header>
+      <div class="admin-topbar__actions">
+        <span class="admin-user">AI SEO Admin</span>
+        <button id="logout-btn" class="btn btn--soft" type="button">登出</button>
+      </div>
+    </header>
 
       <main class="admin-content" id="page-root"></main>
     </div>
