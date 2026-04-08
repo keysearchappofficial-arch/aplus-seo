@@ -134,7 +134,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ===== 手動觸發 =====
   document.getElementById("run-once-btn").onclick = async () => {
     try {
-      await fetch("http://localhost:3000/run-once");
+      await fetch("http://localhost:3000/api/scheduler/run-once", {
+  method: "POST"
+});
       alert("已觸發產文");
     } catch (err) {
       alert("無法觸發（請確認 Node server 已開）");
