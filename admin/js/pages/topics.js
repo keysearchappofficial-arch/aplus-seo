@@ -25,21 +25,40 @@ document.addEventListener("DOMContentLoaded", async () => {
       <section class="card">
         <div class="card__body">
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
-            <div>
-              <label class="form-label">產業</label>
-              <input id="topic-industry" class="input" type="text" value="企業服務" />
-            </div>
+  <div>
+    <label class="form-label">產業</label>
+    <input id="topic-industry" class="input" type="text" value="企業服務" />
+  </div>
 
-            <div>
-              <label class="form-label">地區</label>
-              <input id="topic-location" class="input" type="text" value="台灣" />
-            </div>
+  <div>
+    <label class="form-label">地區</label>
+    <input id="topic-location" class="input" type="text" value="台灣" />
+  </div>
 
-            <div>
-              <label class="form-label">主題數量</label>
-              <input id="topic-count" class="input" type="number" min="1" max="20" value="10" />
-            </div>
-          </div>
+  <div>
+    <label class="form-label">語氣</label>
+    <select id="topic-tone" class="select">
+      <option value="專業">專業</option>
+      <option value="商務">商務</option>
+      <option value="清楚易懂">清楚易懂</option>
+    </select>
+  </div>
+
+  <div>
+    <label class="form-label">分類</label>
+    <input id="topic-category" class="input" type="text" value="AI SEO" />
+  </div>
+
+  <div style="grid-column:1 / -1;">
+    <label class="form-label">CTA</label>
+    <input id="topic-cta" class="input" type="text" value="預約 AI SEO 系統展示" />
+  </div>
+
+  <div>
+    <label class="form-label">主題數量</label>
+    <input id="topic-count" class="input" type="number" min="1" max="20" value="10" />
+  </div>
+</div>
 
           <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;">
             <button id="generate-topics-btn" class="btn btn--primary">AI 自動產主題</button>
@@ -79,14 +98,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       return Array.isArray(data.topics) ? data.topics : [];
     }
 
-    async function generateTopics({ industry, location, count }) {
-      const response = await fetch("http://localhost:3000/api/topics/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ industry, location, count })
-      });
+    async function generateTopics({ industry, location, tone, category, cta, count }) {
+  const response = await fetch("http://localhost:3000/api/topics/generate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      industry,
+      location,
+      tone,
+      category,
+      cta,
+      count
+    })
+  });
 
       if (!response.ok) {
         let message = `主題生成失敗：${response.status}`;
@@ -177,10 +203,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         btn.textContent = "生成中...";
 
         const industry = document.getElementById("topic-industry")?.value?.trim() || "企業服務";
-        const location = document.getElementById("topic-location")?.value?.trim() || "台灣";
-        const count = Number(document.getElementById("topic-count")?.value) || 10;
+const location = document.getElementById("topic-location")?.value?.trim() || "台灣";
+const tone = document.getElementById("topic-tone")?.value?.trim() || "專業";
+const category = document.getElementById("topic-category")?.value?.trim() || "AI SEO";
+const cta = document.getElementById("topic-cta")?.value?.trim() || "預約 AI SEO 系統展示";
+const count = Number(document.getElementById("topic-count")?.value) || 10;
 
-        const topics = await generateTopics({ industry, location, count });
+const topics = await generateTopics({
+  industry,
+  location,
+  tone,
+  category,
+  cta,
+  count
+});
         await renderTopics();
 
         alert(`已新增 ${topics.length} 個主題到題庫`);
