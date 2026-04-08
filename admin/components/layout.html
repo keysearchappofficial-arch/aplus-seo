@@ -1,0 +1,47 @@
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="admin-sidebar">
+    <div class="admin-sidebar__brand">
+      <div class="admin-sidebar__logo">A</div>
+      <div>
+        <strong>AI SEO</strong>
+        <p>Admin</p>
+      </div>
+    </div>
+
+    <nav class="admin-nav">
+      <a href="./index.html" data-page="dashboard">Dashboard</a>
+      <a href="./content.html" data-page="content">文章管理</a>
+      <a href="./generate.html" data-page="generate">AI 生成</a>
+      <a href="./topics.html" data-page="topics">題庫管理</a>
+      <a href="./leads.html" data-page="leads">名單管理</a>
+      <a href="./analytics.html" data-page="analytics">成效分析</a>
+      <a href="./settings.html" data-page="settings">系統設定</a>
+    </nav>
+  </aside>
+
+  <div class="admin-overlay" id="admin-overlay"></div>
+
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <div class="admin-topbar__left">
+        <button id="menu-toggle" class="menu-toggle" type="button" aria-label="開啟選單">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <div>
+          <h1 id="page-title">後台頁面</h1>
+          <p id="page-desc">請在各頁 script 中設定頁面說明。</p>
+        </div>
+      </div>
+
+      <div class="admin-topbar__actions">
+        <span class="admin-user">AI SEO Admin</span>
+        <button id="logout-btn" class="btn btn--soft" type="button">登出</button>
+      </div>
+    </header>
+
+    <main class="admin-content" id="page-root"></main>
+  </div>
+</div>
