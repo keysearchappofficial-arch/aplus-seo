@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   AdminCommon.renderLayout(
     "generate",
     "AI SEO 文章生成",
-    "使用 Ollama 生成 SEO 結構文章，並可直接發布或編輯"
+    "使用 Ollama 生成 SEO 結構文章，並可編輯後發布"
   );
 
   const root = document.getElementById("page-root");
@@ -93,9 +93,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     preview.innerHTML = `
-      <div class="preview__eyebrow">AI PREVIEW</div>
-      <h2 class="preview__title">生成中...</h2>
-      <p class="preview__summary">請稍候</p>
+      <h2>生成中...</h2>
     `;
 
     try {
@@ -108,69 +106,42 @@ document.addEventListener("DOMContentLoaded", async () => {
       };
 
       preview.innerHTML = `
-        <div class="preview__eyebrow">AI PREVIEW</div>
+        <h2>${escape(generated.title)}</h2>
+        <p>${escape(generated.summary)}</p>
 
-        <h2 class="preview__title">${escape(generated.title)}</h2>
-        <p class="preview__summary">${escape(generated.summary)}</p>
+        <div>${generated.content}</div>
 
-        <div class="preview__content">
-          ${generated.content}
-        </div>
-
-        <div style="margin-top:20px;display:flex;gap:10px;">
-          <button class="btn btn--soft" id="save-draft">存草稿</button>
-          <button class="btn btn--primary" id="save-publish">直接發布</button>
+        <div style="margin-top:20px;">
+          <button id="go-edit-draft" class="btn btn--soft">編輯草稿</button>
+          <button id="go-edit-publish" class="btn btn--primary">編輯後發布</button>
         </div>
       `;
 
-      document.getElementById("save-draft")
-        .addEventListener("click", () => save("draft"));
+      document.getElementById("go-edit-draft")
+        .addEventListener("click", () => goEdit("draft"));
 
-      document.getElementById("save-publish")
-        .addEventListener("click", () => save("published"));
+      document.getElementById("go-edit-publish")
+        .addEventListener("click", () => goEdit("published"));
 
     } catch (err) {
-      preview.innerHTML = `
-        <h2>生成失敗</h2>
-        <p>${escape(err.message)}</p>
-      `;
+      preview.innerHTML = `<p>錯誤：${escape(err.message)}</p>`;
     }
 
     btn.disabled = false;
     btn.textContent = "生成內容";
   });
 
-  async function save(status) {
+  function goEdit(status) {
     if (!generated) return;
 
-    const supabase = window.supabaseClient;
-
-    const now = new Date().toISOString();
-
     const payload = {
-      title: generated.title,
-      slug: generated.slug,
-      summary: generated.summary,
-      content: generated.content,
-      category: generated.category,
-      status,
-      seo_title: generated.seoTitle,
-      seo_description: generated.seoDescription,
-      created_at: now,
-      updated_at: now,
-      published_at: status === "published" ? now : null
+      ...generated,
+      status
     };
 
-    const { error } = await supabase.from("articles").insert([payload]);
+    localStorage.setItem("ai_draft", JSON.stringify(payload));
 
-    if (error) {
-      alert("寫入失敗：" + error.message);
-      return;
-    }
-
-    alert(status === "published" ? "已發布" : "已存草稿");
-
-    window.location.href = "./content.html";
+    window.location.href = "./edit.html?mode=ai";
   }
 
   function slugify(text = "") {
