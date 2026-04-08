@@ -1,3 +1,23 @@
+function waitForElement(selector, timeout = 5000) {
+  return new Promise((resolve, reject) => {
+    const start = Date.now();
+
+    const timer = setInterval(() => {
+      const el = document.querySelector(selector);
+      if (el) {
+        clearInterval(timer);
+        resolve(el);
+        return;
+      }
+
+      if (Date.now() - start >= timeout) {
+        clearInterval(timer);
+        reject(new Error(`等不到元素：${selector}`));
+      }
+    }, 50);
+  });
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     console.log("[topics] init start");
@@ -7,26 +27,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!session) return;
     }
 
-    if (!window.AdminCommon || typeof AdminCommon.renderLayout !== "function") {
-      console.error("[topics] AdminCommon.renderLayout 不存在");
-      return;
-    }
-
-    await AdminCommon.renderLayout(
+    AdminCommon.renderLayout(
       "topics",
       "題庫管理",
       "建立、查看與管理 AI 自動產生的 SEO 主題。"
     );
 
-    console.log("[topics] layout rendered");
-
-    const root = document.getElementById("page-root");
-    console.log("[topics] page-root =", root);
-
-    if (!root) {
-      console.error("[topics] 找不到 #page-root，請檢查 admin layout 是否有輸出這個容器");
-      return;
-    }
+    const root = await waitForElement("#page-root");
+    console.log("[topics] page-root ready:", root);
 
     root.innerHTML = `
       <section class="card">
@@ -130,9 +138,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const topics = await fetchTopics();
 
-      if (total) {
-        total.textContent = `共 ${topics.length} 筆`;
-      }
+      total.textContent = `共 ${topics.length} 筆`;
 
       if (!topics.length) {
         list.innerHTML = `
@@ -215,7 +221,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     await renderTopics();
-    console.log("[topics] render done");
   } catch (error) {
     console.error("[topics] page init error:", error);
   }
