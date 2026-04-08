@@ -185,9 +185,23 @@ document.addEventListener("DOMContentLoaded", async () => {
             </div>
           </div>
 
-          <div>
-            <button class="btn btn--ghost delete-topic-btn" data-id="${escapeHtml(item.id)}">刪除</button>
-          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+  <button
+    class="btn btn--primary use-topic-btn"
+    data-topic='${escapeHtml(item.topic)}'
+    data-industry='${escapeHtml(item.industry || "企業服務")}'
+    data-location='${escapeHtml(item.location || "台灣")}'
+    data-tone='${escapeHtml(item.tone || "專業")}'
+    data-category='${escapeHtml(item.category || "AI SEO")}'
+    data-cta='${escapeHtml(item.cta || "預約 AI SEO 系統展示")}'
+  >
+    帶去 AI 生成
+  </button>
+
+  <button class="btn btn--ghost delete-topic-btn" data-id="${escapeHtml(item.id)}">
+    刪除
+  </button>
+</div>
         </div>
       </article>
     `).join("")}
@@ -204,7 +218,26 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
         });
       });
+      
+      list.querySelectorAll(".use-topic-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const payload = {
+      topic: btn.dataset.topic || "",
+      industry: btn.dataset.industry || "企業服務",
+      location: btn.dataset.location || "台灣",
+      tone: btn.dataset.tone || "專業",
+      category: btn.dataset.category || "AI SEO",
+      cta: btn.dataset.cta || "預約 AI SEO 系統展示"
+    };
+
+    localStorage.setItem("selected_topic_for_generate", JSON.stringify(payload));
+
+    window.location.href = "./generate.html";
+  });
+});
     }
+    
+    
 
     document.getElementById("generate-topics-btn")?.addEventListener("click", async () => {
       const btn = document.getElementById("generate-topics-btn");
