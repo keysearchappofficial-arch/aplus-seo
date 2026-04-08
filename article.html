@@ -257,15 +257,22 @@
     }
 
     async function initArticlePage() {
-      const article = await renderArticle();
-      if (!article) return;
+  const article = await renderArticle();
+  if (!article) return;
 
-      await trackPageView(article);
-      await renderRelatedArticles(article.slug);
-      bindForm(article);
-    }
+  const viewsEl = document.getElementById("article-views");
+  const views = await increaseAndFetchViews(article.slug);
 
-    initArticlePage();
+  if (viewsEl) {
+    viewsEl.textContent = views;
+  }
+
+  await trackPageView(article);
+  await renderRelatedArticles(article.slug);
+  bindForm(article);
+}
+
+initArticlePage();
   </script>
 
 </body>
