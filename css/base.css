@@ -116,11 +116,12 @@ p {
 }
 
 ::selection {
-  background: rgba(18, 56, 91, 0.12);
+  background: rgba(19, 135, 192, 0.18);
+  color: var(--color-text);
 }
 
 :focus-visible {
-  outline: 3px solid rgba(18, 56, 91, 0.2);
+  outline: 3px solid rgba(244, 82, 13, 0.28);
   outline-offset: 2px;
 }
 
@@ -133,8 +134,8 @@ p {
   height: 52px;
   border: 0;
   border-radius: 999px;
-  background: rgba(15, 33, 62, 0.92);
-  box-shadow: 0 16px 32px rgba(10, 22, 35, 0.18);
+  background: rgba(19, 135, 192, 0.94);
+  box-shadow: 0 16px 32px rgba(10, 22, 35, 0.16);
   backdrop-filter: blur(10px);
   cursor: pointer;
   display: inline-flex;
@@ -159,9 +160,9 @@ p {
 }
 
 .back-to-top:hover {
-  background: rgba(18, 56, 91, 0.96);
+  background: var(--color-accent);
   transform: translateY(-2px);
-  box-shadow: 0 20px 36px rgba(10, 22, 35, 0.22);
+  box-shadow: 0 20px 36px rgba(10, 22, 35, 0.2);
 }
 
 .back-to-top__icon {
