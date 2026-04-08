@@ -126,3 +126,20 @@
     grid-template-columns: 1fr;
   }
 }
+
+.textarea {
+  width: 100%;
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #fff;
+  color: #0f172a;
+  min-height: 110px;
+  resize: vertical;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #14213d;
+  box-shadow: 0 0 0 4px rgba(20, 33, 61, 0.08);
+}
