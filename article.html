@@ -25,6 +25,10 @@
         <span class="article-label">Article</span>
         <h1 id="article-title"></h1>
       </div>
+      
+      <div id="article-meta" style="margin-top:8px;color:#64748b;font-size:13px;">
+  瀏覽數：<span id="article-views">--</span>
+</div>
 
       <div id="article-content" class="article-content"></div>
 
@@ -89,6 +93,22 @@
       const params = new URLSearchParams(window.location.search);
       return params.get("slug");
     }
+    
+    async function increaseAndFetchViews(slug) {
+  try {
+    const res = await fetch(`http://localhost:3000/api/articles/view/${slug}`, {
+      method: "POST"
+    });
+
+    if (!res.ok) return 0;
+
+    const data = await res.json();
+    return data.views || 0;
+  } catch (error) {
+    console.error("取得 PV 失敗", error);
+    return 0;
+  }
+}
 
     function getSource() {
       const params = new URLSearchParams(window.location.search);
