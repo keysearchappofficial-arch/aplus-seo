@@ -1,7 +1,43 @@
 document.addEventListener("DOMContentLoaded", async () => {
   await window.loadAdminLayout();
 
-  AdminCommon.renderLayout("content", "編輯文章", "修改內容後發布");
+  AdminCommon.renderLayout(
+    "content",
+    "編輯文章",
+    "修改內容、SEO 欄位與發布狀態"
+  );
+
+  const root = document.getElementById("page-root");
+  if (!root) return;
+
+  root.innerHTML = `
+    <div class="card">
+      <div class="card__body">
+        <div style="display:grid;gap:14px;max-width:960px;">
+          <input id="edit-title" class="input" type="text" placeholder="文章標題" />
+          <input id="edit-slug" class="input" type="text" placeholder="Slug" />
+          <input id="edit-category" class="input" type="text" placeholder="分類" />
+          <textarea id="edit-summary" class="textarea" placeholder="摘要"></textarea>
+          <input id="edit-seo-title" class="input" type="text" placeholder="SEO Title" />
+          <textarea id="edit-seo-description" class="textarea" placeholder="SEO Description"></textarea>
+          <textarea id="edit-content" class="textarea" style="min-height:360px;" placeholder="HTML 內容"></textarea>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button id="save-draft-btn" class="btn btn--soft" type="button">儲存草稿</button>
+            <button id="save-publish-btn" class="btn btn--primary" type="button">儲存並發布</button>
+            <button id="back-btn" class="btn btn--soft" type="button">返回列表</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <div class="card__body">
+        <h3 class="card__title">文章預覽</h3>
+        <div id="article-preview" style="line-height:1.8;color:#334155;"></div>
+      </div>
+    </div>
+  `;
 
   const supabase = window.supabaseClient;
   const params = new URLSearchParams(window.location.search);
@@ -21,7 +57,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (mode === "ai") {
     loadFromAI();
   } else {
-    loadArticle();
+    if (!id) {
+      alert("缺少文章 id");
+      window.location.href = "./content.html";
+      return;
+    }
+    await loadArticle();
   }
 
   function loadFromAI() {
@@ -29,6 +70,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (!raw) {
       alert("沒有 AI 資料");
+      window.location.href = "./generate.html";
       return;
     }
 
@@ -46,11 +88,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   async function loadArticle() {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("articles")
       .select("*")
       .eq("id", id)
       .single();
+
+    if (error) {
+      alert("載入文章失敗：" + error.message);
+      window.location.href = "./content.html";
+      return;
+    }
 
     titleEl.value = data.title || "";
     slugEl.value = data.slug || "";
@@ -63,33 +111,39 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderPreview();
   }
 
-  document.getElementById("save-draft-btn").onclick = () => save("draft");
-  document.getElementById("save-publish-btn").onclick = () => save("published");
+  document.getElementById("save-draft-btn").addEventListener("click", () => save("draft"));
+  document.getElementById("save-publish-btn").addEventListener("click", () => save("published"));
+  document.getElementById("back-btn").addEventListener("click", () => {
+    window.location.href = "./content.html";
+  });
+
+  contentEl.addEventListener("input", renderPreview);
 
   async function save(status) {
     const payload = {
-      title: titleEl.value,
-      slug: slugEl.value,
-      category: categoryEl.value,
-      summary: summaryEl.value,
+      title: titleEl.value.trim(),
+      slug: slugEl.value.trim(),
+      category: categoryEl.value.trim(),
+      summary: summaryEl.value.trim(),
       content: contentEl.value,
-      seo_title: seoTitleEl.value,
-      seo_description: seoDescEl.value,
+      seo_title: seoTitleEl.value.trim(),
+      seo_description: seoDescEl.value.trim(),
       status,
       updated_at: new Date().toISOString(),
       published_at: status === "published" ? new Date().toISOString() : null
     };
 
     if (mode === "ai") {
-      const { error } = await supabase.from("articles").insert([payload]);
+      const { error } = await supabase
+        .from("articles")
+        .insert([payload]);
 
       if (error) {
-        alert(error.message);
+        alert("新增失敗：" + error.message);
         return;
       }
 
       localStorage.removeItem("ai_draft");
-
     } else {
       const { error } = await supabase
         .from("articles")
@@ -97,22 +151,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         .eq("id", id);
 
       if (error) {
-        alert(error.message);
+        alert("更新失敗：" + error.message);
         return;
       }
     }
 
-    alert("完成！");
+    alert(status === "published" ? "已儲存並發布" : "草稿已儲存");
     window.location.href = "./content.html";
   }
 
-  contentEl.addEventListener("input", renderPreview);
-
   function renderPreview() {
-    previewEl.innerHTML = contentEl.value || "<p>預覽</p>";
+    previewEl.innerHTML = contentEl.value || "<p>尚無內容預覽</p>";
   }
 
   function slugify(text = "") {
-    return text.toLowerCase().replace(/\s+/g, "-");
+    return String(text)
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9\u4e00-\u9fa5-]/g, "")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
   }
 });
