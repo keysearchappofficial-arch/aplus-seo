@@ -76,6 +76,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let generated = null;
 
+  fillGenerateFormFromTopicLibrary();
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -131,6 +133,43 @@ document.addEventListener("DOMContentLoaded", async () => {
     btn.textContent = "生成內容";
   });
 
+  function fillGenerateFormFromTopicLibrary() {
+    const raw = localStorage.getItem("selected_topic_for_generate");
+    if (!raw || !form) return;
+
+    try {
+      const data = JSON.parse(raw);
+
+      if (form.elements.industry) {
+        form.elements.industry.value = data.industry || "企業服務";
+      }
+
+      if (form.elements.location) {
+        form.elements.location.value = data.location || "台灣";
+      }
+
+      if (form.elements.topic) {
+        form.elements.topic.value = data.topic || "";
+      }
+
+      if (form.elements.tone) {
+        form.elements.tone.value = data.tone || "專業";
+      }
+
+      if (form.elements.category) {
+        form.elements.category.value = data.category || "AI SEO";
+      }
+
+      if (form.elements.cta) {
+        form.elements.cta.value = data.cta || "預約 AI SEO 系統展示";
+      }
+
+      localStorage.removeItem("selected_topic_for_generate");
+    } catch (error) {
+      console.error("帶入題庫資料失敗：", error);
+    }
+  }
+
   function goEdit(status) {
     if (!generated) return;
 
@@ -149,6 +188,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function escape(str = "") {
-    return str.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    return String(str)
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;");
   }
 });
