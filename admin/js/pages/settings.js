@@ -133,15 +133,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ===== 手動觸發 =====
   document.getElementById("run-once-btn").onclick = async () => {
-    try {
-      await fetch("http://localhost:3000/api/scheduler/run-once", {
-  method: "POST"
-});
-      alert("已觸發產文");
-    } catch (err) {
-      alert("無法觸發（請確認 Node server 已開）");
+  try {
+    const res = await fetch("http://localhost:3000/api/scheduler/run-once", {
+      method: "POST"
+    });
+
+    const data = await res.json();
+    console.log("scheduler 回傳：", data);
+
+    if (!res.ok || !data.ok) {
+      throw new Error(data.message || "觸發失敗");
     }
-  };
+
+    alert("已觸發產文成功");
+
+    if (typeof loadArticles === "function") {
+      await loadArticles();
+    }
+  } catch (err) {
+    console.error("run-once error:", err);
+    alert(`無法觸發：${err.message}`);
+  }
+};
 
   loadSettings();
 });
