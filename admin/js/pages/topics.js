@@ -1,30 +1,12 @@
-function waitForElement(selector, timeout = 5000) {
-  return new Promise((resolve, reject) => {
-    const start = Date.now();
-
-    const timer = setInterval(() => {
-      const el = document.querySelector(selector);
-      if (el) {
-        clearInterval(timer);
-        resolve(el);
-        return;
-      }
-
-      if (Date.now() - start >= timeout) {
-        clearInterval(timer);
-        reject(new Error(`等不到元素：${selector}`));
-      }
-    }, 50);
-  });
-}
-
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    console.log("[topics] init start");
-
     if (window.__adminGuardPromise) {
       const session = await window.__adminGuardPromise;
       if (!session) return;
+    }
+
+    if (typeof window.loadAdminLayout === "function") {
+      await window.loadAdminLayout();
     }
 
     AdminCommon.renderLayout(
@@ -33,8 +15,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       "建立、查看與管理 AI 自動產生的 SEO 主題。"
     );
 
-    const root = await waitForElement("#page-root");
-    console.log("[topics] page-root ready:", root);
+    const root = document.getElementById("page-root");
+    if (!root) {
+      console.error("[topics] 找不到 #page-root");
+      return;
+    }
 
     root.innerHTML = `
       <section class="card">
