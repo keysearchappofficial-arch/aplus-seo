@@ -75,9 +75,24 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btn = document.getElementById("generate-btn");
 
   let generated = null;
-  let progressTimer = null;
 
   fillGenerateFormFromTopicLibrary();
+
+  const progress = window.UIProgress.create({
+    render(percent, text) {
+      preview.innerHTML = renderGeneratingPreview(percent, text);
+    },
+    initialPercent: 8,
+    steps: [
+      { until: 20, text: "正在分析主題與產業..." },
+      { until: 38, text: "正在規劃文章結構..." },
+      { until: 58, text: "正在生成文章內容..." },
+      { until: 76, text: "正在整理摘要與 SEO 欄位..." },
+      { until: 90, text: "正在完成最後輸出..." }
+    ],
+    finishingText: "正在整理輸出內容...",
+    finishedText: "生成完成"
+  });
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -95,12 +110,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       cta: fd.get("cta")
     };
 
-    startFakeProgress(preview);
+    progress.start();
 
     try {
       const res = await window.OllamaClient.generateWithOllama(params);
-
-      finishFakeProgress(preview, "內容生成完成，正在整理預覽...");
 
       generated = {
         ...res,
@@ -108,37 +121,38 @@ document.addEventListener("DOMContentLoaded", async () => {
         slug: slugify(res.title)
       };
 
-      setTimeout(() => {
-        preview.innerHTML = `
-          <h2>${escape(generated.title)}</h2>
-          <p>${escape(generated.summary)}</p>
+      await progress.finishSmooth();
 
-          <div>${generated.content}</div>
+      preview.innerHTML = `
+        <h2>${escape(generated.title)}</h2>
+        <p>${escape(generated.summary)}</p>
 
-          <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
-            <button id="go-edit-draft" class="btn btn--soft">編輯草稿</button>
-            <button id="go-edit-publish" class="btn btn--primary">編輯後發布</button>
-          </div>
-        `;
+        <div>${generated.content}</div>
 
-        document.getElementById("go-edit-draft")
-          ?.addEventListener("click", () => goEdit("draft"));
+        <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
+          <button id="go-edit-draft" class="btn btn--soft">編輯草稿</button>
+          <button id="go-edit-publish" class="btn btn--primary">編輯後發布</button>
+        </div>
+      `;
 
-        document.getElementById("go-edit-publish")
-          ?.addEventListener("click", () => goEdit("published"));
-      }, 450);
+      document.getElementById("go-edit-draft")
+        ?.addEventListener("click", () => goEdit("draft"));
+
+      document.getElementById("go-edit-publish")
+        ?.addEventListener("click", () => goEdit("published"));
 
     } catch (err) {
-      stopFakeProgress();
+      progress.stop();
+
       preview.innerHTML = `
         <div class="preview__eyebrow">AI PREVIEW</div>
         <h2 class="preview__title">生成失敗</h2>
         <p class="preview__summary">錯誤：${escape(err.message)}</p>
       `;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "生成內容";
     }
-
-    btn.disabled = false;
-    btn.textContent = "生成內容";
   });
 
   function fillGenerateFormFromTopicLibrary() {
@@ -202,48 +216,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         </div>
       </div>
     `;
-  }
-
-  function startFakeProgress(previewEl) {
-    stopFakeProgress();
-
-    let percent = 8;
-    const steps = [
-      { until: 20, text: "正在分析主題與產業..." },
-      { until: 38, text: "正在規劃文章結構..." },
-      { until: 58, text: "正在生成文章內容..." },
-      { until: 76, text: "正在整理摘要與 SEO 欄位..." },
-      { until: 90, text: "正在完成最後輸出..." }
-    ];
-
-    let stepIndex = 0;
-    previewEl.innerHTML = renderGeneratingPreview(percent, steps[stepIndex].text);
-
-    progressTimer = setInterval(() => {
-      const step = steps[stepIndex];
-      if (!step) return;
-
-      if (percent < step.until) {
-        percent += Math.floor(Math.random() * 3) + 1;
-        if (percent > step.until) percent = step.until;
-      } else if (stepIndex < steps.length - 1) {
-        stepIndex += 1;
-      }
-
-      previewEl.innerHTML = renderGeneratingPreview(percent, steps[stepIndex].text);
-    }, 700);
-  }
-
-  function finishFakeProgress(previewEl, text = "生成完成") {
-    stopFakeProgress();
-    previewEl.innerHTML = renderGeneratingPreview(100, text);
-  }
-
-  function stopFakeProgress() {
-    if (progressTimer) {
-      clearInterval(progressTimer);
-      progressTimer = null;
-    }
   }
 
   function goEdit(status) {
