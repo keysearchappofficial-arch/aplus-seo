@@ -50,51 +50,58 @@ document.addEventListener("DOMContentLoaded", async () => {
   let leads = [];
 
   async function loadLeads() {
-    const { data, error } = await supabase
-      .from("leads")
-      .select("*")
-      .order("created_at", { ascending: false });
+  const { data, error } = await supabase
+    .from("leads")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-    if (error) {
-      root.innerHTML = `<p>錯誤：${error.message}</p>`;
-      return;
-    }
-
-    leads = data || [];
-    render();
+  if (error) {
+    root.innerHTML = `<p>錯誤：${error.message}</p>`;
+    return;
   }
 
-  function render() {
-    const status = filter.value;
+  leads = data || [];
+  render();
+}
 
-    const filtered =
-      status === "all"
-        ? leads
-        : leads.filter(l => l.status === status);
+function render() {
+  const table = document.getElementById("lead-table");
 
-    if (!filtered.length) {
-      table.innerHTML = `
-        <tr>
-          <td colspan="6">沒有資料</td>
-        </tr>
-      `;
-      return;
-    }
+  if (!table) {
+    console.error("❌ lead-table 還沒出現");
+    return;
+  }
 
-    table.innerHTML = filtered.map(l => `
+  const status = filter.value;
+
+  const filtered =
+    status === "all"
+      ? leads
+      : leads.filter(l => l.status === status);
+
+  if (!filtered.length) {
+    table.innerHTML = `
       <tr>
-        <td>${AdminCommon.escapeHtml(l.name || "-")}</td>
-        <td>${AdminCommon.escapeHtml(l.contact || "-")}</td>
-        <td>${AdminCommon.escapeHtml(l.source_article_title || "-")}</td>
-        <td><span class="badge">${l.status || "new"}</span></td>
-        <td>${formatDate(l.created_at)}</td>
-        <td style="display:flex;gap:6px;flex-wrap:wrap;">
-          <button onclick="setStatus('${l.id}','contacted')" class="btn btn--soft">已聯絡</button>
-          <button onclick="setStatus('${l.id}','closed')" class="btn btn--primary">成交</button>
-        </td>
+        <td colspan="6">沒有資料</td>
       </tr>
-    `).join("");
+    `;
+    return;
   }
+
+  table.innerHTML = filtered.map(l => `
+    <tr>
+      <td>${AdminCommon.escapeHtml(l.name || "-")}</td>
+      <td>${AdminCommon.escapeHtml(l.contact || "-")}</td>
+      <td>${AdminCommon.escapeHtml(l.source_article_title || "-")}</td>
+      <td>${l.status || "new"}</td>
+      <td>${formatDate(l.created_at)}</td>
+      <td>
+        <button onclick="setStatus('${l.id}','contacted')">已聯絡</button>
+        <button onclick="setStatus('${l.id}','closed')">成交</button>
+      </td>
+    </tr>
+  `).join("");
+}
 
   window.setStatus = async (id, status) => {
     const { error } = await supabase
