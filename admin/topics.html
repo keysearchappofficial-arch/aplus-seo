@@ -10,87 +10,13 @@
   <link rel="stylesheet" href="./css/admin-components.css" />
 </head>
 <body>
-  <div class="admin-shell">
-    <aside class="admin-sidebar">
-      <div class="admin-sidebar__brand">
-        <div class="admin-sidebar__logo">A</div>
-        <div>
-          <strong>AI SEO</strong>
-          <p>Admin</p>
-        </div>
-      </div>
-
-      <nav class="admin-nav">
-        <a href="./index.html">Dashboard</a>
-        <a href="./content.html">文章管理</a>
-        <a href="./generate.html">AI 生成</a>
-        <a href="./topics.html" class="is-active">題庫管理</a>
-        <a href="./leads.html">名單管理</a>
-        <a href="./analytics.html">成效分析</a>
-        <a href="./settings.html">系統設定</a>
-      </nav>
-    </aside>
-
-    <div class="admin-main">
-      
-      
-      <header class="admin-topbar">
-      <div class="admin-topbar__left">
-        <button id="menu-toggle" class="menu-toggle" type="button" aria-label="開啟選單">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-
-        <div>
-          <h1>題庫管理</h1>
-          <p>管理自動產文用的主題題庫</p>
-        </div>
-      </div>
-
-      <div class="admin-topbar__actions">
-        <span class="admin-user">AI SEO Admin</span>
-        <button id="logout-btn" class="btn btn--soft" type="button">登出</button>
-      </div>
-    </header>
-
-      <main class="admin-content">
-        <div class="card" style="margin-bottom:20px;">
-          <div class="card__body">
-            <h3 class="card__title">新增題目</h3>
-            <div style="display:grid;gap:12px;">
-              <input id="topic-input" class="input" type="text" placeholder="例如：AI SEO 是什麼" />
-              <input id="topic-sort" class="input" type="number" placeholder="排序（數字越小越前面）" value="0" />
-              <button id="add-topic-btn" class="btn btn--primary" type="button">新增題目</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card__body">
-            <div class="table-wrap">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>題目</th>
-                    <th>啟用</th>
-                    <th>排序</th>
-                    <th>上次生成</th>
-                    <th>操作</th>
-                  </tr>
-                </thead>
-                <tbody id="topics-table"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
-  </div>
+  <div id="admin-layout-mount"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./js/supabase.js"></script>
-  <script src="./js/pages/topics.js"></script>
+  <script src="./js/admin-layout-loader.js"></script>
+  <script src="./js/admin-common.js"></script>
   <script src="./js/admin-mobile-nav.js"></script>
+  <script src="./js/pages/topics.js"></script>
 </body>
 </html>
