@@ -3,69 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI SEO 後台｜AI 生成</title>
+  <title>AI SEO 生成｜後台</title>
 
   <link rel="stylesheet" href="./css/admin-base.css" />
   <link rel="stylesheet" href="./css/admin-layout.css" />
   <link rel="stylesheet" href="./css/admin-components.css" />
-  <link rel="stylesheet" href="./css/pages/generate.css" />
 </head>
 <body>
-  <div class="admin-shell">
-    <aside class="admin-sidebar" id="admin-sidebar">
-      <div class="admin-sidebar__brand">
-        <div class="admin-sidebar__logo">Aplus</div>
-        <div>
-          <strong>AI SEO 後台</strong>
-          <p>Content Growth System</p>
-        </div>
-      </div>
-
-      <nav class="admin-nav">
-        <a href="./index.html">Dashboard</a>
-        <a href="./content.html">文章管理</a>
-        <a href="./generate.html" class="is-active">AI 生成</a>
-        <a href="./topics.html">題庫管理</a>
-        <a href="./leads.html">名單管理</a>
-        <a href="./analytics.html">成效分析</a>
-        <a href="./settings.html">系統設定</a>
-      </nav>
-    </aside>
-
-    <div class="admin-main">
-      
-      
-      <header class="admin-topbar">
-      <div class="admin-topbar__left">
-        <button id="menu-toggle" class="menu-toggle" type="button" aria-label="開啟選單">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-
-        <div>
-          <h1 id="page-title">AI SEO 文章生成</h1>
-          <p id="page-desc">使用 Ollama 生成具備 SEO 結構的文章草稿，並可直接套用為草稿或發布。</p>
-        </div>
-      </div>
-
-      <div class="admin-topbar__actions">
-        <span class="admin-user">AI SEO Admin</span>
-        <button id="logout-btn" class="btn btn--soft" type="button">登出</button>
-      </div>
-    </header>
-
-      <main class="admin-content" id="page-root"></main>
-    </div>
-  </div>
+  <div id="admin-layout-mount"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./js/supabase.js"></script>
-  <script src="./js/auth.js"></script>
-  <script src="./js/article-store.js"></script>
+  <script src="./js/admin-layout-loader.js"></script>
   <script src="./js/admin-common.js"></script>
+  <script src="./js/admin-mobile-nav.js"></script>
   <script src="./js/ollama-client.js"></script>
   <script src="./js/pages/generate.js"></script>
-  <script src="./js/admin-mobile-nav.js"></script>
 </body>
 </html>
