@@ -1,4 +1,48 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await window.loadAdminLayout();
+
+  AdminCommon.renderLayout(
+    "topics",
+    "題庫管理",
+    "管理自動產文使用的主題與關鍵字題庫"
+  );
+
+  const root = document.getElementById("page-root");
+  if (!root) return;
+
+  root.innerHTML = `
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card__body">
+        <h3 class="card__title">新增題目</h3>
+
+        <div style="display:grid;gap:12px;max-width:720px;">
+          <input id="topic-input" class="input" type="text" placeholder="例如：AI SEO 是什麼" />
+          <input id="topic-sort" class="input" type="number" placeholder="排序（數字越小越前面）" value="0" />
+          <button id="add-topic-btn" class="btn btn--primary" type="button">新增題目</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__body">
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>題目</th>
+                <th>啟用</th>
+                <th>排序</th>
+                <th>上次生成</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="topics-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+
   const supabase = window.supabaseClient;
   const table = document.getElementById("topics-table");
   const topicInput = document.getElementById("topic-input");
@@ -13,7 +57,13 @@ document.addEventListener("DOMContentLoaded", () => {
       .order("created_at", { ascending: true });
 
     if (error) {
-      alert("載入題庫失敗：" + error.message);
+      root.innerHTML = `
+        <div class="card">
+          <div class="card__body">
+            載入題庫失敗：${AdminCommon.escapeHtml(error.message)}
+          </div>
+        </div>
+      `;
       return;
     }
 
@@ -28,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     table.innerHTML = list.map(item => `
       <tr>
-        <td>${escapeHtml(item.topic)}</td>
+        <td>${AdminCommon.escapeHtml(item.topic)}</td>
         <td>
           <input
             type="checkbox"
@@ -40,13 +90,14 @@ document.addEventListener("DOMContentLoaded", () => {
           <input
             type="number"
             value="${item.sort_order ?? 0}"
-            style="width:90px;"
+            class="input"
+            style="width:90px;padding:8px 10px;"
             onchange="updateSort('${item.id}', this.value)"
           />
         </td>
         <td>${formatDate(item.last_generated_at)}</td>
         <td>
-          <button onclick="deleteTopic('${item.id}')">刪除</button>
+          <button class="btn btn--soft" onclick="deleteTopic('${item.id}')">刪除</button>
         </td>
       </tr>
     `).join("");
@@ -88,6 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.updateSort = async (id, value) => {
     const sort_order = Number(value || 0);
+
     const { error } = await supabase
       .from("auto_generate_topics")
       .update({ sort_order })
@@ -117,13 +169,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function formatDate(value) {
     if (!value) return "-";
     return new Date(value).toLocaleString("zh-TW");
-  }
-
-  function escapeHtml(str = "") {
-    return String(str)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;");
   }
 
   loadTopics();
