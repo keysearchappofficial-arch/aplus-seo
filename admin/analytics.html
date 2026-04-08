@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>成效分析｜AI SEO 後台</title>
+
+  <link rel="stylesheet" href="./css/admin-base.css" />
+  <link rel="stylesheet" href="./css/admin-layout.css" />
+  <link rel="stylesheet" href="./css/admin-components.css" />
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar__brand">
+        <div class="admin-sidebar__logo">A</div>
+        <div>
+          <strong>AI SEO</strong>
+          <p>Admin</p>
+        </div>
+      </div>
+
+      <nav class="admin-nav">
+        <a href="./index.html">Dashboard</a>
+        <a href="./content.html">文章管理</a>
+        <a href="./generate.html">AI 生成</a>
+        <a href="./topics.html">題庫管理</a>
+        <a href="./leads.html">名單管理</a>
+        <a href="./analytics.html" class="is-active">成效分析</a>
+        <a href="./settings.html">系統設定</a>
+      </nav>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div>
+          <h1>成效分析</h1>
+          <p>查看文章流量、名單與轉換率</p>
+        </div>
+      </header>
+
+      <main class="admin-content">
+        <div class="stats-grid" id="analytics-stats" style="margin-bottom:20px;"></div>
+
+        <div class="card">
+          <div class="card__body">
+            <h3 class="card__title">文章成效</h3>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>文章</th>
+                    <th>PV</th>
+                    <th>名單</th>
+                    <th>轉換率</th>
+                  </tr>
+                </thead>
+                <tbody id="analytics-table"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./js/supabase.js"></script>
+  <script src="./js/article-store.js"></script>
+  <script src="./js/pages/analytics.js"></script>
+</body>
+</html>
