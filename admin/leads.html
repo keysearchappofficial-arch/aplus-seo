@@ -11,76 +11,14 @@
 </head>
 
 <body>
-  <div class="admin-shell">
-    <aside class="admin-sidebar">
-      <div class="admin-sidebar__brand">
-        <div class="admin-sidebar__logo">A</div>
-        <div>
-          <strong>AI SEO</strong>
-          <p>Admin</p>
-        </div>
-      </div>
-
-      <nav class="admin-nav">
-        <a href="./index.html">Dashboard</a>
-        <a href="./content.html">文章管理</a>
-        <a href="./generate.html">AI 生成</a>
-        <a href="./leads.html" class="is-active">名單管理</a>
-      </nav>
-    </aside>
-
-    <div class="admin-main">
-      
-      
-      <header class="admin-topbar">
-      <div class="admin-topbar__left">
-        <button id="menu-toggle" class="menu-toggle" type="button" aria-label="開啟選單">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-
-        <div>
-          <h1>名單管理</h1>
-          <p>查看網站收集到的潛在客戶</p>
-        </div>
-      </div>
-
-      <div class="admin-topbar__actions">
-        <span class="admin-user">AI SEO Admin</span>
-        <button id="logout-btn" class="btn btn--soft" type="button">登出</button>
-      </div>
-    </header>
-
-      <main class="admin-content">
-        <div class="card">
-          <div class="card__body">
-
-            <div class="table-wrap">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>姓名</th>
-                    <th>聯絡方式</th>
-                    <th>來源文章</th>
-                    <th>狀態</th>
-                    <th>時間</th>
-                    <th>操作</th>
-                  </tr>
-                </thead>
-                <tbody id="lead-table"></tbody>
-              </table>
-            </div>
-
-          </div>
-        </div>
-      </main>
-    </div>
-  </div>
+  <div id="admin-layout-mount"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./js/supabase.js"></script>
-  <script src="./js/pages/leads.js"></script>
+  <script src="./js/article-store.js"></script>
+  <script src="./js/admin-layout-loader.js"></script>
+  <script src="./js/admin-common.js"></script>
   <script src="./js/admin-mobile-nav.js"></script>
+  <script src="./js/pages/leads.js"></script>
 </body>
 </html>
