@@ -133,7 +133,9 @@ try {
     <h2>${escape(generated.title)}</h2>
     <p>${escape(generated.summary)}</p>
 
-    <div>${generated.content}</div>
+    <div class="generated-article">
+  ${renderArticleBody(generated.content)}
+</div>
 
     <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
       <button id="go-edit-draft" class="btn btn--soft">編輯草稿</button>
@@ -223,6 +225,56 @@ try {
       </div>
     `;
   }
+
+  function renderArticleBody(content = "") {
+  const lines = String(content)
+    .split("\n")
+    .map(line => line.trim())
+    .filter(Boolean);
+
+  let html = "";
+  let inList = false;
+
+  for (const line of lines) {
+    if (line.startsWith("## ")) {
+      if (inList) {
+        html += "</ul>";
+        inList = false;
+      }
+      html += `<h3 style="margin:24px 0 10px;">${escape(line.replace(/^## /, ""))}</h3>`;
+      continue;
+    }
+
+    if (line.startsWith("### ")) {
+      if (inList) {
+        html += "</ul>";
+        inList = false;
+      }
+      html += `<h4 style="margin:18px 0 8px;">${escape(line.replace(/^### /, ""))}</h4>`;
+      continue;
+    }
+
+    if (line.startsWith("- ")) {
+      if (!inList) {
+        html += `<ul style="padding-left:20px;line-height:1.8;">`;
+        inList = true;
+      }
+      html += `<li>${escape(line.replace(/^- /, ""))}</li>`;
+      continue;
+    }
+
+    if (inList) {
+      html += "</ul>";
+      inList = false;
+    }
+
+    html += `<p style="line-height:1.9;margin:0 0 14px;">${escape(line)}</p>`;
+  }
+
+  if (inList) html += "</ul>";
+
+  return html;
+}
 
   function goEdit(status) {
     if (!generated) return;
