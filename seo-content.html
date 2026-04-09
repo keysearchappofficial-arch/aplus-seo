@@ -844,16 +844,23 @@
       });
 
       resetBtn.addEventListener("click", () => {
-        form.reset();
-        const topicFromQuery = getTopicFromQuery();
-        if (topicFromQuery) topicInput.value = topicFromQuery;
-        setError("");
-        previewBox.innerHTML = `
-          <div class="article-preview__empty">
-            輸入主題、產業與服務後，點擊「開始生成」，這裡就會顯示完整文章預覽、SEO Title 與 SEO Description。
-          </div>
-        `;
-      });
+  form.reset();
+
+  const topicFromQuery = getTopicFromQuery();
+  if (topicFromQuery) topicInput.value = topicFromQuery;
+
+  setError("");
+
+  advancedFields.style.display = "none";
+  isAdvancedOpen = false;
+  toggleAdvancedBtn.textContent = "進階設定 ▼";
+
+  previewBox.innerHTML = `
+  <div class="article-preview__empty">
+    輸入文章主題後，點擊「開始生成」，這裡就會顯示完整文章預覽、SEO Title 與 SEO Description。
+  </div>
+`;
+});
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
