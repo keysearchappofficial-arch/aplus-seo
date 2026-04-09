@@ -219,6 +219,24 @@
         border-bottom: 1px solid #e2e8f0;
       }
     }
+
+    @media (max-width: 860px) {
+  .topic-modal {
+    padding: 12px;
+    align-items: flex-start;
+  }
+
+  .topic-modal__dialog {
+    grid-template-columns: 1fr;
+    max-height: calc(100vh - 24px);
+    margin: 0 auto;
+  }
+
+  .topic-modal__left {
+    border-right: 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+}
   </style>
 </head>
 
