@@ -462,63 +462,108 @@
         </div>
 
         <form class="article-form" id="articleGenerateForm">
-          <div class="article-field">
-            <label for="articleTopic">文章主題</label>
-            <input id="articleTopic" name="topic" type="text" placeholder="例如：AI SEO 網站怎麼做？" required />
-          </div>
+  <div style="font-size:13px;color:#64748b;margin-bottom:4px;">
+    快速模式：先輸入主題就能直接生成
+  </div>
 
-          <div class="article-field">
-            <label for="articleIndustry">產業</label>
-            <input id="articleIndustry" name="industry" type="text" placeholder="例如：SEO 顧問、網站設計、花店" />
-          </div>
+  <div class="article-field">
+    <label for="articleTopic">文章主題</label>
+    <input
+      id="articleTopic"
+      name="topic"
+      type="text"
+      placeholder="例如：AI SEO 網站怎麼做？"
+      required
+    />
+  </div>
 
-          <div class="article-field">
-            <label for="articleService">產品 / 服務</label>
-            <input id="articleService" name="service" type="text" placeholder="例如：AI SEO 網站建置" />
-          </div>
+  <div class="article-field">
+    <label for="articleLength">文章長度</label>
+    <select id="articleLength" name="length">
+      <option value="短">短</option>
+      <option value="中" selected>中</option>
+      <option value="長">長</option>
+    </select>
+  </div>
 
-          <div class="article-field">
-            <label for="articleRegion">地區</label>
-            <input id="articleRegion" name="region" type="text" placeholder="例如：台北、台中、全台灣" />
-          </div>
+  <button
+    type="button"
+    class="btn btn--ghost"
+    id="toggleAdvancedBtn"
+    style="justify-content:flex-start;"
+  >
+    進階設定 ▼
+  </button>
 
-          <div class="article-field">
-            <label for="articleAudience">目標客群</label>
-            <input id="articleAudience" name="audience" type="text" placeholder="例如：中小企業主、品牌經營者" />
-          </div>
+  <div id="advancedFields" style="display:none;">
+    <div class="article-field" style="margin-top:16px;">
+      <label for="articleIndustry">產業</label>
+      <input
+        id="articleIndustry"
+        name="industry"
+        type="text"
+        placeholder="例如：SEO 顧問、網站設計、花店"
+      />
+    </div>
 
-          <div class="article-field">
-            <label for="articleTone">語氣</label>
-            <select id="articleTone" name="tone">
-              <option value="專業">專業</option>
-              <option value="商務">商務</option>
-              <option value="教學">教學</option>
-            </select>
-          </div>
+    <div class="article-field">
+      <label for="articleService">產品 / 服務</label>
+      <input
+        id="articleService"
+        name="service"
+        type="text"
+        placeholder="例如：AI SEO 網站建置"
+      />
+    </div>
 
-          <div class="article-field">
-            <label for="articleLength">文章長度</label>
-            <select id="articleLength" name="length">
-              <option value="短">短</option>
-              <option value="中" selected>中</option>
-              <option value="長">長</option>
-            </select>
-          </div>
+    <div class="article-field">
+      <label for="articleRegion">地區</label>
+      <input
+        id="articleRegion"
+        name="region"
+        type="text"
+        placeholder="例如：台北、台中、全台灣"
+      />
+    </div>
 
-          <div class="article-field">
-            <label for="articleKeywords">核心關鍵字</label>
-            <textarea id="articleKeywords" name="keywords" placeholder="例如：AI SEO、SEO網站、內容行銷、自動產文"></textarea>
-          </div>
+    <div class="article-field">
+      <label for="articleAudience">目標客群</label>
+      <input
+        id="articleAudience"
+        name="audience"
+        type="text"
+        placeholder="例如：中小企業主、品牌經營者"
+      />
+    </div>
 
-          <div class="article-form__actions">
-            <button type="submit" class="btn btn--primary" id="submitArticleBtn">
-              開始生成
-            </button>
-            <button type="button" class="btn btn--ghost" id="resetArticleBtn">
-              清空
-            </button>
-          </div>
-        </form>
+    <div class="article-field">
+      <label for="articleTone">語氣</label>
+      <select id="articleTone" name="tone">
+        <option value="專業">專業</option>
+        <option value="商務">商務</option>
+        <option value="教學">教學</option>
+      </select>
+    </div>
+
+    <div class="article-field">
+      <label for="articleKeywords">核心關鍵字</label>
+      <textarea
+        id="articleKeywords"
+        name="keywords"
+        placeholder="例如：AI SEO、SEO網站、內容行銷、自動產文"
+      ></textarea>
+    </div>
+  </div>
+
+  <div class="article-form__actions">
+    <button type="submit" class="btn btn--primary" id="submitArticleBtn">
+      開始生成
+    </button>
+    <button type="button" class="btn btn--ghost" id="resetArticleBtn">
+      清空
+    </button>
+  </div>
+</form>
       </div>
 
       <div class="article-modal__right">
@@ -837,6 +882,17 @@
           setLoading(false);
         }
       });
+
+      const toggleAdvancedBtn = document.getElementById("toggleAdvancedBtn");
+const advancedFields = document.getElementById("advancedFields");
+
+let isAdvancedOpen = false;
+
+toggleAdvancedBtn.addEventListener("click", () => {
+  isAdvancedOpen = !isAdvancedOpen;
+  advancedFields.style.display = isAdvancedOpen ? "block" : "none";
+  toggleAdvancedBtn.textContent = isAdvancedOpen ? "收合設定 ▲" : "進階設定 ▼";
+});
 
       const topicFromQuery = getTopicFromQuery();
 if (topicFromQuery) {
