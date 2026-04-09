@@ -104,12 +104,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const params = {
   industry: fd.get("industry"),
-  region: fd.get("location"),
+  location: fd.get("location"),
   topic: fd.get("topic"),
   tone: fd.get("tone"),
-  service: fd.get("category") || "",
-  keywords: "",
-  audience: ""
+  cta: fd.get("cta"),
+  category: fd.get("category")
 };
 
 progress.start();
