@@ -103,37 +103,44 @@ document.addEventListener("DOMContentLoaded", async () => {
     const fd = new FormData(form);
 
     const params = {
-      industry: fd.get("industry"),
-      location: fd.get("location"),
-      topic: fd.get("topic"),
-      tone: fd.get("tone"),
-      cta: fd.get("cta")
-    };
+  industry: fd.get("industry"),
+  region: fd.get("location"),
+  topic: fd.get("topic"),
+  tone: fd.get("tone"),
+  service: fd.get("category") || "",
+  keywords: "",
+  audience: ""
+};
 
-    progress.start();
+progress.start();
 
-    try {
-      const res = await window.OllamaClient.generateWithOllama(params);
+try {
+  const res = await window.OllamaClient.generateWithOllama(params);
+  const article = res.article || {};
 
-      generated = {
-        ...res,
-        category: fd.get("category"),
-        slug: slugify(res.title)
-      };
+  generated = {
+    title: article.title || "",
+    summary: article.summary || "",
+    content: article.body || "",
+    seoTitle: article.seoTitle || "",
+    seoDescription: article.seoDescription || "",
+    category: fd.get("category"),
+    slug: slugify(article.title || "")
+  };
 
-      await progress.finishSmooth();
+  await progress.finishSmooth();
 
-      preview.innerHTML = `
-        <h2>${escape(generated.title)}</h2>
-        <p>${escape(generated.summary)}</p>
+  preview.innerHTML = `
+    <h2>${escape(generated.title)}</h2>
+    <p>${escape(generated.summary)}</p>
 
-        <div>${generated.content}</div>
+    <div>${generated.content}</div>
 
-        <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
-          <button id="go-edit-draft" class="btn btn--soft">編輯草稿</button>
-          <button id="go-edit-publish" class="btn btn--primary">編輯後發布</button>
-        </div>
-      `;
+    <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
+      <button id="go-edit-draft" class="btn btn--soft">編輯草稿</button>
+      <button id="go-edit-publish" class="btn btn--primary">編輯後發布</button>
+    </div>
+  `;
 
       document.getElementById("go-edit-draft")
         ?.addEventListener("click", () => goEdit("draft"));
