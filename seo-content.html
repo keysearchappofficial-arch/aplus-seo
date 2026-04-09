@@ -543,10 +543,7 @@
   <script src="./assets/js/layout.js"></script>
   <script>
     (function () {
-      const API_BASE =
-        window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
-          ? "http://localhost:3000"
-          : "https://your-domain.com";
+      
 
       const modal = document.getElementById("articleModal");
       const openBtns = [
@@ -770,22 +767,22 @@
       }
 
       async function generateArticle(payload) {
-        const response = await fetch(`${API_BASE}/api/ollama/article`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
+  const response = await fetch("http://localhost:3000/api/ollama/article", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
 
-        const result = await response.json();
+  const result = await response.json();
 
-        if (!response.ok) {
-          throw new Error(result?.message || "產文失敗，請稍後再試。");
-        }
+  if (!response.ok) {
+    throw new Error(result?.message || "產文失敗，請稍後再試。");
+  }
 
-        return result;
-      }
+  return result;
+}
 
       openBtns.forEach((btn) => {
         btn.addEventListener("click", openModal);
