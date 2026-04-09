@@ -225,7 +225,12 @@ generated = {
     `;
   }
 
-  function renderArticleBody(content = "") {
+  function formatInline(text = "") {
+  return escape(text)
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+}
+
+function renderArticleBody(content = "") {
   const lines = String(content)
     .split("\n")
     .map(line => line.trim())
@@ -240,7 +245,7 @@ generated = {
         html += "</ul>";
         inList = false;
       }
-      html += `<h3>${formatInline(line.replace(/^## /, ""))}</h3>`;
+      html += `<h2 style="margin:28px 0 12px;">${formatInline(line.replace(/^## /, ""))}</h2>`;
       continue;
     }
 
@@ -249,13 +254,13 @@ generated = {
         html += "</ul>";
         inList = false;
       }
-      html += `<h4>${formatInline(line.replace(/^### /, ""))}</h4>`;
+      html += `<h3 style="margin:20px 0 10px;">${formatInline(line.replace(/^### /, ""))}</h3>`;
       continue;
     }
 
     if (line.startsWith("- ") || line.startsWith("* ")) {
       if (!inList) {
-        html += `<ul>`;
+        html += `<ul style="padding-left:20px;line-height:1.8;margin:0 0 16px;">`;
         inList = true;
       }
       html += `<li>${formatInline(line.replace(/^[-*] /, ""))}</li>`;
@@ -267,17 +272,14 @@ generated = {
       inList = false;
     }
 
-    html += `<p>${formatInline(line)}</p>`;
+    html += `<p style="line-height:1.9;margin:0 0 14px;">${formatInline(line)}</p>`;
   }
 
-  if (inList) html += "</ul>";
+  if (inList) {
+    html += "</ul>";
+  }
 
   return html;
-}
-
-function formatInline(text = "") {
-  return escape(text)
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 }
 
   function goEdit(status) {
@@ -297,8 +299,10 @@ function formatInline(text = "") {
   }
 
   function escape(str = "") {
-    return String(str)
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;");
-  }
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
 });
