@@ -244,6 +244,12 @@
       padding-left: 22px;
       margin: 0 0 18px;
     }
+    
+    .article-body ul,
+.article-body ol {
+  padding-left: 22px;
+  margin: 0 0 18px;
+}
 
     .article-seo-grid {
       display: grid;
@@ -650,65 +656,64 @@
           .replace(/'/g, "&#039;");
       }
 
-      function nl2html(text) {
-        return escapeHtml(text)
-          .replace(/\n{2,}/g, "</p><p>")
-          .replace(/\n/g, "<br>");
+      function formatInline(text = "") {
+  return escapeHtml(text)
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+}
+
+function renderBody(content = "") {
+  if (!content) return "<p>目前沒有可顯示的文章內容。</p>";
+
+  const lines = String(content)
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  let html = "";
+  let inList = false;
+
+  for (const line of lines) {
+    if (line.startsWith("## ")) {
+      if (inList) {
+        html += "</ul>";
+        inList = false;
       }
+      html += `<h2>${formatInline(line.replace(/^## /, ""))}</h2>`;
+      continue;
+    }
 
-      function renderBody(content) {
-        if (!content) return "<p>目前沒有可顯示的文章內容。</p>";
-
-        const blocks = String(content)
-          .split("\n")
-          .map((line) => line.trim())
-          .filter(Boolean);
-
-        let html = "";
-        let inList = false;
-
-        blocks.forEach((line) => {
-          if (/^##\s+/.test(line)) {
-            if (inList) {
-              html += "</ul>";
-              inList = false;
-            }
-            html += `<h2>${escapeHtml(line.replace(/^##\s+/, ""))}</h2>`;
-            return;
-          }
-
-          if (/^###\s+/.test(line)) {
-            if (inList) {
-              html += "</ul>";
-              inList = false;
-            }
-            html += `<h3>${escapeHtml(line.replace(/^###\s+/, ""))}</h3>`;
-            return;
-          }
-
-          if (/^- /.test(line)) {
-            if (!inList) {
-              html += "<ul>";
-              inList = true;
-            }
-            html += `<li>${escapeHtml(line.replace(/^- /, ""))}</li>`;
-            return;
-          }
-
-          if (inList) {
-            html += "</ul>";
-            inList = false;
-          }
-
-          html += `<p>${nl2html(line)}</p>`;
-        });
-
-        if (inList) {
-          html += "</ul>";
-        }
-
-        return html;
+    if (line.startsWith("### ")) {
+      if (inList) {
+        html += "</ul>";
+        inList = false;
       }
+      html += `<h3>${formatInline(line.replace(/^### /, ""))}</h3>`;
+      continue;
+    }
+
+    if (line.startsWith("- ") || line.startsWith("* ")) {
+      if (!inList) {
+        html += "<ul>";
+        inList = true;
+      }
+      html += `<li>${formatInline(line.replace(/^[-*] /, ""))}</li>`;
+      continue;
+    }
+
+    if (inList) {
+      html += "</ul>";
+      inList = false;
+    }
+
+    html += `<p>${formatInline(line)}</p>`;
+  }
+
+  if (inList) {
+    html += "</ul>";
+  }
+
+  return html;
+}
 
       function renderArticle(article) {
         if (!article) {
