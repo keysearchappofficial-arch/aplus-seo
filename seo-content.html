@@ -469,12 +469,12 @@
 
           <div class="article-field">
             <label for="articleIndustry">產業</label>
-            <input id="articleIndustry" name="industry" type="text" placeholder="例如：SEO 顧問、網站設計、花店" required />
+            <input id="articleIndustry" name="industry" type="text" placeholder="例如：SEO 顧問、網站設計、花店" />
           </div>
 
           <div class="article-field">
             <label for="articleService">產品 / 服務</label>
-            <input id="articleService" name="service" type="text" placeholder="例如：AI SEO 網站建置" required />
+            <input id="articleService" name="service" type="text" placeholder="例如：AI SEO 網站建置" />
           </div>
 
           <div class="article-field">
@@ -839,9 +839,10 @@
       });
 
       const topicFromQuery = getTopicFromQuery();
-      if (topicFromQuery) {
-        topicInput.value = topicFromQuery;
-      }
+if (topicFromQuery) {
+  topicInput.value = topicFromQuery;
+  openModal();
+}
     })();
   </script>
 </body>
