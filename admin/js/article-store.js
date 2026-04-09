@@ -14,7 +14,8 @@ function mapArticleRow(row) {
     scheduledAt: row.scheduled_at || null,
     publishedAt: row.published_at || null,
     createdAt: row.created_at || null,
-    updatedAt: row.updated_at || null
+    updatedAt: row.updated_at || null,
+    views: row.views || 0
   };
 }
 
@@ -24,10 +25,11 @@ function mapLeadRow(row) {
   return {
     id: row.id,
     name: row.name || "",
-    contact: row.contact || "",
+    contact: row.contact || row.contact_value || "",
     message: row.message || "",
     sourceArticleId: row.source_article_id || "",
     sourceArticleTitle: row.source_article_title || "",
+    sourceChannel: row.source_channel || "",
     status: row.status || "new",
     createdAt: row.created_at || null
   };
@@ -67,6 +69,69 @@ async function getTrackingEvents() {
 
   if (error) throw error;
   return data || [];
+}
+
+async function trackEvent({
+  articleId,
+  eventType,
+  source = "direct"
+}) {
+  const supabase = window.supabaseClient;
+
+  const payload = {
+    article_id: articleId,
+    event_type: eventType,
+    source,
+    created_at: new Date().toISOString()
+  };
+
+  const { data, error } = await supabase
+    .from("tracking_events")
+    .insert([payload])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+async function createLead({
+  name,
+  contactValue,
+  message = "",
+  sourceArticleId = null,
+  sourceArticleTitle = "",
+  sourceChannel = "direct"
+}) {
+  const supabase = window.supabaseClient;
+
+  const payload = {
+    name: String(name || "").trim(),
+    contact_value: String(contactValue || "").trim(),
+    message: String(message || "").trim(),
+    source_article_id: sourceArticleId,
+    source_article_title: String(sourceArticleTitle || "").trim(),
+    source_channel: String(sourceChannel || "direct").trim(),
+    status: "new",
+    created_at: new Date().toISOString()
+  };
+
+  if (!payload.name) {
+    throw new Error("缺少姓名");
+  }
+
+  if (!payload.contact_value) {
+    throw new Error("缺少聯絡方式");
+  }
+
+  const { data, error } = await supabase
+    .from("leads")
+    .insert([payload])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return mapLeadRow(data);
 }
 
 async function getDashboardStats() {
@@ -127,5 +192,7 @@ window.ArticleStore = {
   getArticles,
   getLeads,
   getTrackingEvents,
+  trackEvent,
+  createLead,
   getDashboardStats
 };
