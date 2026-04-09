@@ -193,35 +193,31 @@ async function getDashboardStats() {
 async function updateLeadStatus(id, status) {
   const supabase = window.supabaseClient;
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("leads")
     .update({
       status,
       updated_at: new Date().toISOString()
     })
-    .eq("id", id)
-    .select()
-    .single();
+    .eq("id", id);
 
   if (error) throw error;
-  return mapLeadRow(data);
+  return true;
 }
 
 async function updateLeadNote(id, note) {
   const supabase = window.supabaseClient;
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("leads")
     .update({
       note: String(note || "").trim(),
       updated_at: new Date().toISOString()
     })
-    .eq("id", id)
-    .select()
-    .single();
+    .eq("id", id);
 
   if (error) throw error;
-  return mapLeadRow(data);
+  return true;
 }
 
 window.ArticleStore = {
