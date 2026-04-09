@@ -96,6 +96,7 @@
 
     <div class="modal__actions">
       <button id="modal-close" class="btn btn--ghost">關閉</button>
+      <a href="https://line.me/..." class="btn btn--primary">加 LINE 諮詢</a>
       <a href="/" class="btn btn--primary">回首頁</a>
     </div>
   </div>
@@ -242,14 +243,30 @@
             sourceChannel: getSource()
           });
 
-          alert("已送出，我們會盡快與你聯繫！");
-          form.reset();
+          showLeadSuccessModal();
+form.reset();
         } catch (error) {
           console.error("送出詢問失敗：", error);
           alert(`送出失敗：${error.message}`);
         }
       });
     }
+
+    function showLeadSuccessModal() {
+  const modal = document.getElementById("lead-success-modal");
+  if (!modal) return;
+
+  modal.classList.remove("hidden");
+
+  const closeBtn = document.getElementById("modal-close");
+
+  function close() {
+    modal.classList.add("hidden");
+  }
+
+  closeBtn?.addEventListener("click", close);
+  modal.querySelector(".modal__overlay")?.addEventListener("click", close);
+}
 
     async function renderRelatedArticles(currentSlug) {
       const articles = await ArticleStore.getArticles();
