@@ -14,6 +14,222 @@
   <link rel="stylesheet" href="./css/base.css" />
   <link rel="stylesheet" href="./css/layout.css" />
   <link rel="stylesheet" href="./css/components.css" />
+
+  <style>
+    .topic-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 9999;
+    }
+
+    .topic-modal.is-open {
+      display: flex;
+    }
+
+    .topic-modal__dialog {
+      width: 100%;
+      max-width: 960px;
+      max-height: 90vh;
+      overflow: hidden;
+      border-radius: 24px;
+      background: #ffffff;
+      box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25);
+      display: grid;
+      grid-template-columns: 360px 1fr;
+    }
+
+    .topic-modal__left {
+      padding: 28px;
+      border-right: 1px solid #e2e8f0;
+      background: #f8fafc;
+      overflow-y: auto;
+    }
+
+    .topic-modal__right {
+      padding: 28px;
+      overflow-y: auto;
+    }
+
+    .topic-modal__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .topic-modal__title {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.3;
+    }
+
+    .topic-modal__close {
+      border: 0;
+      background: transparent;
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      color: #475569;
+    }
+
+    .topic-form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .topic-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .topic-field label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .topic-field input,
+    .topic-field select,
+    .topic-field textarea {
+      width: 100%;
+      min-height: 46px;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      font: inherit;
+      color: #0f172a;
+      background: #fff;
+    }
+
+    .topic-field textarea {
+      min-height: 96px;
+      resize: vertical;
+    }
+
+    .topic-form__actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .topic-status {
+      display: none;
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .topic-status.is-show {
+      display: block;
+    }
+
+    .topic-status--loading {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .topic-status--error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .topic-results__empty {
+      color: #64748b;
+      line-height: 1.8;
+      padding: 28px 20px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+      background: #f8fafc;
+    }
+
+    .topic-results__list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .topic-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 18px;
+      background: #fff;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .topic-card__top {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .topic-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .topic-card h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      line-height: 1.5;
+      color: #0f172a;
+    }
+
+    .topic-card p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    .topic-card__actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .topic-mini-btn {
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #0f172a;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .topic-mini-btn:hover {
+      background: #f8fafc;
+    }
+
+    @media (max-width: 860px) {
+      .topic-modal__dialog {
+        grid-template-columns: 1fr;
+      }
+
+      .topic-modal__left {
+        border-right: 0;
+        border-bottom: 1px solid #e2e8f0;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -22,7 +238,6 @@
   <main class="section-shell">
     <div class="container" style="max-width: 1000px;">
 
-      <!-- HERO -->
       <section style="padding: 48px 0 24px;">
         <div style="font-size:13px;color:#64748b;margin-bottom:10px;">
           AI SEO 模組
@@ -33,26 +248,24 @@
         </h1>
 
         <p style="font-size:18px;color:#475569;line-height:1.8;margin:0;">
-          不再煩惱「今天要寫什麼」。  
+          不再煩惱「今天要寫什麼」。
           透過 AI 自動產出符合搜尋需求的 SEO 主題，
           建立可持續產文的內容題庫。
         </p>
 
         <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
-          <a href="./admin/topics.html" class="btn btn--primary">
+          <button type="button" class="btn btn--primary" id="openTopicModalBtn">
             立即開始產題
-          </a>
+          </button>
           <a href="./seo-content.html" class="btn btn--ghost">
             下一步：AI 產文 →
           </a>
         </div>
       </section>
 
-      <!-- 問題 -->
       <section class="card" style="margin-top:20px;">
         <div class="card__body">
           <h2>你是不是遇到這些問題？</h2>
-
           <ul style="line-height:1.8;">
             <li>不知道該寫什麼文章</li>
             <li>關鍵字找不到方向</li>
@@ -63,20 +276,14 @@
         </div>
       </section>
 
-      <!-- 解法 -->
       <section class="card" style="margin-top:20px;">
         <div class="card__body">
           <h2>這個模組在做什麼？</h2>
-
           <p>
             AI 關鍵字主題生成器會根據你的產業、地區與語氣，
             自動產出一組符合搜尋需求的文章主題。
           </p>
-
-          <p>
-            這些主題不是隨機，而是：
-          </p>
-
+          <p>這些主題不是隨機，而是：</p>
           <ul>
             <li>模擬使用者搜尋行為</li>
             <li>符合 SEO 長尾關鍵字邏輯</li>
@@ -86,11 +293,9 @@
         </div>
       </section>
 
-      <!-- 功能亮點 -->
       <section class="card" style="margin-top:20px;">
         <div class="card__body">
           <h2>核心功能</h2>
-
           <ul>
             <li>輸入產業 / 地區 → 自動產主題</li>
             <li>支援語氣（專業 / 商務 / 教學）</li>
@@ -101,11 +306,9 @@
         </div>
       </section>
 
-      <!-- 流程 -->
       <section class="card" style="margin-top:20px;">
         <div class="card__body">
           <h2>使用流程</h2>
-
           <ol style="line-height:1.8;">
             <li>輸入產業與地區</li>
             <li>設定語氣與分類</li>
@@ -116,11 +319,9 @@
         </div>
       </section>
 
-      <!-- 成果 -->
       <section class="card" style="margin-top:20px;">
         <div class="card__body">
           <h2>你會得到什麼？</h2>
-
           <ul>
             <li>穩定的內容產出來源</li>
             <li>可累積的 SEO 題庫</li>
@@ -130,19 +331,15 @@
         </div>
       </section>
 
-      <!-- CTA -->
       <section class="card" style="margin-top:20px;margin-bottom:40px;">
         <div class="card__body">
           <h2>現在就開始建立你的 SEO 題庫</h2>
-
-          <p>
-            透過 AI 主題生成，建立長期流量的第一步。
-          </p>
+          <p>透過 AI 主題生成，建立長期流量的第一步。</p>
 
           <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
-            <a href="./admin/topics.html" class="btn btn--primary">
+            <button type="button" class="btn btn--primary" id="openTopicModalBtnBottom">
               開始產題
-            </a>
+            </button>
 
             <a href="./index.html" class="btn btn--ghost">
               回首頁
@@ -156,6 +353,281 @@
 
   <div id="site-footer"></div>
 
+  <!-- Modal -->
+  <div class="topic-modal" id="topicModal" aria-hidden="true">
+    <div class="topic-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="topicModalTitle">
+      <div class="topic-modal__left">
+        <div class="topic-modal__header">
+          <h2 class="topic-modal__title" id="topicModalTitle">立即開始產題</h2>
+          <button type="button" class="topic-modal__close" id="closeTopicModalBtn" aria-label="關閉">×</button>
+        </div>
+
+        <form class="topic-form" id="topicGenerateForm">
+          <div class="topic-field">
+            <label for="industry">產業</label>
+            <input id="industry" name="industry" type="text" placeholder="例如：室內設計、SEO顧問、花店" required />
+          </div>
+
+          <div class="topic-field">
+            <label for="service">產品 / 服務</label>
+            <input id="service" name="service" type="text" placeholder="例如：AI SEO 網站建置" required />
+          </div>
+
+          <div class="topic-field">
+            <label for="region">地區</label>
+            <input id="region" name="region" type="text" placeholder="例如：台北、台中、全台灣" />
+          </div>
+
+          <div class="topic-field">
+            <label for="audience">目標客群</label>
+            <input id="audience" name="audience" type="text" placeholder="例如：中小企業主、店家老闆" />
+          </div>
+
+          <div class="topic-field">
+            <label for="tone">語氣</label>
+            <select id="tone" name="tone">
+              <option value="專業">專業</option>
+              <option value="商務">商務</option>
+              <option value="教學">教學</option>
+            </select>
+          </div>
+
+          <div class="topic-field">
+            <label for="category">主題分類偏好</label>
+            <select id="category" name="category">
+              <option value="混合">混合</option>
+              <option value="SEO">SEO</option>
+              <option value="教學">教學</option>
+              <option value="比較">比較</option>
+              <option value="轉換">轉換</option>
+            </select>
+          </div>
+
+          <div class="topic-field">
+            <label for="keywords">核心關鍵字</label>
+            <textarea id="keywords" name="keywords" placeholder="例如：AI SEO、SEO網站、自動產文、內容行銷"></textarea>
+          </div>
+
+          <div class="topic-field">
+            <label for="count">題目數量</label>
+            <select id="count" name="count">
+              <option value="5">5 題</option>
+              <option value="10" selected>10 題</option>
+              <option value="15">15 題</option>
+            </select>
+          </div>
+
+          <div class="topic-form__actions">
+            <button type="submit" class="btn btn--primary" id="submitTopicBtn">
+              開始生成
+            </button>
+            <button type="button" class="btn btn--ghost" id="resetTopicBtn">
+              清空
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="topic-modal__right">
+        <div class="topic-status topic-status--loading" id="topicLoading">
+          AI 正在分析你的產業、搜尋需求與關鍵字，請稍候...
+        </div>
+
+        <div class="topic-status topic-status--error" id="topicError"></div>
+
+        <div class="topic-results" id="topicResults">
+          <div class="topic-results__empty">
+            輸入你的產業、服務與關鍵字後，點擊「開始生成」，這裡就會顯示 AI 幫你整理好的 SEO 主題。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="./assets/js/layout.js"></script>
+  <script>
+    (function () {
+      const modal = document.getElementById("topicModal");
+      const openBtns = [
+        document.getElementById("openTopicModalBtn"),
+        document.getElementById("openTopicModalBtnBottom")
+      ].filter(Boolean);
+
+      const closeBtn = document.getElementById("closeTopicModalBtn");
+      const form = document.getElementById("topicGenerateForm");
+      const resetBtn = document.getElementById("resetTopicBtn");
+      const submitBtn = document.getElementById("submitTopicBtn");
+      const loadingBox = document.getElementById("topicLoading");
+      const errorBox = document.getElementById("topicError");
+      const resultsBox = document.getElementById("topicResults");
+
+      function openModal() {
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeModal() {
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+      }
+
+      function setLoading(isLoading) {
+        loadingBox.classList.toggle("is-show", isLoading);
+        submitBtn.disabled = isLoading;
+        submitBtn.textContent = isLoading ? "生成中..." : "開始生成";
+      }
+
+      function setError(message = "") {
+        errorBox.textContent = message;
+        errorBox.classList.toggle("is-show", Boolean(message));
+      }
+
+      function escapeHtml(text) {
+        return String(text || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function renderTopics(topics) {
+        if (!Array.isArray(topics) || topics.length === 0) {
+          resultsBox.innerHTML = `
+            <div class="topic-results__empty">
+              這次沒有產出主題，請調整條件後再試一次。
+            </div>
+          `;
+          return;
+        }
+
+        resultsBox.innerHTML = `
+          <div class="topic-results__list">
+            ${topics.map((item, index) => `
+              <article class="topic-card">
+                <div class="topic-card__top">
+                  <span class="topic-badge">#${index + 1}</span>
+                  <span class="topic-badge">${escapeHtml(item.category || "未分類")}</span>
+                  <span class="topic-badge">${escapeHtml(item.intent || "資訊型")}</span>
+                </div>
+
+                <h3>${escapeHtml(item.title || "")}</h3>
+                <p>${escapeHtml(item.reason || "適合作為 SEO 內容主題，能延伸成文章與關鍵字頁。")}</p>
+
+                <div class="topic-card__actions">
+                  <button type="button" class="topic-mini-btn" data-copy="${escapeHtml(item.title || "")}">
+                    複製題目
+                  </button>
+                  <button type="button" class="topic-mini-btn" data-fill-article="${escapeHtml(item.title || "")}">
+                    帶去產文
+                  </button>
+                </div>
+              </article>
+            `).join("")}
+          </div>
+        `;
+      }
+
+      async function generateTopics(payload) {
+        const response = await fetch("http://localhost:3000/api/ollama/topics", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result?.message || "產題失敗，請稍後再試。");
+        }
+
+        return result;
+      }
+
+      openBtns.forEach((btn) => {
+        btn.addEventListener("click", openModal);
+      });
+
+      closeBtn.addEventListener("click", closeModal);
+
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) {
+          closeModal();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && modal.classList.contains("is-open")) {
+          closeModal();
+        }
+      });
+
+      resetBtn.addEventListener("click", () => {
+        form.reset();
+        setError("");
+        resultsBox.innerHTML = `
+          <div class="topic-results__empty">
+            輸入你的產業、服務與關鍵字後，點擊「開始生成」，這裡就會顯示 AI 幫你整理好的 SEO 主題。
+          </div>
+        `;
+      });
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        setError("");
+        setLoading(true);
+
+        const formData = new FormData(form);
+        const payload = {
+          industry: formData.get("industry")?.toString().trim(),
+          service: formData.get("service")?.toString().trim(),
+          region: formData.get("region")?.toString().trim(),
+          audience: formData.get("audience")?.toString().trim(),
+          tone: formData.get("tone")?.toString().trim(),
+          category: formData.get("category")?.toString().trim(),
+          keywords: formData.get("keywords")?.toString().trim(),
+          count: Number(formData.get("count") || 10)
+        };
+
+        try {
+          const result = await generateTopics(payload);
+          renderTopics(result.topics || []);
+        } catch (error) {
+          setError(error.message || "產題失敗，請稍後再試。");
+        } finally {
+          setLoading(false);
+        }
+      });
+
+      resultsBox.addEventListener("click", async (event) => {
+        const copyBtn = event.target.closest("[data-copy]");
+        const articleBtn = event.target.closest("[data-fill-article]");
+
+        if (copyBtn) {
+          const text = copyBtn.getAttribute("data-copy") || "";
+          try {
+            await navigator.clipboard.writeText(text);
+            copyBtn.textContent = "已複製";
+            setTimeout(() => {
+              copyBtn.textContent = "複製題目";
+            }, 1200);
+          } catch (error) {
+            console.error("複製失敗：", error);
+          }
+        }
+
+        if (articleBtn) {
+          const topic = articleBtn.getAttribute("data-fill-article") || "";
+          const targetUrl = `./seo-content.html?topic=${encodeURIComponent(topic)}`;
+          window.location.href = targetUrl;
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
