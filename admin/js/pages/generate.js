@@ -240,7 +240,7 @@ generated = {
         html += "</ul>";
         inList = false;
       }
-      html += `<h3 style="margin:24px 0 10px;">${escape(line.replace(/^## /, ""))}</h3>`;
+      html += `<h3>${formatInline(line.replace(/^## /, ""))}</h3>`;
       continue;
     }
 
@@ -249,16 +249,16 @@ generated = {
         html += "</ul>";
         inList = false;
       }
-      html += `<h4 style="margin:18px 0 8px;">${escape(line.replace(/^### /, ""))}</h4>`;
+      html += `<h4>${formatInline(line.replace(/^### /, ""))}</h4>`;
       continue;
     }
 
-    if (line.startsWith("- ")) {
+    if (line.startsWith("- ") || line.startsWith("* ")) {
       if (!inList) {
-        html += `<ul style="padding-left:20px;line-height:1.8;">`;
+        html += `<ul>`;
         inList = true;
       }
-      html += `<li>${escape(line.replace(/^- /, ""))}</li>`;
+      html += `<li>${formatInline(line.replace(/^[-*] /, ""))}</li>`;
       continue;
     }
 
@@ -267,12 +267,17 @@ generated = {
       inList = false;
     }
 
-    html += `<p style="line-height:1.9;margin:0 0 14px;">${escape(line)}</p>`;
+    html += `<p>${formatInline(line)}</p>`;
   }
 
   if (inList) html += "</ul>";
 
   return html;
+}
+
+function formatInline(text = "") {
+  return escape(text)
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 }
 
   function goEdit(status) {
