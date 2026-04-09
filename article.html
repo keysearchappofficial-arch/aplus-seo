@@ -113,10 +113,49 @@
       return params.get("slug");
     }
     
-    async function increaseAndFetchViews(slug) {
+    function getVisitorId() {
+  let visitorId = localStorage.getItem("aplus_visitor_id");
+
+  if (!visitorId) {
+    visitorId =
+      "v_" +
+      Math.random().toString(36).slice(2) +
+      "_" +
+      Date.now().toString(36);
+
+    localStorage.setItem("aplus_visitor_id", visitorId);
+  }
+
+  return visitorId;
+}
+
+function shouldCountView(slug, cooldownMs = 5 * 60 * 1000) {
+  const key = `aplus_viewed_${slug}`;
+  const lastViewedAt = Number(localStorage.getItem(key) || 0);
+  const now = Date.now();
+
+  if (now - lastViewedAt < cooldownMs) {
+    return false;
+  }
+
+  localStorage.setItem(key, String(now));
+  return true;
+}
+
+async function increaseAndFetchViews(slug) {
   try {
+    const shouldIncrease = shouldCountView(slug);
+    const visitorId = getVisitorId();
+
     const res = await fetch(`http://localhost:3000/api/articles/view/${slug}`, {
-      method: "POST"
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        visitorId,
+        shouldIncrease
+      })
     });
 
     if (!res.ok) return 0;
