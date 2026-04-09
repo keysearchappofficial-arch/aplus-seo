@@ -43,7 +43,137 @@
   <link rel="stylesheet" href="./css/components.css" />
   <link rel="stylesheet" href="./css/pages/blog.css" />
 
-  <script type="application/ld+json">
+  <style>
+    .blog-meta-overview {
+      margin: 12px 0 0;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .blog-card {
+      display: block;
+      height: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      background: #fff;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .blog-card:hover {
+      transform: translateY(-4px);
+      border-color: #cbd5e1;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+    }
+
+    .blog-card__thumb {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 140px;
+      padding: 20px;
+      background:
+        radial-gradient(circle at top right, rgba(96, 165, 250, 0.20), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(37, 99, 235, 0.14), transparent 30%),
+        linear-gradient(180deg, #eff6ff 0%, #f8fafc 100%);
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 28px;
+      font-weight: 800;
+      color: #1e3a8a;
+      letter-spacing: .02em;
+    }
+
+    .blog-card__body {
+      padding: 20px;
+    }
+
+    .inline-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .inline-meta span {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .blog-card h3 {
+      margin: 12px 0 10px;
+      font-size: 22px;
+      line-height: 1.45;
+      color: #0f172a;
+    }
+
+    .blog-card p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.85;
+      font-size: 15px;
+    }
+
+    .blog-card__more {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 16px;
+      color: #2563eb;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      padding: 28px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 20px;
+      background: #f8fafc;
+    }
+
+    .empty-state h3 {
+      margin: 0 0 10px;
+      color: #0f172a;
+    }
+
+    .empty-state p {
+      margin: 0;
+      color: #64748b;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 960px) {
+      .blog-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .blog-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .blog-card__thumb {
+        min-height: 110px;
+        font-size: 24px;
+      }
+
+      .blog-card h3 {
+        font-size: 20px;
+      }
+    }
+  </style>
+
+  <script type="application/ld+json" id="blog-schema">
   {
     "@context": "https://schema.org",
     "@type": "Blog",
@@ -67,6 +197,9 @@
         <p class="section-subtitle">
           分享 SEO 內容策略、關鍵字佈局、AI 文章生成與自然流量成長方法，
           幫助企業網站從靜態展示頁，變成持續帶來流量與客戶的內容引擎。
+        </p>
+        <p class="blog-meta-overview">
+          目前共收錄 <strong id="article-count">0</strong> 篇文章
         </p>
       </div>
 
@@ -107,6 +240,8 @@
   <script src="./admin/js/supabase.js"></script>
 
   <script>
+    const SITE_ORIGIN = "https://www.keysearch-app.com";
+
     async function loadArticles() {
       const supabase = window.supabaseClient;
       if (!supabase) {
@@ -145,17 +280,33 @@
         .replace(/'/g, "&#39;");
     }
 
+    function getCardLabel(article) {
+      const category = String(article.category || "").trim();
+      if (category) return escapeHtml(category);
+      return "SEO 文章";
+    }
+
+    function getCardBadgeText(article) {
+      const category = String(article.category || "").trim();
+      if (!category) return "SEO";
+      return escapeHtml(category.slice(0, 10).toUpperCase());
+    }
+
     function buildArticleCard(article) {
       const title = escapeHtml(article.title || "未命名文章");
-      const summary = escapeHtml(article.summary || "查看這篇文章，了解更多 SEO 內容策略與流量成長方法。");
-      const category = escapeHtml(article.category || "SEO 文章");
+      const summary = escapeHtml(
+        article.summary || "查看這篇文章，了解更多 SEO 內容策略與流量成長方法。"
+      );
+      const category = getCardLabel(article);
+      const badgeText = getCardBadgeText(article);
       const dateText = formatDate(article.published_at || article.created_at);
       const slug = encodeURIComponent(article.slug || "");
 
       return `
         <a class="blog-card" href="./article.html?slug=${slug}&source=blog">
+          <div class="blog-card__thumb">${badgeText}</div>
           <div class="blog-card__body">
-            <div class="inline-meta" style="margin-bottom:10px;">
+            <div class="inline-meta">
               <span>${category}</span>
               <span>${dateText}</span>
             </div>
@@ -167,11 +318,38 @@
       `;
     }
 
+    function injectBlogItemListSchema(articles) {
+      const oldScript = document.getElementById("blog-itemlist-schema");
+      if (oldScript) oldScript.remove();
+
+      const schema = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": articles.map((article, index) => ({
+          "@type": "ListItem",
+          "position": index + 1,
+          "url": `${SITE_ORIGIN}/article.html?slug=${encodeURIComponent(article.slug || "")}`,
+          "name": article.title || "未命名文章"
+        }))
+      };
+
+      const script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.id = "blog-itemlist-schema";
+      script.textContent = JSON.stringify(schema);
+      document.head.appendChild(script);
+    }
+
     async function renderBlog() {
       const listEl = document.getElementById("blog-list");
+      const countEl = document.getElementById("article-count");
 
       try {
         const articles = await loadArticles();
+
+        if (countEl) {
+          countEl.textContent = String(articles.length);
+        }
 
         if (!articles.length) {
           listEl.innerHTML = `
@@ -184,6 +362,7 @@
         }
 
         listEl.innerHTML = articles.map(buildArticleCard).join("");
+        injectBlogItemListSchema(articles);
       } catch (error) {
         console.error("載入文章失敗：", error);
         listEl.innerHTML = `
