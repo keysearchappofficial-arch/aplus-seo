@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>文章｜Aplus AI SEO</title>
-  <meta name="description" content="" />
-  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="description" content="AI SEO 文章內容頁面。" />
+
+  <!-- 👇 加在這裡 -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="" />
+  <meta property="og:description" content="" />
 
   <link rel="stylesheet" href="./css/variables.css" />
   <link rel="stylesheet" href="./css/base.css" />
@@ -181,6 +185,61 @@ async function increaseAndFetchViews(slug) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
     }
+    
+    function formatInline(text = "") {
+  return escapeHtml(text)
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+}
+
+function renderArticleBody(content = "") {
+  const lines = String(content)
+    .split("\n")
+    .map(line => line.trim())
+    .filter(Boolean);
+
+  let html = "";
+  let inList = false;
+
+  for (const line of lines) {
+    if (line.startsWith("## ")) {
+      if (inList) {
+        html += "</ul>";
+        inList = false;
+      }
+      html += `<h2>${formatInline(line.replace(/^## /, ""))}</h2>`;
+      continue;
+    }
+
+    if (line.startsWith("### ")) {
+      if (inList) {
+        html += "</ul>";
+        inList = false;
+      }
+      html += `<h3>${formatInline(line.replace(/^### /, ""))}</h3>`;
+      continue;
+    }
+
+    if (line.startsWith("- ") || line.startsWith("* ")) {
+      if (!inList) {
+        html += "<ul>";
+        inList = true;
+      }
+      html += `<li>${formatInline(line.replace(/^[-*] /, ""))}</li>`;
+      continue;
+    }
+
+    if (inList) {
+      html += "</ul>";
+      inList = false;
+    }
+
+    html += `<p>${formatInline(line)}</p>`;
+  }
+
+  if (inList) html += "</ul>";
+
+  return html;
+}
 
     async function loadArticle() {
       const supabase = window.supabaseClient;
@@ -202,16 +261,26 @@ async function increaseAndFetchViews(slug) {
     }
 
     function setSEO(article) {
-      document.title = article.seo_title || article.title || "文章｜Aplus AI SEO";
+  const pageTitle = article.seo_title || article.title || "文章｜Aplus AI SEO";
+  const pageDescription = article.seo_description || article.summary || "";
 
-      const meta = document.querySelector("meta[name='description']");
-      if (meta) {
-        meta.setAttribute(
-          "content",
-          article.seo_description || article.summary || ""
-        );
-      }
-    }
+  document.title = pageTitle;
+
+  const meta = document.querySelector("meta[name='description']");
+  if (meta) {
+    meta.setAttribute("content", pageDescription);
+  }
+
+  const ogTitle = document.querySelector("meta[property='og:title']");
+  if (ogTitle) {
+    ogTitle.setAttribute("content", pageTitle);
+  }
+
+  const ogDescription = document.querySelector("meta[property='og:description']");
+  if (ogDescription) {
+    ogDescription.setAttribute("content", pageDescription);
+  }
+}
 
     async function renderArticle() {
       const titleEl = document.getElementById("article-title");
@@ -227,7 +296,9 @@ async function increaseAndFetchViews(slug) {
         }
 
         titleEl.innerText = article.title || "未命名文章";
-        contentEl.innerHTML = article.content || "<p>目前尚無內容。</p>";
+        contentEl.innerHTML = article.content
+  ? renderArticleBody(article.content)
+  : "<p>目前尚無內容。</p>";
 
         setSEO(article);
         return article;
