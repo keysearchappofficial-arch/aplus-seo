@@ -32,27 +32,32 @@
     }
 
     .article-modal__dialog {
-      width: 100%;
-      max-width: 1120px;
-      max-height: calc(100vh - 40px);
-      overflow-y: auto;
-      border-radius: 24px;
-      background: #fff;
-      box-shadow: 0 30px 80px rgba(15, 23, 42, 0.24);
-      display: grid;
-      grid-template-columns: 360px 1fr;
-    }
+  width: 100%;
+  max-width: 1120px;
+  height: min(760px, calc(100vh - 40px));
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.24);
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  overflow: hidden;
+}
 
-    .article-modal__left {
-      padding: 28px;
-      border-right: 1px solid #e2e8f0;
-      background: #f8fafc;
-    }
+.article-modal__left {
+  padding: 28px;
+  border-right: 1px solid #e2e8f0;
+  background: #f8fafc;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
 
-    .article-modal__right {
-      padding: 28px;
-      background: #fff;
-    }
+.article-modal__right {
+  padding: 28px;
+  background: #fff;
+  overflow-y: auto;
+  min-height: 0;
+}
 
     .article-modal__header {
       display: flex;
@@ -287,39 +292,44 @@
       background: #f8fafc;
     }
 
-    .article-modal__dialog::-webkit-scrollbar {
-      width: 10px;
-    }
+    .article-modal__right::-webkit-scrollbar {
+  width: 10px;
+}
 
-    .article-modal__dialog::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 999px;
-    }
+.article-modal__right::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
 
-    .article-modal__dialog::-webkit-scrollbar-track {
-      background: transparent;
-    }
+.article-modal__right::-webkit-scrollbar-track {
+  background: transparent;
+}
 
     @media (max-width: 860px) {
-      .article-modal {
-        padding: 12px;
-        align-items: flex-start;
-      }
+  .article-modal {
+    padding: 12px;
+    align-items: flex-start;
+  }
 
-      .article-modal__dialog {
-        grid-template-columns: 1fr;
-        max-height: calc(100vh - 24px);
-      }
+  .article-modal__dialog {
+    grid-template-columns: 1fr;
+    height: auto;
+    max-height: calc(100vh - 24px);
+  }
 
-      .article-modal__left {
-        border-right: 0;
-        border-bottom: 1px solid #e2e8f0;
-      }
+  .article-modal__left {
+    border-right: 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
 
-      .article-title {
-        font-size: 24px;
-      }
-    }
+  .article-modal__right {
+    max-height: 46vh;
+  }
+
+  .article-title {
+    font-size: 24px;
+  }
+}
   </style>
 </head>
 
