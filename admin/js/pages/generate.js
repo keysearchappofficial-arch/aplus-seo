@@ -115,17 +115,16 @@ progress.start();
 
 try {
   const res = await window.OllamaClient.generateWithOllama(params);
-  const article = res.article || {};
 
-  generated = {
-    title: article.title || "",
-    summary: article.summary || "",
-    content: article.body || "",
-    seoTitle: article.seoTitle || "",
-    seoDescription: article.seoDescription || "",
-    category: fd.get("category"),
-    slug: slugify(article.title || "")
-  };
+generated = {
+  title: res.title || "",
+  summary: res.summary || "",
+  content: res.content || "",
+  seoTitle: res.seoTitle || "",
+  seoDescription: res.seoDescription || "",
+  category: fd.get("category"),
+  slug: slugify(res.title || "")
+};
 
   await progress.finishSmooth();
 
