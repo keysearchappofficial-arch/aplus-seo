@@ -31,7 +31,9 @@ function mapLeadRow(row) {
     sourceArticleTitle: row.source_article_title || "",
     sourceChannel: row.source_channel || "",
     status: row.status || "new",
-    createdAt: row.created_at || null
+    note: row.note || "",
+    createdAt: row.created_at || null,
+    updatedAt: row.updated_at || null
   };
 }
 
@@ -188,11 +190,47 @@ async function getDashboardStats() {
   };
 }
 
+async function updateLeadStatus(id, status) {
+  const supabase = window.supabaseClient;
+
+  const { data, error } = await supabase
+    .from("leads")
+    .update({
+      status,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return mapLeadRow(data);
+}
+
+async function updateLeadNote(id, note) {
+  const supabase = window.supabaseClient;
+
+  const { data, error } = await supabase
+    .from("leads")
+    .update({
+      note: String(note || "").trim(),
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return mapLeadRow(data);
+}
+
 window.ArticleStore = {
   getArticles,
   getLeads,
   getTrackingEvents,
   trackEvent,
   createLead,
+  updateLeadStatus,
+  updateLeadNote,
   getDashboardStats
 };
