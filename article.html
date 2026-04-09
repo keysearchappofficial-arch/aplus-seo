@@ -6,17 +6,77 @@
 
   <title>文章｜Aplus AI SEO</title>
   <meta name="description" content="AI SEO 文章內容頁面。" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="" />
 
-  <!-- 👇 加在這裡 -->
   <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Aplus AI SEO" />
+  <meta property="og:locale" content="zh_TW" />
   <meta property="og:title" content="" />
   <meta property="og:description" content="" />
+  <meta property="og:url" content="" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="" />
+  <meta name="twitter:description" content="" />
 
   <link rel="stylesheet" href="./css/variables.css" />
   <link rel="stylesheet" href="./css/base.css" />
   <link rel="stylesheet" href="./css/layout.css" />
   <link rel="stylesheet" href="./css/components.css" />
   <link rel="stylesheet" href="./css/pages/article.css" />
+
+  <style>
+    .article-back-link {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 12px;
+      color: #64748b;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .article-back-link:hover {
+      color: #0f172a;
+    }
+
+    .article-content h2 {
+      margin: 28px 0 12px;
+      font-size: 30px;
+      line-height: 1.4;
+      color: #0f172a;
+    }
+
+    .article-content h3 {
+      margin: 20px 0 10px;
+      font-size: 22px;
+      line-height: 1.5;
+      color: #0f172a;
+    }
+
+    .article-content p {
+      margin: 0 0 16px;
+      line-height: 1.95;
+      color: #334155;
+    }
+
+    .article-content ul {
+      margin: 0 0 18px;
+      padding-left: 22px;
+      color: #334155;
+      line-height: 1.9;
+    }
+
+    .article-content li {
+      margin-bottom: 8px;
+    }
+
+    .article-content strong {
+      color: #0f172a;
+    }
+  </style>
+
+  <script type="application/ld+json" id="article-schema"></script>
 </head>
 
 <body>
@@ -26,13 +86,14 @@
     <div class="container article">
 
       <div class="article-header">
+        <a href="./blog.html" class="article-back-link">← 返回文章專欄</a>
         <span class="article-label">Article</span>
         <h1 id="article-title"></h1>
       </div>
-      
+
       <div id="article-meta" style="margin-top:8px;color:#64748b;font-size:13px;">
-  瀏覽數：<span id="article-views">--</span>
-</div>
+        有效瀏覽：<span id="article-views">--</span>
+      </div>
 
       <div id="article-content" class="article-content"></div>
 
@@ -88,23 +149,23 @@
   <div id="site-footer"></div>
 
   <div id="lead-success-modal" class="modal hidden">
-  <div class="modal__overlay"></div>
+    <div class="modal__overlay"></div>
 
-  <div class="modal__card">
-    <h3>已成功送出 🎉</h3>
+    <div class="modal__card">
+      <h3>已成功送出 🎉</h3>
 
-    <p>
-      我們已收到你的 SEO 評估需求，<br />
-      將盡快與你聯繫。
-    </p>
+      <p>
+        我們已收到你的 SEO 評估需求，<br />
+        將盡快與你聯繫。
+      </p>
 
-    <div class="modal__actions">
-      <button id="modal-close" class="btn btn--ghost">關閉</button>
-      <a href="https://line.me/..." class="btn btn--primary">加 LINE 諮詢</a>
-      <a href="/" class="btn btn--primary">回首頁</a>
+      <div class="modal__actions">
+        <button id="modal-close" class="btn btn--ghost">關閉</button>
+        <a href="https://line.me/..." class="btn btn--primary">加 LINE 諮詢</a>
+        <a href="./index.html" class="btn btn--primary">回首頁</a>
+      </div>
     </div>
   </div>
-</div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./admin/js/supabase.js"></script>
@@ -112,69 +173,71 @@
   <script src="./assets/js/layout.js"></script>
 
   <script>
+    const SITE_ORIGIN = "https://www.keysearch-app.com";
+
     function getSlug() {
       const params = new URLSearchParams(window.location.search);
       return params.get("slug");
     }
-    
-    function getVisitorId() {
-  let visitorId = localStorage.getItem("aplus_visitor_id");
-
-  if (!visitorId) {
-    visitorId =
-      "v_" +
-      Math.random().toString(36).slice(2) +
-      "_" +
-      Date.now().toString(36);
-
-    localStorage.setItem("aplus_visitor_id", visitorId);
-  }
-
-  return visitorId;
-}
-
-function shouldCountView(slug, cooldownMs = 5 * 60 * 1000) {
-  const key = `aplus_viewed_${slug}`;
-  const lastViewedAt = Number(localStorage.getItem(key) || 0);
-  const now = Date.now();
-
-  if (now - lastViewedAt < cooldownMs) {
-    return false;
-  }
-
-  localStorage.setItem(key, String(now));
-  return true;
-}
-
-async function increaseAndFetchViews(slug) {
-  try {
-    const shouldIncrease = shouldCountView(slug);
-    const visitorId = getVisitorId();
-
-    const res = await fetch(`http://localhost:3000/api/articles/view/${slug}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        visitorId,
-        shouldIncrease
-      })
-    });
-
-    if (!res.ok) return 0;
-
-    const data = await res.json();
-    return data.views || 0;
-  } catch (error) {
-    console.error("取得 PV 失敗", error);
-    return 0;
-  }
-}
 
     function getSource() {
       const params = new URLSearchParams(window.location.search);
       return params.get("source") || "direct";
+    }
+
+    function getVisitorId() {
+      let visitorId = localStorage.getItem("aplus_visitor_id");
+
+      if (!visitorId) {
+        visitorId =
+          "v_" +
+          Math.random().toString(36).slice(2) +
+          "_" +
+          Date.now().toString(36);
+
+        localStorage.setItem("aplus_visitor_id", visitorId);
+      }
+
+      return visitorId;
+    }
+
+    function shouldCountView(slug, cooldownMs = 5 * 60 * 1000) {
+      const key = `aplus_viewed_${slug}`;
+      const lastViewedAt = Number(localStorage.getItem(key) || 0);
+      const now = Date.now();
+
+      if (now - lastViewedAt < cooldownMs) {
+        return false;
+      }
+
+      localStorage.setItem(key, String(now));
+      return true;
+    }
+
+    async function increaseAndFetchViews(slug) {
+      try {
+        const shouldIncrease = shouldCountView(slug);
+        const visitorId = getVisitorId();
+
+        const res = await fetch(`http://localhost:3000/api/articles/view/${slug}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            visitorId,
+            shouldIncrease
+          })
+        });
+
+        if (!res.ok) return 0;
+
+        const data = await res.json();
+        return data.views || 0;
+      } catch (error) {
+        console.error("取得 PV 失敗", error);
+        return 0;
+      }
     }
 
     function escapeHtml(value) {
@@ -185,61 +248,63 @@ async function increaseAndFetchViews(slug) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
     }
-    
+
     function formatInline(text = "") {
-  return escapeHtml(text)
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-}
+      return escapeHtml(text)
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    }
 
-function renderArticleBody(content = "") {
-  const lines = String(content)
-    .split("\n")
-    .map(line => line.trim())
-    .filter(Boolean);
+    function renderArticleBody(content = "") {
+      const lines = String(content)
+        .split("\n")
+        .map(line => line.trim())
+        .filter(Boolean);
 
-  let html = "";
-  let inList = false;
+      let html = "";
+      let inList = false;
 
-  for (const line of lines) {
-    if (line.startsWith("## ")) {
+      for (const line of lines) {
+        if (line.startsWith("## ")) {
+          if (inList) {
+            html += "</ul>";
+            inList = false;
+          }
+          html += `<h2>${formatInline(line.replace(/^## /, ""))}</h2>`;
+          continue;
+        }
+
+        if (line.startsWith("### ")) {
+          if (inList) {
+            html += "</ul>";
+            inList = false;
+          }
+          html += `<h3>${formatInline(line.replace(/^### /, ""))}</h3>`;
+          continue;
+        }
+
+        if (line.startsWith("- ") || line.startsWith("* ")) {
+          if (!inList) {
+            html += "<ul>";
+            inList = true;
+          }
+          html += `<li>${formatInline(line.replace(/^[-*] /, ""))}</li>`;
+          continue;
+        }
+
+        if (inList) {
+          html += "</ul>";
+          inList = false;
+        }
+
+        html += `<p>${formatInline(line)}</p>`;
+      }
+
       if (inList) {
         html += "</ul>";
-        inList = false;
       }
-      html += `<h2>${formatInline(line.replace(/^## /, ""))}</h2>`;
-      continue;
+
+      return html;
     }
-
-    if (line.startsWith("### ")) {
-      if (inList) {
-        html += "</ul>";
-        inList = false;
-      }
-      html += `<h3>${formatInline(line.replace(/^### /, ""))}</h3>`;
-      continue;
-    }
-
-    if (line.startsWith("- ") || line.startsWith("* ")) {
-      if (!inList) {
-        html += "<ul>";
-        inList = true;
-      }
-      html += `<li>${formatInline(line.replace(/^[-*] /, ""))}</li>`;
-      continue;
-    }
-
-    if (inList) {
-      html += "</ul>";
-      inList = false;
-    }
-
-    html += `<p>${formatInline(line)}</p>`;
-  }
-
-  if (inList) html += "</ul>";
-
-  return html;
-}
 
     async function loadArticle() {
       const supabase = window.supabaseClient;
@@ -261,26 +326,86 @@ function renderArticleBody(content = "") {
     }
 
     function setSEO(article) {
-  const pageTitle = article.seo_title || article.title || "文章｜Aplus AI SEO";
-  const pageDescription = article.seo_description || article.summary || "";
+      const pageTitle = article.seo_title || article.title || "文章｜Aplus AI SEO";
+      const pageDescription = article.seo_description || article.summary || "";
+      const pageUrl = `${SITE_ORIGIN}/article.html?slug=${encodeURIComponent(article.slug || "")}`;
 
-  document.title = pageTitle;
+      document.title = pageTitle;
 
-  const meta = document.querySelector("meta[name='description']");
-  if (meta) {
-    meta.setAttribute("content", pageDescription);
-  }
+      const metaDescription = document.querySelector("meta[name='description']");
+      if (metaDescription) {
+        metaDescription.setAttribute("content", pageDescription);
+      }
 
-  const ogTitle = document.querySelector("meta[property='og:title']");
-  if (ogTitle) {
-    ogTitle.setAttribute("content", pageTitle);
-  }
+      const robots = document.querySelector("meta[name='robots']");
+      if (robots) {
+        robots.setAttribute("content", "index, follow, max-image-preview:large");
+      }
 
-  const ogDescription = document.querySelector("meta[property='og:description']");
-  if (ogDescription) {
-    ogDescription.setAttribute("content", pageDescription);
-  }
-}
+      const canonical = document.querySelector("link[rel='canonical']");
+      if (canonical) {
+        canonical.setAttribute("href", pageUrl);
+      }
+
+      const ogTitle = document.querySelector("meta[property='og:title']");
+      if (ogTitle) {
+        ogTitle.setAttribute("content", pageTitle);
+      }
+
+      const ogDescription = document.querySelector("meta[property='og:description']");
+      if (ogDescription) {
+        ogDescription.setAttribute("content", pageDescription);
+      }
+
+      const ogUrl = document.querySelector("meta[property='og:url']");
+      if (ogUrl) {
+        ogUrl.setAttribute("content", pageUrl);
+      }
+
+      const twitterTitle = document.querySelector("meta[name='twitter:title']");
+      if (twitterTitle) {
+        twitterTitle.setAttribute("content", pageTitle);
+      }
+
+      const twitterDescription = document.querySelector("meta[name='twitter:description']");
+      if (twitterDescription) {
+        twitterDescription.setAttribute("content", pageDescription);
+      }
+    }
+
+    function injectArticleSchema(article) {
+      const schemaEl = document.getElementById("article-schema");
+      if (!schemaEl || !article) return;
+
+      const pageUrl = `${SITE_ORIGIN}/article.html?slug=${encodeURIComponent(article.slug || "")}`;
+      const publishedTime = article.published_at || article.created_at || "";
+      const modifiedTime = article.updated_at || publishedTime;
+
+      const schema = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": article.title || "未命名文章",
+        "description": article.seo_description || article.summary || "",
+        "url": pageUrl,
+        "datePublished": publishedTime,
+        "dateModified": modifiedTime,
+        "author": {
+          "@type": "Organization",
+          "name": "Aplus AI SEO"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Aplus AI SEO"
+        },
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": pageUrl
+        },
+        "inLanguage": "zh-Hant"
+      };
+
+      schemaEl.textContent = JSON.stringify(schema);
+    }
 
     async function renderArticle() {
       const titleEl = document.getElementById("article-title");
@@ -297,10 +422,11 @@ function renderArticleBody(content = "") {
 
         titleEl.innerText = article.title || "未命名文章";
         contentEl.innerHTML = article.content
-  ? renderArticleBody(article.content)
-  : "<p>目前尚無內容。</p>";
+          ? renderArticleBody(article.content)
+          : "<p>目前尚無內容。</p>";
 
         setSEO(article);
+        injectArticleSchema(article);
         return article;
       } catch (error) {
         console.error("載入文章失敗：", error);
@@ -354,7 +480,7 @@ function renderArticleBody(content = "") {
           });
 
           showLeadSuccessModal();
-form.reset();
+          form.reset();
         } catch (error) {
           console.error("送出詢問失敗：", error);
           alert(`送出失敗：${error.message}`);
@@ -363,20 +489,20 @@ form.reset();
     }
 
     function showLeadSuccessModal() {
-  const modal = document.getElementById("lead-success-modal");
-  if (!modal) return;
+      const modal = document.getElementById("lead-success-modal");
+      if (!modal) return;
 
-  modal.classList.remove("hidden");
+      modal.classList.remove("hidden");
 
-  const closeBtn = document.getElementById("modal-close");
+      const closeBtn = document.getElementById("modal-close");
 
-  function close() {
-    modal.classList.add("hidden");
-  }
+      function close() {
+        modal.classList.add("hidden");
+      }
 
-  closeBtn?.addEventListener("click", close);
-  modal.querySelector(".modal__overlay")?.addEventListener("click", close);
-}
+      closeBtn?.addEventListener("click", close);
+      modal.querySelector(".modal__overlay")?.addEventListener("click", close);
+    }
 
     async function renderRelatedArticles(currentSlug) {
       const articles = await ArticleStore.getArticles();
@@ -402,22 +528,22 @@ form.reset();
     }
 
     async function initArticlePage() {
-  const article = await renderArticle();
-  if (!article) return;
+      const article = await renderArticle();
+      if (!article) return;
 
-  const viewsEl = document.getElementById("article-views");
-  const views = await increaseAndFetchViews(article.slug);
+      const viewsEl = document.getElementById("article-views");
+      const views = await increaseAndFetchViews(article.slug);
 
-  if (viewsEl) {
-    viewsEl.textContent = views;
-  }
+      if (viewsEl) {
+        viewsEl.textContent = views;
+      }
 
-  await trackPageView(article);
-  await renderRelatedArticles(article.slug);
-  bindForm(article);
-}
+      await trackPageView(article);
+      await renderRelatedArticles(article.slug);
+      bindForm(article);
+    }
 
-initArticlePage();
+    initArticlePage();
   </script>
 
 </body>
