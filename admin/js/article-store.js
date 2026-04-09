@@ -193,31 +193,43 @@ async function getDashboardStats() {
 async function updateLeadStatus(id, status) {
   const supabase = window.supabaseClient;
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("leads")
     .update({
       status,
       updated_at: new Date().toISOString()
     })
-    .eq("id", id);
+    .eq("id", id)
+    .select("id, status, updated_at");
 
   if (error) throw error;
-  return true;
+
+  if (!data || !data.length) {
+    throw new Error("沒有任何資料被更新，請檢查 leads 的 RLS update policy");
+  }
+
+  return data[0];
 }
 
 async function updateLeadNote(id, note) {
   const supabase = window.supabaseClient;
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("leads")
     .update({
       note: String(note || "").trim(),
       updated_at: new Date().toISOString()
     })
-    .eq("id", id);
+    .eq("id", id)
+    .select("id, note, updated_at");
 
   if (error) throw error;
-  return true;
+
+  if (!data || !data.length) {
+    throw new Error("沒有任何資料被更新，請檢查 leads 的 RLS update policy");
+  }
+
+  return data[0];
 }
 
 window.ArticleStore = {
