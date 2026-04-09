@@ -25,7 +25,6 @@
   padding: 20px;
   background: rgba(15, 23, 42, 0.55);
   z-index: 9999;
-  overflow-y: auto;
 }
 
 .topic-modal.is-open {
@@ -35,9 +34,8 @@
 .topic-modal__dialog {
   width: 100%;
   max-width: 960px;
-  height: auto;
   max-height: calc(100vh - 40px);
-  overflow: hidden;
+  overflow-y: auto;
   border-radius: 24px;
   background: #ffffff;
   box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25);
@@ -49,14 +47,10 @@
   padding: 28px;
   border-right: 1px solid #e2e8f0;
   background: #f8fafc;
-  overflow-y: auto;
-  max-height: calc(100vh - 40px);
 }
 
 .topic-modal__right {
   padding: 28px;
-  overflow-y: auto;
-  max-height: calc(100vh - 40px);
 }
 
     .topic-modal__title {
