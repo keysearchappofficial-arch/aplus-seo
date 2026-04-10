@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>AI SEO Article Generation | Create Titles, Content, and SEO Fields Automatically | Aplus AI SEO</title>
+  <meta
+    name="description"
+    content="Use AI to generate SEO-structured articles automatically, including title, summary, article body, SEO Title, and SEO Description, all in one workflow."
+  />
+  <meta
+    name="keywords"
+    content="AI SEO article generation, SEO article generation, AI article writing, SEO Title, SEO Description, content generation, AI content tools, Aplus AI SEO"
+  />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+
+  <link rel="canonical" href="https://www.keysearch-app.com/en/seo-content.html" />
+  <link rel="alternate" hreflang="zh-Hant" href="https://www.keysearch-app.com/seo-content.html" />
+  <link rel="alternate" hreflang="zh-TW" href="https://www.keysearch-app.com/seo-content.html" />
+  <link rel="alternate" hreflang="en" href="https://www.keysearch-app.com/en/seo-content.html" />
+  <link rel="alternate" hreflang="x-default" href="https://www.keysearch-app.com/en/seo-content.html" />
+
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Aplus AI SEO" />
+  <meta property="og:title" content="AI SEO Article Generation | Create Titles, Content, and SEO Fields Automatically" />
+  <meta
+    property="og:description"
+    content="Go from topic to article in one step. AI automatically generates SEO-friendly titles, summaries, article content, and SEO fields so content production becomes faster and more structured."
+  />
+  <meta property="og:url" content="https://www.keysearch-app.com/en/seo-content.html" />
+  <meta property="og:image" content="https://www.keysearch-app.com/assets/images/og/seo-content-og.jpg" />
+  <meta property="og:image:alt" content="Aplus AI SEO article generation page visual" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="AI SEO Article Generation | Create Titles, Content, and SEO Fields Automatically" />
+  <meta
+    name="twitter:description"
+    content="AI automatically generates SEO-structured articles, including title, summary, article body, and SEO fields in one workflow."
+  />
+  <meta name="twitter:image" content="https://www.keysearch-app.com/assets/images/og/seo-content-og.jpg" />
+
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+
+  <style>
+    .article-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.56);
+      z-index: 9999;
+    }
+
+    .article-modal.is-open {
+      display: flex;
+    }
+
+    .article-modal__dialog {
+      width: 100%;
+      max-width: 1120px;
+      height: min(760px, calc(100vh - 40px));
+      border-radius: 24px;
+      background: #fff;
+      box-shadow: 0 30px 80px rgba(15, 23, 42, 0.24);
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      overflow: hidden;
+    }
+
+    .article-modal__left {
+      padding: 28px;
+      border-right: 1px solid #e2e8f0;
+      background: #f8fafc;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .article-modal__right {
+      padding: 28px;
+      background: #fff;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .article-modal__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .article-modal__title {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.3;
+      color: #0f172a;
+    }
+
+    .article-modal__close {
+      border: 0;
+      background: transparent;
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      color: #475569;
+    }
+
+    .article-form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .article-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .article-field label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .article-field input,
+    .article-field select,
+    .article-field textarea {
+      width: 100%;
+      min-height: 46px;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      font: inherit;
+      color: #0f172a;
+      background: #fff;
+    }
+
+    .article-field textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .article-form__actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .article-status {
+      display: none;
+      margin-bottom: 16px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .article-status.is-show {
+      display: block;
+    }
+
+    .article-status--loading {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .article-status--error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .article-preview__empty {
+      color: #64748b;
+      line-height: 1.8;
+      padding: 28px 20px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+      background: #f8fafc;
+    }
+
+    .article-preview__shell {
+      display: grid;
+      gap: 18px;
+    }
+
+    .article-output-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+      overflow: hidden;
+    }
+
+    .article-output-card__head {
+      padding: 16px 20px;
+      border-bottom: 1px solid #e2e8f0;
+      background: #f8fafc;
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .article-output-card__body {
+      padding: 20px;
+    }
+
+    .article-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .article-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .article-title {
+      margin: 0 0 14px;
+      font-size: 30px;
+      line-height: 1.4;
+      color: #0f172a;
+    }
+
+    .article-summary {
+      margin: 0;
+      color: #475569;
+      font-size: 16px;
+      line-height: 1.9;
+    }
+
+    .article-body {
+      color: #1e293b;
+      line-height: 1.95;
+      font-size: 16px;
+    }
+
+    .article-body h2 {
+      margin: 28px 0 12px;
+      font-size: 24px;
+      line-height: 1.45;
+      color: #0f172a;
+    }
+
+    .article-body h3 {
+      margin: 22px 0 10px;
+      font-size: 20px;
+      line-height: 1.5;
+      color: #0f172a;
+    }
+
+    .article-body p {
+      margin: 0 0 16px;
+    }
+
+    .article-body ul,
+    .article-body ol {
+      padding-left: 22px;
+      margin: 0 0 18px;
+    }
+
+    .article-body li {
+      margin-bottom: 8px;
+    }
+
+    .article-body strong {
+      color: #0f172a;
+    }
+
+    .article-seo-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .article-seo-item {
+      padding: 16px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+
+    .article-seo-item strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #0f172a;
+      font-size: 14px;
+    }
+
+    .article-seo-item p {
+      margin: 0;
+      color: #334155;
+      line-height: 1.8;
+      word-break: break-word;
+    }
+
+    .article-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .article-mini-btn {
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #0f172a;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .article-mini-btn:hover {
+      background: #f8fafc;
+    }
+
+    .article-modal__right::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .article-modal__right::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+    }
+
+    .article-modal__right::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    @media (max-width: 860px) {
+      .article-modal {
+        padding: 12px;
+        align-items: flex-start;
+      }
+
+      .article-modal__dialog {
+        grid-template-columns: 1fr;
+        height: auto;
+        max-height: calc(100vh - 24px);
+      }
+
+      .article-modal__left {
+        border-right: 0;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .article-modal__right {
+        max-height: 46vh;
+      }
+
+      .article-title {
+        font-size: 24px;
+      }
+    }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "AI SEO Article Generation",
+    "url": "https://www.keysearch-app.com/en/seo-content.html",
+    "description": "Use AI to generate SEO-structured articles automatically, including title, summary, body content, and SEO fields, all in one workflow.",
+    "inLanguage": "en",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "Aplus AI SEO",
+      "url": "https://www.keysearch-app.com/"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Aplus AI SEO Article Generation Module",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "url": "https://www.keysearch-app.com/en/seo-content.html",
+    "description": "An AI content module that generates SEO-structured articles and SEO fields automatically based on topic, industry, location, and tone."
+  }
+  </script>
+</head>
+
+<body>
+  <div id="site-header"></div>
+
+  <main class="section-shell">
+    <div class="container" style="max-width: 1000px;">
+
+      <section style="padding: 48px 0 24px;">
+        <div style="font-size:13px;color:#64748b;margin-bottom:10px;">
+          AI SEO Module
+        </div>
+
+        <h1 style="font-size:40px;margin:0 0 16px;">
+          AI SEO Article Generation
+        </h1>
+
+        <p style="font-size:18px;color:#475569;line-height:1.8;margin:0;">
+          Go from topic to article in one step.
+          AI automatically generates SEO-friendly titles, summaries, article content, and SEO fields,
+          making content production faster, more structured, and easier to keep updating.
+        </p>
+
+        <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
+          <button type="button" class="btn btn--primary" id="openArticleModalBtn">
+            Start Generating
+          </button>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:20px;">
+        <div class="card__body">
+          <h2>Are you running into these problems?</h2>
+          <ul style="line-height:1.8;">
+            <li>You have a topic, but do not know how to turn it into a full article</li>
+            <li>You spend too much time organizing every article structure</li>
+            <li>AI-generated content feels scattered and does not read like a real article</li>
+            <li>You often forget to complete SEO titles and descriptions</li>
+            <li>Content production is too slow to keep up with your publishing rhythm</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:20px;">
+        <div class="card__body">
+          <h2>What does this module do?</h2>
+
+          <p>
+            The AI SEO article generation module creates usable article content
+            based on the industry, location, topic, and tone you enter.
+          </p>
+
+          <p>The output is not just a paragraph of text. It includes:</p>
+
+          <ul>
+            <li>Article title</li>
+            <li>Summary</li>
+            <li>Full article body</li>
+            <li>SEO Title</li>
+            <li>SEO Description</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:20px;">
+        <div class="card__body">
+          <h2>Core features</h2>
+
+          <ul>
+            <li>Supports industry, location, topic, and tone settings</li>
+            <li>Automatically generates readable article structure</li>
+            <li>Outputs SEO fields at the same time</li>
+            <li>Can move directly into draft editing</li>
+            <li>Can connect with topic bank management and backend publishing workflows</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:20px;">
+        <div class="card__body">
+          <h2>How it works</h2>
+
+          <ol style="line-height:1.8;">
+            <li>Bring in a topic from the topic bank or enter a keyword manually</li>
+            <li>Set industry, location, and tone</li>
+            <li>Let AI generate the article content</li>
+            <li>Adjust the content in draft mode</li>
+            <li>Publish it to the front-end article page</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:20px;">
+        <div class="card__body">
+          <h2>Why this module matters</h2>
+
+          <ul>
+            <li>Greatly reduces content production time</li>
+            <li>Turns your topic bank into real articles</li>
+            <li>Helps increase website update frequency</li>
+            <li>Makes SEO content production more scalable</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:20px;margin-bottom:40px;">
+        <div class="card__body">
+          <h2>Want to update website content faster?</h2>
+
+          <p>
+            From AI topic generation to AI article generation, content management, and publishing,
+            build an SEO content workflow that can keep running over time.
+          </p>
+
+          <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
+            <button type="button" class="btn btn--primary" id="openArticleModalBtnBottom">
+              Start Generating
+            </button>
+
+            <a href="./topic-generator.html" class="btn btn--ghost">
+              View Topic Generation First
+            </a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <div class="article-modal" id="articleModal" aria-hidden="true">
+    <div class="article-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="articleModalTitle">
+      <div class="article-modal__left">
+        <div class="article-modal__header">
+          <h2 class="article-modal__title" id="articleModalTitle">Start Article Generation</h2>
+          <button type="button" class="article-modal__close" id="closeArticleModalBtn" aria-label="Close">×</button>
+        </div>
+
+        <form class="article-form" id="articleGenerateForm">
+          <div style="font-size:13px;color:#64748b;margin-bottom:4px;">
+            Quick mode: enter a topic and generate immediately
+          </div>
+
+          <div class="article-field">
+            <label for="articleTopic">Article Topic</label>
+            <input
+              id="articleTopic"
+              name="topic"
+              type="text"
+              placeholder="e.g. How to build an AI SEO website?"
+              required
+            />
+          </div>
+
+          <div class="article-field">
+            <label for="articleLength">Article Length</label>
+            <select id="articleLength" name="length">
+              <option value="短">Short</option>
+              <option value="中" selected>Medium</option>
+              <option value="長">Long</option>
+            </select>
+          </div>
+
+          <button
+            type="button"
+            class="btn btn--ghost"
+            id="toggleAdvancedBtn"
+            style="justify-content:flex-start;"
+          >
+            Advanced Settings ▼
+          </button>
+
+          <div id="advancedFields" style="display:none;">
+            <div class="article-field" style="margin-top:16px;">
+              <label for="articleIndustry">Industry</label>
+              <input
+                id="articleIndustry"
+                name="industry"
+                type="text"
+                placeholder="e.g. SEO consulting, web design, florist"
+              />
+            </div>
+
+            <div class="article-field">
+              <label for="articleService">Product / Service</label>
+              <input
+                id="articleService"
+                name="service"
+                type="text"
+                placeholder="e.g. AI SEO website building"
+              />
+            </div>
+
+            <div class="article-field">
+              <label for="articleRegion">Location</label>
+              <input
+                id="articleRegion"
+                name="region"
+                type="text"
+                placeholder="e.g. Taipei, Taichung, Taiwan"
+              />
+            </div>
+
+            <div class="article-field">
+              <label for="articleAudience">Target Audience</label>
+              <input
+                id="articleAudience"
+                name="audience"
+                type="text"
+                placeholder="e.g. SME owners, brand managers"
+              />
+            </div>
+
+            <div class="article-field">
+              <label for="articleTone">Tone</label>
+              <select id="articleTone" name="tone">
+                <option value="專業">Professional</option>
+                <option value="商務">Business</option>
+                <option value="教學">Educational</option>
+              </select>
+            </div>
+
+            <div class="article-field">
+              <label for="articleKeywords">Core Keywords</label>
+              <textarea
+                id="articleKeywords"
+                name="keywords"
+                placeholder="e.g. AI SEO, SEO website, content marketing, automated article generation"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="article-form__actions">
+            <button type="submit" class="btn btn--primary" id="submitArticleBtn">
+              Generate Article
+            </button>
+            <button type="button" class="btn btn--ghost" id="resetArticleBtn">
+              Reset
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="article-modal__right">
+        <div class="article-status article-status--loading" id="articleLoading">
+          AI is generating the article structure, summary, and SEO fields. Please wait...
+        </div>
+
+        <div class="article-status article-status--error" id="articleError"></div>
+
+        <div class="article-preview" id="articlePreview">
+          <div class="article-preview__empty">
+            Enter your topic, industry, and service, then click “Generate Article.”
+            Your full article preview, SEO Title, and SEO Description will appear here.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/layout.js"></script>
+  <script>
+    (function () {
+      const modal = document.getElementById("articleModal");
+      const openBtns = [
+        document.getElementById("openArticleModalBtn"),
+        document.getElementById("openArticleModalBtnBottom")
+      ].filter(Boolean);
+
+      const closeBtn = document.getElementById("closeArticleModalBtn");
+      const form = document.getElementById("articleGenerateForm");
+      const resetBtn = document.getElementById("resetArticleBtn");
+      const submitBtn = document.getElementById("submitArticleBtn");
+      const loadingBox = document.getElementById("articleLoading");
+      const errorBox = document.getElementById("articleError");
+      const previewBox = document.getElementById("articlePreview");
+      const topicInput = document.getElementById("articleTopic");
+      const toggleAdvancedBtn = document.getElementById("toggleAdvancedBtn");
+      const advancedFields = document.getElementById("advancedFields");
+
+      let isAdvancedOpen = false;
+
+      function getTopicFromQuery() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("topic") || "";
+      }
+
+      function openModal() {
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeModal() {
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+      }
+
+      function setLoading(isLoading) {
+        loadingBox.classList.toggle("is-show", isLoading);
+        submitBtn.disabled = isLoading;
+        submitBtn.textContent = isLoading ? "Generating..." : "Generate Article";
+      }
+
+      function setError(message = "") {
+        errorBox.textContent = message;
+        errorBox.classList.toggle("is-show", Boolean(message));
+      }
+
+      function escapeHtml(text) {
+        return String(text || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function formatInline(text = "") {
+        return escapeHtml(text)
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+      }
+
+      function renderBody(content = "") {
+        if (!content) return "<p>No article content available yet.</p>";
+
+        const lines = String(content)
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean);
+
+        let html = "";
+        let inList = false;
+
+        for (const line of lines) {
+          if (line.startsWith("## ")) {
+            if (inList) {
+              html += "</ul>";
+              inList = false;
+            }
+            html += `<h2>${formatInline(line.replace(/^## /, ""))}</h2>`;
+            continue;
+          }
+
+          if (line.startsWith("### ")) {
+            if (inList) {
+              html += "</ul>";
+              inList = false;
+            }
+            html += `<h3>${formatInline(line.replace(/^### /, ""))}</h3>`;
+            continue;
+          }
+
+          if (line.startsWith("- ") || line.startsWith("* ")) {
+            if (!inList) {
+              html += "<ul>";
+              inList = true;
+            }
+            html += `<li>${formatInline(line.replace(/^[-*] /, ""))}</li>`;
+            continue;
+          }
+
+          if (inList) {
+            html += "</ul>";
+            inList = false;
+          }
+
+          html += `<p>${formatInline(line)}</p>`;
+        }
+
+        if (inList) {
+          html += "</ul>";
+        }
+
+        return html;
+      }
+
+      function renderArticle(article) {
+        if (!article) {
+          previewBox.innerHTML = `
+            <div class="article-preview__empty">
+              No article content is available to display yet.
+            </div>
+          `;
+          return;
+        }
+
+        const title = article.title || "Untitled Article";
+        const summary = article.summary || "";
+        const body = article.body || "";
+        const seoTitle = article.seoTitle || "";
+        const seoDescription = article.seoDescription || "";
+
+        previewBox.innerHTML = `
+          <div class="article-preview__shell">
+            <section class="article-output-card">
+              <div class="article-output-card__head">Article Preview</div>
+              <div class="article-output-card__body">
+                <div class="article-meta">
+                  <span class="article-badge">AI Article</span>
+                  <span class="article-badge">SEO Structured</span>
+                </div>
+                <h1 class="article-title">${escapeHtml(title)}</h1>
+                <p class="article-summary">${escapeHtml(summary)}</p>
+              </div>
+            </section>
+
+            <section class="article-output-card">
+              <div class="article-output-card__head">Article Body</div>
+              <div class="article-output-card__body">
+                <div class="article-body">
+                  ${renderBody(body)}
+                </div>
+              </div>
+            </section>
+
+            <section class="article-output-card">
+              <div class="article-output-card__head">SEO Fields</div>
+              <div class="article-output-card__body">
+                <div class="article-seo-grid">
+                  <div class="article-seo-item">
+                    <strong>SEO Title</strong>
+                    <p>${escapeHtml(seoTitle)}</p>
+                  </div>
+                  <div class="article-seo-item">
+                    <strong>SEO Description</strong>
+                    <p>${escapeHtml(seoDescription)}</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="article-actions">
+              <button type="button" class="article-mini-btn" id="copyArticleTitleBtn">Copy Title</button>
+              <button type="button" class="article-mini-btn" id="copyArticleBodyBtn">Copy Body</button>
+              <button type="button" class="article-mini-btn" id="copySeoBtn">Copy SEO Fields</button>
+            </section>
+          </div>
+        `;
+
+        const copyTitleBtn = document.getElementById("copyArticleTitleBtn");
+        const copyBodyBtn = document.getElementById("copyArticleBodyBtn");
+        const copySeoBtn = document.getElementById("copySeoBtn");
+
+        if (copyTitleBtn) {
+          copyTitleBtn.addEventListener("click", async () => {
+            await navigator.clipboard.writeText(title);
+            copyTitleBtn.textContent = "Copied";
+            setTimeout(() => {
+              copyTitleBtn.textContent = "Copy Title";
+            }, 1200);
+          });
+        }
+
+        if (copyBodyBtn) {
+          copyBodyBtn.addEventListener("click", async () => {
+            await navigator.clipboard.writeText(body);
+            copyBodyBtn.textContent = "Copied";
+            setTimeout(() => {
+              copyBodyBtn.textContent = "Copy Body";
+            }, 1200);
+          });
+        }
+
+        if (copySeoBtn) {
+          copySeoBtn.addEventListener("click", async () => {
+            const seoText = `SEO Title: ${seoTitle}\nSEO Description: ${seoDescription}`;
+            await navigator.clipboard.writeText(seoText);
+            copySeoBtn.textContent = "Copied";
+            setTimeout(() => {
+              copySeoBtn.textContent = "Copy SEO Fields";
+            }, 1200);
+          });
+        }
+      }
+
+      async function generateArticle(payload) {
+        const response = await fetch("http://localhost:3000/api/ollama/article", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result?.message || "Article generation failed. Please try again later.");
+        }
+
+        return result;
+      }
+
+      openBtns.forEach((btn) => {
+        btn.addEventListener("click", openModal);
+      });
+
+      closeBtn.addEventListener("click", closeModal);
+
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) {
+          closeModal();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && modal.classList.contains("is-open")) {
+          closeModal();
+        }
+      });
+
+      resetBtn.addEventListener("click", () => {
+        form.reset();
+
+        const topicFromQuery = getTopicFromQuery();
+        if (topicFromQuery) topicInput.value = topicFromQuery;
+
+        setError("");
+
+        advancedFields.style.display = "none";
+        isAdvancedOpen = false;
+        toggleAdvancedBtn.textContent = "Advanced Settings ▼";
+
+        previewBox.innerHTML = `
+          <div class="article-preview__empty">
+            Enter your article topic, then click “Generate Article.”
+            Your article preview, SEO Title, and SEO Description will appear here.
+          </div>
+        `;
+      });
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        setError("");
+        setLoading(true);
+
+        const formData = new FormData(form);
+        const payload = {
+          topic: formData.get("topic")?.toString().trim(),
+          industry: formData.get("industry")?.toString().trim(),
+          service: formData.get("service")?.toString().trim(),
+          region: formData.get("region")?.toString().trim(),
+          audience: formData.get("audience")?.toString().trim(),
+          tone: formData.get("tone")?.toString().trim(),
+          length: formData.get("length")?.toString().trim(),
+          keywords: formData.get("keywords")?.toString().trim()
+        };
+
+        try {
+          const result = await generateArticle(payload);
+          renderArticle(result.article || null);
+        } catch (error) {
+          setError(error.message || "Article generation failed. Please try again later.");
+        } finally {
+          setLoading(false);
+        }
+      });
+
+      toggleAdvancedBtn.addEventListener("click", () => {
+        isAdvancedOpen = !isAdvancedOpen;
+        advancedFields.style.display = isAdvancedOpen ? "block" : "none";
+        toggleAdvancedBtn.textContent = isAdvancedOpen ? "Hide Advanced Settings ▲" : "Advanced Settings ▼";
+      });
+
+      const topicFromQuery = getTopicFromQuery();
+      if (topicFromQuery) {
+        topicInput.value = topicFromQuery;
+        openModal();
+      }
+    })();
+  </script>
+</body>
+</html>
