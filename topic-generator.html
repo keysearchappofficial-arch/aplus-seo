@@ -4,11 +4,41 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>AI 關鍵字主題生成器｜Aplus AI SEO</title>
+  <title>AI 關鍵字主題生成器｜自動產出 SEO 題庫與內容方向｜Aplus AI SEO</title>
   <meta
     name="description"
-    content="透過 AI 自動產出 SEO 文章主題，建立完整內容題庫，解決不知道寫什麼、內容無方向的問題。"
+    content="透過 AI 自動產出 SEO 文章主題，建立完整內容題庫，解決不知道寫什麼、內容無方向的問題，讓網站更容易持續累積搜尋入口。"
   />
+  <meta
+    name="keywords"
+    content="AI 題目生成, SEO 主題生成, 關鍵字題庫, SEO 題庫, AI SEO, 內容題目, 長尾關鍵字, Aplus AI SEO"
+  />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+
+  <link rel="canonical" href="https://www.keysearch-app.com/topic-generator.html" />
+  <link rel="alternate" hreflang="zh-Hant" href="https://www.keysearch-app.com/topic-generator.html" />
+  <link rel="alternate" hreflang="zh-TW" href="https://www.keysearch-app.com/topic-generator.html" />
+  <link rel="alternate" hreflang="x-default" href="https://www.keysearch-app.com/topic-generator.html" />
+
+  <meta property="og:locale" content="zh_TW" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Aplus AI SEO" />
+  <meta property="og:title" content="AI 關鍵字主題生成器｜自動產出 SEO 題庫與內容方向" />
+  <meta
+    property="og:description"
+    content="透過 AI 自動產出符合搜尋需求的 SEO 主題，建立可持續產文的內容題庫，讓網站更新更有方向。"
+  />
+  <meta property="og:url" content="https://www.keysearch-app.com/topic-generator.html" />
+  <meta property="og:image" content="https://www.keysearch-app.com/assets/images/og/topic-generator-og.jpg" />
+  <meta property="og:image:alt" content="Aplus AI SEO 主題生成器頁面視覺" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="AI 關鍵字主題生成器｜自動產出 SEO 題庫與內容方向" />
+  <meta
+    name="twitter:description"
+    content="根據產業、服務、地區與搜尋需求，自動產出 SEO 主題，建立可持續更新的內容題庫。"
+  />
+  <meta name="twitter:image" content="https://www.keysearch-app.com/assets/images/og/topic-generator-og.jpg" />
 
   <link rel="stylesheet" href="./css/variables.css" />
   <link rel="stylesheet" href="./css/base.css" />
@@ -16,249 +46,278 @@
   <link rel="stylesheet" href="./css/components.css" />
 
   <style>
-  .topic-modal {
-    position: fixed;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background: rgba(15, 23, 42, 0.55);
-    z-index: 9999;
-  }
-
-  .topic-modal.is-open {
-    display: flex;
-  }
-
-  .topic-modal__dialog {
-    width: 100%;
-    max-width: 960px;
-    height: min(760px, calc(100vh - 40px));
-    border-radius: 24px;
-    background: #ffffff;
-    box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25);
-    display: grid;
-    grid-template-columns: 360px 1fr;
-    overflow: hidden;
-  }
-
-  .topic-modal__left {
-    padding: 28px;
-    border-right: 1px solid #e2e8f0;
-    background: #f8fafc;
-    overflow: auto;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .topic-modal__right {
-    padding: 28px;
-    overflow-y: auto;
-    min-height: 0;
-    background: #fff;
-  }
-
-  .topic-modal__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-
-  .topic-modal__title {
-    margin: 0;
-    font-size: 24px;
-    line-height: 1.3;
-  }
-
-  .topic-modal__close {
-    border: 0;
-    background: transparent;
-    font-size: 28px;
-    line-height: 1;
-    cursor: pointer;
-    color: #475569;
-  }
-
-  .topic-form {
-    display: grid;
-    gap: 16px;
-  }
-
-  .topic-field {
-    display: grid;
-    gap: 8px;
-  }
-
-  .topic-field label {
-    font-size: 14px;
-    font-weight: 700;
-    color: #0f172a;
-  }
-
-  .topic-field input,
-  .topic-field select,
-  .topic-field textarea {
-    width: 100%;
-    min-height: 46px;
-    padding: 12px 14px;
-    border: 1px solid #cbd5e1;
-    border-radius: 14px;
-    font: inherit;
-    color: #0f172a;
-    background: #fff;
-  }
-
-  .topic-field textarea {
-    min-height: 96px;
-    resize: vertical;
-  }
-
-  .topic-form__actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 8px;
-  }
-
-  .topic-status {
-    display: none;
-    margin-bottom: 18px;
-    padding: 14px 16px;
-    border-radius: 14px;
-    font-size: 14px;
-    line-height: 1.7;
-  }
-
-  .topic-status.is-show {
-    display: block;
-  }
-
-  .topic-status--loading {
-    background: #eff6ff;
-    color: #1d4ed8;
-  }
-
-  .topic-status--error {
-    background: #fef2f2;
-    color: #b91c1c;
-  }
-
-  .topic-results__empty {
-    color: #64748b;
-    line-height: 1.8;
-    padding: 28px 20px;
-    border: 1px dashed #cbd5e1;
-    border-radius: 18px;
-    background: #f8fafc;
-  }
-
-  .topic-results__list {
-    display: grid;
-    gap: 14px;
-  }
-
-  .topic-card {
-    border: 1px solid #e2e8f0;
-    border-radius: 18px;
-    padding: 18px;
-    background: #fff;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
-  }
-
-  .topic-card__top {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-  }
-
-  .topic-badge {
-    display: inline-flex;
-    align-items: center;
-    min-height: 28px;
-    padding: 0 10px;
-    border-radius: 999px;
-    background: #e2e8f0;
-    color: #334155;
-    font-size: 12px;
-    font-weight: 700;
-  }
-
-  .topic-card h3 {
-    margin: 0 0 10px;
-    font-size: 20px;
-    line-height: 1.5;
-    color: #0f172a;
-  }
-
-  .topic-card p {
-    margin: 0;
-    color: #475569;
-    line-height: 1.8;
-    font-size: 14px;
-  }
-
-  .topic-card__actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 14px;
-  }
-
-  .topic-mini-btn {
-    border: 1px solid #cbd5e1;
-    background: #fff;
-    color: #0f172a;
-    border-radius: 999px;
-    padding: 8px 14px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .topic-mini-btn:hover {
-    background: #f8fafc;
-  }
-
-  .topic-modal__right::-webkit-scrollbar {
-    width: 10px;
-  }
-
-  .topic-modal__right::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 999px;
-  }
-
-  .topic-modal__right::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  @media (max-width: 860px) {
     .topic-modal {
-      padding: 12px;
-      align-items: flex-start;
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 9999;
+    }
+
+    .topic-modal.is-open {
+      display: flex;
     }
 
     .topic-modal__dialog {
-      grid-template-columns: 1fr;
-      height: auto;
-      max-height: calc(100vh - 24px);
-      margin: 0 auto;
+      width: 100%;
+      max-width: 960px;
+      height: min(760px, calc(100vh - 40px));
+      border-radius: 24px;
+      background: #ffffff;
+      box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25);
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      overflow: hidden;
     }
 
     .topic-modal__left {
-      border-right: 0;
-      border-bottom: 1px solid #e2e8f0;
+      padding: 28px;
+      border-right: 1px solid #e2e8f0;
+      background: #f8fafc;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     .topic-modal__right {
-      max-height: 46vh;
+      padding: 28px;
+      overflow-y: auto;
+      min-height: 0;
+      background: #fff;
+    }
+
+    .topic-modal__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .topic-modal__title {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.3;
+      color: #0f172a;
+    }
+
+    .topic-modal__close {
+      border: 0;
+      background: transparent;
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      color: #475569;
+    }
+
+    .topic-form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .topic-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .topic-field label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .topic-field input,
+    .topic-field select,
+    .topic-field textarea {
+      width: 100%;
+      min-height: 46px;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      font: inherit;
+      color: #0f172a;
+      background: #fff;
+    }
+
+    .topic-field textarea {
+      min-height: 96px;
+      resize: vertical;
+    }
+
+    .topic-form__actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .topic-status {
+      display: none;
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .topic-status.is-show {
+      display: block;
+    }
+
+    .topic-status--loading {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .topic-status--error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .topic-results__empty {
+      color: #64748b;
+      line-height: 1.8;
+      padding: 28px 20px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+      background: #f8fafc;
+    }
+
+    .topic-results__list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .topic-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 18px;
+      background: #fff;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .topic-card__top {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .topic-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .topic-card h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      line-height: 1.5;
+      color: #0f172a;
+    }
+
+    .topic-card p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    .topic-card__actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .topic-mini-btn {
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #0f172a;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .topic-mini-btn:hover {
+      background: #f8fafc;
+    }
+
+    .topic-modal__right::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .topic-modal__right::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+    }
+
+    .topic-modal__right::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    @media (max-width: 860px) {
+      .topic-modal {
+        padding: 12px;
+        align-items: flex-start;
+      }
+
+      .topic-modal__dialog {
+        grid-template-columns: 1fr;
+        height: auto;
+        max-height: calc(100vh - 24px);
+        margin: 0 auto;
+      }
+
+      .topic-modal__left {
+        border-right: 0;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .topic-modal__right {
+        max-height: 46vh;
+      }
+    }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "AI 關鍵字主題生成器",
+    "url": "https://www.keysearch-app.com/topic-generator.html",
+    "description": "透過 AI 自動產出 SEO 文章主題，建立完整內容題庫，讓網站更新更有方向。",
+    "inLanguage": "zh-Hant",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "Aplus AI SEO",
+      "url": "https://www.keysearch-app.com/"
     }
   }
-</style>
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Aplus AI 關鍵字主題生成器",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "url": "https://www.keysearch-app.com/topic-generator.html",
+    "description": "根據產業、服務、地區與搜尋需求，自動產出 SEO 主題與內容方向的 AI 模組。"
+  }
+  </script>
 </head>
 
 <body>
@@ -323,11 +382,11 @@
         <div class="card__body">
           <h2>核心功能</h2>
           <ul>
-            <li>輸入產業 / 地區 → 自動產主題</li>
+            <li>輸入產業 / 地區，自動產出主題</li>
             <li>支援語氣（專業 / 商務 / 教學）</li>
-            <li>自動分類（SEO / 教學 / 比較）</li>
-            <li>直接存入題庫管理</li>
-            <li>一鍵帶到 AI 產文</li>
+            <li>自動分類（SEO / 教學 / 比較 / 轉換）</li>
+            <li>可直接銜接 AI 產文</li>
+            <li>可累積成網站長期內容題庫</li>
           </ul>
         </div>
       </section>
@@ -337,10 +396,10 @@
           <h2>使用流程</h2>
           <ol style="line-height:1.8;">
             <li>輸入產業與地區</li>
-            <li>設定語氣與分類</li>
+            <li>設定語氣與分類偏好</li>
             <li>AI 自動生成主題</li>
-            <li>存入題庫</li>
-            <li>帶到 AI 產文</li>
+            <li>挑選適合題目</li>
+            <li>帶入 AI 產文流程</li>
           </ol>
         </div>
       </section>
@@ -379,7 +438,6 @@
 
   <div id="site-footer"></div>
 
-  <!-- Modal -->
   <div class="topic-modal" id="topicModal" aria-hidden="true">
     <div class="topic-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="topicModalTitle">
       <div class="topic-modal__left">
