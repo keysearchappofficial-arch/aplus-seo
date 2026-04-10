@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>AI Topic Generator | Create SEO Topic Ideas and Content Direction Automatically | Aplus AI SEO</title>
+  <meta
+    name="description"
+    content="Generate SEO article topics automatically with AI. Build a structured topic library, solve content planning problems, and create consistent search entry points for your website."
+  />
+  <meta
+    name="keywords"
+    content="AI topic generator, SEO topic generation, keyword topic library, SEO content ideas, AI SEO, long-tail keywords, content planning, Aplus AI SEO"
+  />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+
+  <link rel="canonical" href="https://www.keysearch-app.com/en/topic-generator.html" />
+  <link rel="alternate" hreflang="zh-Hant" href="https://www.keysearch-app.com/topic-generator.html" />
+  <link rel="alternate" hreflang="zh-TW" href="https://www.keysearch-app.com/topic-generator.html" />
+  <link rel="alternate" hreflang="en" href="https://www.keysearch-app.com/en/topic-generator.html" />
+  <link rel="alternate" hreflang="x-default" href="https://www.keysearch-app.com/en/topic-generator.html" />
+
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Aplus AI SEO" />
+  <meta property="og:title" content="AI Topic Generator | Create SEO Topic Ideas and Content Direction Automatically" />
+  <meta
+    property="og:description"
+    content="Use AI to generate SEO topic ideas based on search demand, build a scalable topic library, and create clearer direction for website content updates."
+  />
+  <meta property="og:url" content="https://www.keysearch-app.com/en/topic-generator.html" />
+  <meta property="og:image" content="https://www.keysearch-app.com/assets/images/og/topic-generator-og.jpg" />
+  <meta property="og:image:alt" content="Aplus AI SEO topic generator page visual" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="AI Topic Generator | Create SEO Topic Ideas and Content Direction Automatically" />
+  <meta
+    name="twitter:description"
+    content="Generate SEO topics automatically based on industry, service, location, and search demand to build a scalable content library."
+  />
+  <meta name="twitter:image" content="https://www.keysearch-app.com/assets/images/og/topic-generator-og.jpg" />
+
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+
+  <style>
+    .topic-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 9999;
+    }
+
+    .topic-modal.is-open {
+      display: flex;
+    }
+
+    .topic-modal__dialog {
+      width: 100%;
+      max-width: 960px;
+      height: min(760px, calc(100vh - 40px));
+      border-radius: 24px;
+      background: #ffffff;
+      box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25);
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      overflow: hidden;
+    }
+
+    .topic-modal__left {
+      padding: 28px;
+      border-right: 1px solid #e2e8f0;
+      background: #f8fafc;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topic-modal__right {
+      padding: 28px;
+      overflow-y: auto;
+      min-height: 0;
+      background: #fff;
+    }
+
+    .topic-modal__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .topic-modal__title {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.3;
+      color: #0f172a;
+    }
+
+    .topic-modal__close {
+      border: 0;
+      background: transparent;
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      color: #475569;
+    }
+
+    .topic-form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .topic-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .topic-field label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .topic-field input,
+    .topic-field select,
+    .topic-field textarea {
+      width: 100%;
+      min-height: 46px;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      font: inherit;
+      color: #0f172a;
+      background: #fff;
+    }
+
+    .topic-field textarea {
+      min-height: 96px;
+      resize: vertical;
+    }
+
+    .topic-form__actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .topic-status {
+      display: none;
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .topic-status.is-show {
+      display: block;
+    }
+
+    .topic-status--loading {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .topic-status--error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .topic-results__empty {
+      color: #64748b;
+      line-height: 1.8;
+      padding: 28px 20px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+      background: #f8fafc;
+    }
+
+    .topic-results__list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .topic-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 18px;
+      background: #fff;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .topic-card__top {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .topic-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .topic-card h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      line-height: 1.5;
+      color: #0f172a;
+    }
+
+    .topic-card p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    .topic-card__actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .topic-mini-btn {
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #0f172a;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .topic-mini-btn:hover {
+      background: #f8fafc;
+    }
+
+    .topic-modal__right::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .topic-modal__right::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+    }
+
+    .topic-modal__right::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    @media (max-width: 860px) {
+      .topic-modal {
+        padding: 12px;
+        align-items: flex-start;
+      }
+
+      .topic-modal__dialog {
+        grid-template-columns: 1fr;
+        height: auto;
+        max-height: calc(100vh - 24px);
+        margin: 0 auto;
+      }
+
+      .topic-modal__left {
+        border-right: 0;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .topic-modal__right {
+        max-height: 46vh;
+      }
+    }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "AI Topic Generator",
+    "url": "https://www.keysearch-app.com/en/topic-generator.html",
+    "description": "Generate SEO article topics automatically with AI and build a structured topic library for scalable website content.",
+    "inLanguage": "en",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "Aplus AI SEO",
+      "url": "https://www.keysearch-app.com/"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Aplus AI Topic Generator",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "url": "https://www.keysearch-app.com/en/topic-generator.html",
+    "description": "An AI module that generates SEO topic ideas and content direction based on industry, service, location, and search demand."
+  }
+  </script>
+</head>
+
+<body>
+  <div id="site-header"></div>
+
+  <main class="section-shell">
+    <div class="container" style="max-width: 1000px;">
+
+      <section style="padding: 48px 0 24px;">
+        <div style="font-size:13px;color:#64748b;margin-bottom:10px;">
+          AI SEO Module
+        </div>
+
+        <h1 style="font-size:40px;margin:0 0 16px;">
+          AI Topic Generator
+        </h1>
+
+        <p style="font-size:18px;color:#475569;line-height:1.8;margin:0;">
+          No more wondering what to write next.
+          Use AI to generate SEO topic ideas based on search demand
+          and build a scalable content library for ongoing publishing.
+        </p>
+
+        <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
+          <button type="button" class="btn btn--primary" id="openTopicModalBtn">
+            Start Generating Topics
+          </button>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:20px;">
+        <div class="card__body">
+          <h2>Are you facing these problems?</h2>
+          <ul style="line-height:1.8;">
+            <li>You do not know what articles to write</li>
+            <li>You cannot find a clear keyword direction</li>
+            <li>Your content updates are slow and inconsistent</li>
+            <li>Your content is not bringing traffic</li>
+            <li>You use AI for writing, but without a topic strategy</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:20px;">
+        <div class="card__body">
+          <h2>What does this module do?</h2>
+          <p>
+            The AI topic generator creates a set of article topics
+            based on your industry, location, and tone.
+          </p>
+          <p>These topics are not random. They are designed to:</p>
+          <ul>
+            <li>Reflect how users actually search</li>
+            <li>Match long-tail SEO keyword logic</li>
+            <li>Be ready for article generation</li>
+            <li>Grow into a reusable topic library</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:20px;">
+        <div class="card__body">
+          <h2>Core features</h2>
+          <ul>
+            <li>Enter industry and location to generate topics automatically</li>
+            <li>Supports tone settings: professional, business, and educational</li>
+            <li>Automatically categorizes topics: SEO, educational, comparison, and conversion</li>
+            <li>Can connect directly to AI article generation</li>
+            <li>Builds a long-term content library for your website</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:20px;">
+        <div class="card__body">
+          <h2>How it works</h2>
+          <ol style="line-height:1.8;">
+            <li>Enter your industry and location</li>
+            <li>Set your tone and category preference</li>
+            <li>Let AI generate topic ideas</li>
+            <li>Select the best-fit topics</li>
+            <li>Send them into the AI article workflow</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:20px;">
+        <div class="card__body">
+          <h2>What do you get?</h2>
+          <ul style="line-height:1.8;">
+            <li>A stable source of content ideas</li>
+            <li>A growing SEO topic library</li>
+            <li>No more getting stuck on what to write</li>
+            <li>A more strategic AI content workflow</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:20px;margin-bottom:40px;">
+        <div class="card__body">
+          <h2>Start building your SEO topic library today</h2>
+          <p>AI topic generation is the first step toward long-term organic traffic growth.</p>
+
+          <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
+            <button type="button" class="btn btn--primary" id="openTopicModalBtnBottom">
+              Generate Topics
+            </button>
+
+            <a href="./index.html" class="btn btn--ghost">
+              Back to Home
+            </a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <div class="topic-modal" id="topicModal" aria-hidden="true">
+    <div class="topic-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="topicModalTitle">
+      <div class="topic-modal__left">
+        <div class="topic-modal__header">
+          <h2 class="topic-modal__title" id="topicModalTitle">Start Topic Generation</h2>
+          <button type="button" class="topic-modal__close" id="closeTopicModalBtn" aria-label="Close">×</button>
+        </div>
+
+        <form class="topic-form" id="topicGenerateForm">
+          <div class="topic-field">
+            <label for="industry">Industry</label>
+            <input id="industry" name="industry" type="text" placeholder="e.g. interior design, SEO consulting, florist" required />
+          </div>
+
+          <div class="topic-field">
+            <label for="service">Product / Service</label>
+            <input id="service" name="service" type="text" placeholder="e.g. AI SEO website building" required />
+          </div>
+
+          <div class="topic-field">
+            <label for="region">Location</label>
+            <input id="region" name="region" type="text" placeholder="e.g. Taipei, Taichung, Taiwan" />
+          </div>
+
+          <div class="topic-field">
+            <label for="audience">Target Audience</label>
+            <input id="audience" name="audience" type="text" placeholder="e.g. SME owners, local business owners" />
+          </div>
+
+          <div class="topic-field">
+            <label for="tone">Tone</label>
+            <select id="tone" name="tone">
+              <option value="專業">Professional</option>
+              <option value="商務">Business</option>
+              <option value="教學">Educational</option>
+            </select>
+          </div>
+
+          <div class="topic-field">
+            <label for="category">Preferred Topic Category</label>
+            <select id="category" name="category">
+              <option value="混合">Mixed</option>
+              <option value="SEO">SEO</option>
+              <option value="教學">Educational</option>
+              <option value="比較">Comparison</option>
+              <option value="轉換">Conversion</option>
+            </select>
+          </div>
+
+          <div class="topic-field">
+            <label for="keywords">Core Keywords</label>
+            <textarea id="keywords" name="keywords" placeholder="e.g. AI SEO, SEO website, automated content, content marketing"></textarea>
+          </div>
+
+          <div class="topic-field">
+            <label for="count">Number of Topics</label>
+            <select id="count" name="count">
+              <option value="5">5 topics</option>
+              <option value="10" selected>10 topics</option>
+              <option value="15">15 topics</option>
+            </select>
+          </div>
+
+          <div class="topic-form__actions">
+            <button type="submit" class="btn btn--primary" id="submitTopicBtn">
+              Generate Topics
+            </button>
+            <button type="button" class="btn btn--ghost" id="resetTopicBtn">
+              Reset
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="topic-modal__right">
+        <div class="topic-status topic-status--loading" id="topicLoading">
+          AI is analyzing your industry, search demand, and keywords. Please wait...
+        </div>
+
+        <div class="topic-status topic-status--error" id="topicError"></div>
+
+        <div class="topic-results" id="topicResults">
+          <div class="topic-results__empty">
+            Enter your industry, service, and keywords, then click “Generate Topics.”
+            Your AI-generated SEO topic ideas will appear here.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/layout.js"></script>
+  <script>
+    (function () {
+      const modal = document.getElementById("topicModal");
+      const openBtns = [
+        document.getElementById("openTopicModalBtn"),
+        document.getElementById("openTopicModalBtnBottom")
+      ].filter(Boolean);
+
+      const closeBtn = document.getElementById("closeTopicModalBtn");
+      const form = document.getElementById("topicGenerateForm");
+      const resetBtn = document.getElementById("resetTopicBtn");
+      const submitBtn = document.getElementById("submitTopicBtn");
+      const loadingBox = document.getElementById("topicLoading");
+      const errorBox = document.getElementById("topicError");
+      const resultsBox = document.getElementById("topicResults");
+
+      function openModal() {
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeModal() {
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+      }
+
+      function setLoading(isLoading) {
+        loadingBox.classList.toggle("is-show", isLoading);
+        submitBtn.disabled = isLoading;
+        submitBtn.textContent = isLoading ? "Generating..." : "Generate Topics";
+      }
+
+      function setError(message = "") {
+        errorBox.textContent = message;
+        errorBox.classList.toggle("is-show", Boolean(message));
+      }
+
+      function escapeHtml(text) {
+        return String(text || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function renderTopics(topics) {
+        if (!Array.isArray(topics) || topics.length === 0) {
+          resultsBox.innerHTML = `
+            <div class="topic-results__empty">
+              No topics were generated this time. Please adjust your inputs and try again.
+            </div>
+          `;
+          return;
+        }
+
+        resultsBox.innerHTML = `
+          <div class="topic-results__list">
+            ${topics.map((item, index) => `
+              <article class="topic-card">
+                <div class="topic-card__top">
+                  <span class="topic-badge">#${index + 1}</span>
+                  <span class="topic-badge">${escapeHtml(item.category || "Uncategorized")}</span>
+                  <span class="topic-badge">${escapeHtml(item.intent || "Informational")}</span>
+                </div>
+
+                <h3>${escapeHtml(item.title || "")}</h3>
+                <p>${escapeHtml(item.reason || "A suitable SEO topic that can be expanded into an article or keyword page.")}</p>
+
+                <div class="topic-card__actions">
+                  <button type="button" class="topic-mini-btn" data-copy="${escapeHtml(item.title || "")}">
+                    Copy Topic
+                  </button>
+                  <button type="button" class="topic-mini-btn" data-fill-article="${escapeHtml(item.title || "")}">
+                    Send to Article Generator
+                  </button>
+                </div>
+              </article>
+            `).join("")}
+          </div>
+        `;
+      }
+
+      async function generateTopics(payload) {
+        const response = await fetch("http://localhost:3000/api/ollama/topics", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result?.message || "Topic generation failed. Please try again later.");
+        }
+
+        return result;
+      }
+
+      openBtns.forEach((btn) => {
+        btn.addEventListener("click", openModal);
+      });
+
+      closeBtn.addEventListener("click", closeModal);
+
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) {
+          closeModal();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && modal.classList.contains("is-open")) {
+          closeModal();
+        }
+      });
+
+      resetBtn.addEventListener("click", () => {
+        form.reset();
+        setError("");
+        resultsBox.innerHTML = `
+          <div class="topic-results__empty">
+            Enter your industry, service, and keywords, then click “Generate Topics.”
+            Your AI-generated SEO topic ideas will appear here.
+          </div>
+        `;
+      });
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        setError("");
+        setLoading(true);
+
+        const formData = new FormData(form);
+        const payload = {
+          industry: formData.get("industry")?.toString().trim(),
+          service: formData.get("service")?.toString().trim(),
+          region: formData.get("region")?.toString().trim(),
+          audience: formData.get("audience")?.toString().trim(),
+          tone: formData.get("tone")?.toString().trim(),
+          category: formData.get("category")?.toString().trim(),
+          keywords: formData.get("keywords")?.toString().trim(),
+          count: Number(formData.get("count") || 10)
+        };
+
+        try {
+          const result = await generateTopics(payload);
+          renderTopics(result.topics || []);
+        } catch (error) {
+          setError(error.message || "Topic generation failed. Please try again later.");
+        } finally {
+          setLoading(false);
+        }
+      });
+
+      resultsBox.addEventListener("click", async (event) => {
+        const copyBtn = event.target.closest("[data-copy]");
+        const articleBtn = event.target.closest("[data-fill-article]");
+
+        if (copyBtn) {
+          const text = copyBtn.getAttribute("data-copy") || "";
+          try {
+            await navigator.clipboard.writeText(text);
+            copyBtn.textContent = "Copied";
+            setTimeout(() => {
+              copyBtn.textContent = "Copy Topic";
+            }, 1200);
+          } catch (error) {
+            console.error("Copy failed:", error);
+          }
+        }
+
+        if (articleBtn) {
+          const topic = articleBtn.getAttribute("data-fill-article") || "";
+          const targetUrl = `./seo-content.html?topic=${encodeURIComponent(topic)}`;
+          window.location.href = targetUrl;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
