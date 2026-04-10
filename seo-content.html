@@ -4,11 +4,41 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>AI SEO 文章生成｜Aplus AI SEO</title>
+  <title>AI SEO 文章生成｜自動產出標題、內文與 SEO 欄位｜Aplus AI SEO</title>
   <meta
     name="description"
-    content="使用 AI 自動生成 SEO 結構文章，從標題、摘要、內文到 SEO 欄位一次完成，加快內容產出效率。"
+    content="使用 AI 自動生成 SEO 結構文章，從標題、摘要、內文到 SEO Title 與 SEO Description 一次完成，加快內容產出效率。"
   />
+  <meta
+    name="keywords"
+    content="AI SEO 文章生成, SEO文章生成, AI寫文章, SEO Title, SEO Description, 內容生成, AI內容工具, Aplus AI SEO"
+  />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+
+  <link rel="canonical" href="https://www.keysearch-app.com/seo-content.html" />
+  <link rel="alternate" hreflang="zh-Hant" href="https://www.keysearch-app.com/seo-content.html" />
+  <link rel="alternate" hreflang="zh-TW" href="https://www.keysearch-app.com/seo-content.html" />
+  <link rel="alternate" hreflang="x-default" href="https://www.keysearch-app.com/seo-content.html" />
+
+  <meta property="og:locale" content="zh_TW" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Aplus AI SEO" />
+  <meta property="og:title" content="AI SEO 文章生成｜自動產出標題、內文與 SEO 欄位" />
+  <meta
+    property="og:description"
+    content="從主題到文章一次完成，AI 自動生成適合 SEO 的標題、摘要、內文與 SEO 欄位，讓內容產出更快、更有結構。"
+  />
+  <meta property="og:url" content="https://www.keysearch-app.com/seo-content.html" />
+  <meta property="og:image" content="https://www.keysearch-app.com/assets/images/og/seo-content-og.jpg" />
+  <meta property="og:image:alt" content="Aplus AI SEO 文章生成頁面視覺" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="AI SEO 文章生成｜自動產出標題、內文與 SEO 欄位" />
+  <meta
+    name="twitter:description"
+    content="AI 自動生成 SEO 結構文章，從標題、摘要、內文到 SEO 欄位一次完成。"
+  />
+  <meta name="twitter:image" content="https://www.keysearch-app.com/assets/images/og/seo-content-og.jpg" />
 
   <link rel="stylesheet" href="./css/variables.css" />
   <link rel="stylesheet" href="./css/base.css" />
@@ -32,32 +62,32 @@
     }
 
     .article-modal__dialog {
-  width: 100%;
-  max-width: 1120px;
-  height: min(760px, calc(100vh - 40px));
-  border-radius: 24px;
-  background: #fff;
-  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.24);
-  display: grid;
-  grid-template-columns: 360px 1fr;
-  overflow: hidden;
-}
+      width: 100%;
+      max-width: 1120px;
+      height: min(760px, calc(100vh - 40px));
+      border-radius: 24px;
+      background: #fff;
+      box-shadow: 0 30px 80px rgba(15, 23, 42, 0.24);
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      overflow: hidden;
+    }
 
-.article-modal__left {
-  padding: 28px;
-  border-right: 1px solid #e2e8f0;
-  background: #f8fafc;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-}
+    .article-modal__left {
+      padding: 28px;
+      border-right: 1px solid #e2e8f0;
+      background: #f8fafc;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+    }
 
-.article-modal__right {
-  padding: 28px;
-  background: #fff;
-  overflow-y: auto;
-  min-height: 0;
-}
+    .article-modal__right {
+      padding: 28px;
+      background: #fff;
+      overflow-y: auto;
+      min-height: 0;
+    }
 
     .article-modal__header {
       display: flex;
@@ -244,12 +274,14 @@
       padding-left: 22px;
       margin: 0 0 18px;
     }
-    
-    .article-body ul,
-.article-body ol {
-  padding-left: 22px;
-  margin: 0 0 18px;
-}
+
+    .article-body li {
+      margin-bottom: 8px;
+    }
+
+    .article-body strong {
+      color: #0f172a;
+    }
 
     .article-seo-grid {
       display: grid;
@@ -299,44 +331,72 @@
     }
 
     .article-modal__right::-webkit-scrollbar {
-  width: 10px;
-}
+      width: 10px;
+    }
 
-.article-modal__right::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 999px;
-}
+    .article-modal__right::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+    }
 
-.article-modal__right::-webkit-scrollbar-track {
-  background: transparent;
-}
+    .article-modal__right::-webkit-scrollbar-track {
+      background: transparent;
+    }
 
     @media (max-width: 860px) {
-  .article-modal {
-    padding: 12px;
-    align-items: flex-start;
-  }
+      .article-modal {
+        padding: 12px;
+        align-items: flex-start;
+      }
 
-  .article-modal__dialog {
-    grid-template-columns: 1fr;
-    height: auto;
-    max-height: calc(100vh - 24px);
-  }
+      .article-modal__dialog {
+        grid-template-columns: 1fr;
+        height: auto;
+        max-height: calc(100vh - 24px);
+      }
 
-  .article-modal__left {
-    border-right: 0;
-    border-bottom: 1px solid #e2e8f0;
-  }
+      .article-modal__left {
+        border-right: 0;
+        border-bottom: 1px solid #e2e8f0;
+      }
 
-  .article-modal__right {
-    max-height: 46vh;
-  }
+      .article-modal__right {
+        max-height: 46vh;
+      }
 
-  .article-title {
-    font-size: 24px;
-  }
-}
+      .article-title {
+        font-size: 24px;
+      }
+    }
   </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "AI SEO 文章生成",
+    "url": "https://www.keysearch-app.com/seo-content.html",
+    "description": "使用 AI 自動生成 SEO 結構文章，從標題、摘要、內文到 SEO 欄位一次完成，加快內容產出效率。",
+    "inLanguage": "zh-Hant",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "Aplus AI SEO",
+      "url": "https://www.keysearch-app.com/"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Aplus AI SEO 文章生成模組",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "url": "https://www.keysearch-app.com/seo-content.html",
+    "description": "根據主題、產業、地區與語氣，自動生成 SEO 結構文章與 SEO 欄位的 AI 內容模組。"
+  }
+  </script>
 </head>
 
 <body>
@@ -468,7 +528,6 @@
 
   <div id="site-footer"></div>
 
-  <!-- Modal -->
   <div class="article-modal" id="articleModal" aria-hidden="true">
     <div class="article-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="articleModalTitle">
       <div class="article-modal__left">
@@ -478,108 +537,108 @@
         </div>
 
         <form class="article-form" id="articleGenerateForm">
-  <div style="font-size:13px;color:#64748b;margin-bottom:4px;">
-    快速模式：先輸入主題就能直接生成
-  </div>
+          <div style="font-size:13px;color:#64748b;margin-bottom:4px;">
+            快速模式：先輸入主題就能直接生成
+          </div>
 
-  <div class="article-field">
-    <label for="articleTopic">文章主題</label>
-    <input
-      id="articleTopic"
-      name="topic"
-      type="text"
-      placeholder="例如：AI SEO 網站怎麼做？"
-      required
-    />
-  </div>
+          <div class="article-field">
+            <label for="articleTopic">文章主題</label>
+            <input
+              id="articleTopic"
+              name="topic"
+              type="text"
+              placeholder="例如：AI SEO 網站怎麼做？"
+              required
+            />
+          </div>
 
-  <div class="article-field">
-    <label for="articleLength">文章長度</label>
-    <select id="articleLength" name="length">
-      <option value="短">短</option>
-      <option value="中" selected>中</option>
-      <option value="長">長</option>
-    </select>
-  </div>
+          <div class="article-field">
+            <label for="articleLength">文章長度</label>
+            <select id="articleLength" name="length">
+              <option value="短">短</option>
+              <option value="中" selected>中</option>
+              <option value="長">長</option>
+            </select>
+          </div>
 
-  <button
-    type="button"
-    class="btn btn--ghost"
-    id="toggleAdvancedBtn"
-    style="justify-content:flex-start;"
-  >
-    進階設定 ▼
-  </button>
+          <button
+            type="button"
+            class="btn btn--ghost"
+            id="toggleAdvancedBtn"
+            style="justify-content:flex-start;"
+          >
+            進階設定 ▼
+          </button>
 
-  <div id="advancedFields" style="display:none;">
-    <div class="article-field" style="margin-top:16px;">
-      <label for="articleIndustry">產業</label>
-      <input
-        id="articleIndustry"
-        name="industry"
-        type="text"
-        placeholder="例如：SEO 顧問、網站設計、花店"
-      />
-    </div>
+          <div id="advancedFields" style="display:none;">
+            <div class="article-field" style="margin-top:16px;">
+              <label for="articleIndustry">產業</label>
+              <input
+                id="articleIndustry"
+                name="industry"
+                type="text"
+                placeholder="例如：SEO 顧問、網站設計、花店"
+              />
+            </div>
 
-    <div class="article-field">
-      <label for="articleService">產品 / 服務</label>
-      <input
-        id="articleService"
-        name="service"
-        type="text"
-        placeholder="例如：AI SEO 網站建置"
-      />
-    </div>
+            <div class="article-field">
+              <label for="articleService">產品 / 服務</label>
+              <input
+                id="articleService"
+                name="service"
+                type="text"
+                placeholder="例如：AI SEO 網站建置"
+              />
+            </div>
 
-    <div class="article-field">
-      <label for="articleRegion">地區</label>
-      <input
-        id="articleRegion"
-        name="region"
-        type="text"
-        placeholder="例如：台北、台中、全台灣"
-      />
-    </div>
+            <div class="article-field">
+              <label for="articleRegion">地區</label>
+              <input
+                id="articleRegion"
+                name="region"
+                type="text"
+                placeholder="例如：台北、台中、全台灣"
+              />
+            </div>
 
-    <div class="article-field">
-      <label for="articleAudience">目標客群</label>
-      <input
-        id="articleAudience"
-        name="audience"
-        type="text"
-        placeholder="例如：中小企業主、品牌經營者"
-      />
-    </div>
+            <div class="article-field">
+              <label for="articleAudience">目標客群</label>
+              <input
+                id="articleAudience"
+                name="audience"
+                type="text"
+                placeholder="例如：中小企業主、品牌經營者"
+              />
+            </div>
 
-    <div class="article-field">
-      <label for="articleTone">語氣</label>
-      <select id="articleTone" name="tone">
-        <option value="專業">專業</option>
-        <option value="商務">商務</option>
-        <option value="教學">教學</option>
-      </select>
-    </div>
+            <div class="article-field">
+              <label for="articleTone">語氣</label>
+              <select id="articleTone" name="tone">
+                <option value="專業">專業</option>
+                <option value="商務">商務</option>
+                <option value="教學">教學</option>
+              </select>
+            </div>
 
-    <div class="article-field">
-      <label for="articleKeywords">核心關鍵字</label>
-      <textarea
-        id="articleKeywords"
-        name="keywords"
-        placeholder="例如：AI SEO、SEO網站、內容行銷、自動產文"
-      ></textarea>
-    </div>
-  </div>
+            <div class="article-field">
+              <label for="articleKeywords">核心關鍵字</label>
+              <textarea
+                id="articleKeywords"
+                name="keywords"
+                placeholder="例如：AI SEO、SEO網站、內容行銷、自動產文"
+              ></textarea>
+            </div>
+          </div>
 
-  <div class="article-form__actions">
-    <button type="submit" class="btn btn--primary" id="submitArticleBtn">
-      開始生成
-    </button>
-    <button type="button" class="btn btn--ghost" id="resetArticleBtn">
-      清空
-    </button>
-  </div>
-</form>
+          <div class="article-form__actions">
+            <button type="submit" class="btn btn--primary" id="submitArticleBtn">
+              開始生成
+            </button>
+            <button type="button" class="btn btn--ghost" id="resetArticleBtn">
+              清空
+            </button>
+          </div>
+        </form>
       </div>
 
       <div class="article-modal__right">
@@ -601,8 +660,6 @@
   <script src="./assets/js/layout.js"></script>
   <script>
     (function () {
-      
-
       const modal = document.getElementById("articleModal");
       const openBtns = [
         document.getElementById("openArticleModalBtn"),
@@ -616,8 +673,11 @@
       const loadingBox = document.getElementById("articleLoading");
       const errorBox = document.getElementById("articleError");
       const previewBox = document.getElementById("articlePreview");
-
       const topicInput = document.getElementById("articleTopic");
+      const toggleAdvancedBtn = document.getElementById("toggleAdvancedBtn");
+      const advancedFields = document.getElementById("advancedFields");
+
+      let isAdvancedOpen = false;
 
       function getTopicFromQuery() {
         const params = new URLSearchParams(window.location.search);
@@ -657,63 +717,63 @@
       }
 
       function formatInline(text = "") {
-  return escapeHtml(text)
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-}
-
-function renderBody(content = "") {
-  if (!content) return "<p>目前沒有可顯示的文章內容。</p>";
-
-  const lines = String(content)
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
-
-  let html = "";
-  let inList = false;
-
-  for (const line of lines) {
-    if (line.startsWith("## ")) {
-      if (inList) {
-        html += "</ul>";
-        inList = false;
+        return escapeHtml(text)
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
       }
-      html += `<h2>${formatInline(line.replace(/^## /, ""))}</h2>`;
-      continue;
-    }
 
-    if (line.startsWith("### ")) {
-      if (inList) {
-        html += "</ul>";
-        inList = false;
+      function renderBody(content = "") {
+        if (!content) return "<p>目前沒有可顯示的文章內容。</p>";
+
+        const lines = String(content)
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean);
+
+        let html = "";
+        let inList = false;
+
+        for (const line of lines) {
+          if (line.startsWith("## ")) {
+            if (inList) {
+              html += "</ul>";
+              inList = false;
+            }
+            html += `<h2>${formatInline(line.replace(/^## /, ""))}</h2>`;
+            continue;
+          }
+
+          if (line.startsWith("### ")) {
+            if (inList) {
+              html += "</ul>";
+              inList = false;
+            }
+            html += `<h3>${formatInline(line.replace(/^### /, ""))}</h3>`;
+            continue;
+          }
+
+          if (line.startsWith("- ") || line.startsWith("* ")) {
+            if (!inList) {
+              html += "<ul>";
+              inList = true;
+            }
+            html += `<li>${formatInline(line.replace(/^[-*] /, ""))}</li>`;
+            continue;
+          }
+
+          if (inList) {
+            html += "</ul>";
+            inList = false;
+          }
+
+          html += `<p>${formatInline(line)}</p>`;
+        }
+
+        if (inList) {
+          html += "</ul>";
+        }
+
+        return html;
       }
-      html += `<h3>${formatInline(line.replace(/^### /, ""))}</h3>`;
-      continue;
-    }
-
-    if (line.startsWith("- ") || line.startsWith("* ")) {
-      if (!inList) {
-        html += "<ul>";
-        inList = true;
-      }
-      html += `<li>${formatInline(line.replace(/^[-*] /, ""))}</li>`;
-      continue;
-    }
-
-    if (inList) {
-      html += "</ul>";
-      inList = false;
-    }
-
-    html += `<p>${formatInline(line)}</p>`;
-  }
-
-  if (inList) {
-    html += "</ul>";
-  }
-
-  return html;
-}
 
       function renderArticle(article) {
         if (!article) {
@@ -781,7 +841,6 @@ function renderBody(content = "") {
         const copyTitleBtn = document.getElementById("copyArticleTitleBtn");
         const copyBodyBtn = document.getElementById("copyArticleBodyBtn");
         const copySeoBtn = document.getElementById("copySeoBtn");
-        const goContentManagementBtn = document.getElementById("goContentManagementBtn");
 
         if (copyTitleBtn) {
           copyTitleBtn.addEventListener("click", async () => {
@@ -813,32 +872,25 @@ function renderBody(content = "") {
             }, 1200);
           });
         }
-
-        if (goContentManagementBtn) {
-          goContentManagementBtn.addEventListener("click", () => {
-            const targetUrl = `./content-management.html?title=${encodeURIComponent(title)}`;
-            window.location.href = targetUrl;
-          });
-        }
       }
 
       async function generateArticle(payload) {
-  const response = await fetch("http://localhost:3000/api/ollama/article", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(payload)
-  });
+        const response = await fetch("http://localhost:3000/api/ollama/article", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
 
-  const result = await response.json();
+        const result = await response.json();
 
-  if (!response.ok) {
-    throw new Error(result?.message || "產文失敗，請稍後再試。");
-  }
+        if (!response.ok) {
+          throw new Error(result?.message || "產文失敗，請稍後再試。");
+        }
 
-  return result;
-}
+        return result;
+      }
 
       openBtns.forEach((btn) => {
         btn.addEventListener("click", openModal);
@@ -859,23 +911,23 @@ function renderBody(content = "") {
       });
 
       resetBtn.addEventListener("click", () => {
-  form.reset();
+        form.reset();
 
-  const topicFromQuery = getTopicFromQuery();
-  if (topicFromQuery) topicInput.value = topicFromQuery;
+        const topicFromQuery = getTopicFromQuery();
+        if (topicFromQuery) topicInput.value = topicFromQuery;
 
-  setError("");
+        setError("");
 
-  advancedFields.style.display = "none";
-  isAdvancedOpen = false;
-  toggleAdvancedBtn.textContent = "進階設定 ▼";
+        advancedFields.style.display = "none";
+        isAdvancedOpen = false;
+        toggleAdvancedBtn.textContent = "進階設定 ▼";
 
-  previewBox.innerHTML = `
-  <div class="article-preview__empty">
-    輸入文章主題後，點擊「開始生成」，這裡就會顯示完整文章預覽、SEO Title 與 SEO Description。
-  </div>
-`;
-});
+        previewBox.innerHTML = `
+          <div class="article-preview__empty">
+            輸入文章主題後，點擊「開始生成」，這裡就會顯示完整文章預覽、SEO Title 與 SEO Description。
+          </div>
+        `;
+      });
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -905,22 +957,17 @@ function renderBody(content = "") {
         }
       });
 
-      const toggleAdvancedBtn = document.getElementById("toggleAdvancedBtn");
-const advancedFields = document.getElementById("advancedFields");
-
-let isAdvancedOpen = false;
-
-toggleAdvancedBtn.addEventListener("click", () => {
-  isAdvancedOpen = !isAdvancedOpen;
-  advancedFields.style.display = isAdvancedOpen ? "block" : "none";
-  toggleAdvancedBtn.textContent = isAdvancedOpen ? "收合設定 ▲" : "進階設定 ▼";
-});
+      toggleAdvancedBtn.addEventListener("click", () => {
+        isAdvancedOpen = !isAdvancedOpen;
+        advancedFields.style.display = isAdvancedOpen ? "block" : "none";
+        toggleAdvancedBtn.textContent = isAdvancedOpen ? "收合設定 ▲" : "進階設定 ▼";
+      });
 
       const topicFromQuery = getTopicFromQuery();
-if (topicFromQuery) {
-  topicInput.value = topicFromQuery;
-  openModal();
-}
+      if (topicFromQuery) {
+        topicInput.value = topicFromQuery;
+        openModal();
+      }
     })();
   </script>
 </body>
