@@ -97,6 +97,10 @@
   color: var(--color-text);
 }
 
+.section-heading__title- {
+  color: #ffffff;
+}
+
 .section-heading__desc {
   margin-bottom: 0;
   font-size: var(--fs-md);
