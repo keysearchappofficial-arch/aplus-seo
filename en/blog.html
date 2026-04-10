@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Blog | AI SEO, Content Marketing & Organic Traffic Growth | Aplus</title>
+  <meta
+    name="description"
+    content="Explore the Aplus AI SEO blog for insights on SEO content strategy, keyword planning, organic traffic growth, content marketing, and website lead generation."
+  />
+  <meta
+    name="keywords"
+    content="AI SEO, SEO articles, keyword strategy, organic traffic, content marketing, business website SEO, SEO education, AI content generation"
+  />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+
+  <link rel="canonical" href="https://www.keysearch-app.com/en/blog.html" />
+  <link rel="alternate" hreflang="zh-Hant" href="https://www.keysearch-app.com/blog.html" />
+  <link rel="alternate" hreflang="zh-TW" href="https://www.keysearch-app.com/blog.html" />
+  <link rel="alternate" hreflang="en" href="https://www.keysearch-app.com/en/blog.html" />
+  <link rel="alternate" hreflang="x-default" href="https://www.keysearch-app.com/en/blog.html" />
+
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Aplus AI SEO" />
+  <meta property="og:title" content="Blog | AI SEO, Content Marketing & Organic Traffic Growth" />
+  <meta
+    property="og:description"
+    content="From SEO content strategy to AI-powered content generation, discover how business websites can build sustainable organic traffic and lead flow."
+  />
+  <meta property="og:url" content="https://www.keysearch-app.com/en/blog.html" />
+  <meta property="og:image" content="https://www.keysearch-app.com/assets/images/og/blog-og.jpg" />
+  <meta property="og:image:alt" content="Aplus AI SEO blog" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Blog | AI SEO, Content Marketing & Organic Traffic Growth" />
+  <meta
+    name="twitter:description"
+    content="Insights on SEO content strategy, keyword planning, organic traffic growth, and content-driven lead generation."
+  />
+  <meta name="twitter:image" content="https://www.keysearch-app.com/assets/images/og/blog-og.jpg" />
+
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/pages/blog.css" />
+
+  <style>
+    .blog-meta-overview {
+      margin: 12px 0 0;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .blog-card {
+      display: block;
+      height: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      background: #fff;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .blog-card:hover {
+      transform: translateY(-4px);
+      border-color: #cbd5e1;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+    }
+
+    .blog-card__thumb {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 140px;
+      padding: 20px;
+      background:
+        radial-gradient(circle at top right, rgba(96, 165, 250, 0.20), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(37, 99, 235, 0.14), transparent 30%),
+        linear-gradient(180deg, #eff6ff 0%, #f8fafc 100%);
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 28px;
+      font-weight: 800;
+      color: #1e3a8a;
+      letter-spacing: .02em;
+    }
+
+    .blog-card__body {
+      padding: 20px;
+    }
+
+    .inline-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .inline-meta span {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .blog-card h3 {
+      margin: 12px 0 10px;
+      font-size: 22px;
+      line-height: 1.45;
+      color: #0f172a;
+    }
+
+    .blog-card p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.85;
+      font-size: 15px;
+    }
+
+    .blog-card__more {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 16px;
+      color: #2563eb;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      padding: 28px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 20px;
+      background: #f8fafc;
+    }
+
+    .empty-state h3 {
+      margin: 0 0 10px;
+      color: #0f172a;
+    }
+
+    .empty-state p {
+      margin: 0;
+      color: #64748b;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 960px) {
+      .blog-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .blog-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .blog-card__thumb {
+        min-height: 110px;
+        font-size: 24px;
+      }
+
+      .blog-card h3 {
+        font-size: 20px;
+      }
+    }
+  </style>
+
+  <script type="application/ld+json" id="blog-schema">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "Aplus AI SEO Blog",
+    "url": "https://www.keysearch-app.com/en/blog.html",
+    "description": "Insights on SEO content strategy, keyword planning, AI content generation, and organic traffic growth.",
+    "inLanguage": "en"
+  }
+  </script>
+</head>
+
+<body>
+  <div id="site-header"></div>
+
+  <main class="section-shell">
+    <div class="container">
+
+      <div class="section-heading">
+        <span class="section-heading__eyebrow">Blog</span>
+        <h1 class="section-title">AI SEO Blog</h1>
+        <p class="section-subtitle">
+          Explore insights on SEO content strategy, keyword planning, AI article generation, and organic traffic growth,
+          helping business websites evolve from static pages into content engines that continuously attract traffic and customers.
+        </p>
+        <p class="blog-meta-overview">
+          Currently featuring <strong id="article-count">0</strong> articles
+        </p>
+      </div>
+
+      <div class="blog-intro-card">
+        <strong>Every article here is a potential search entry point.</strong>
+        <p>
+          As your website keeps publishing useful content, it has more opportunities to be indexed and ranked by search engines,
+          bringing traffic back to your services and business opportunities.
+        </p>
+      </div>
+
+      <div id="blog-list" class="blog-grid"></div>
+
+      <section class="section cta-section" style="padding-top: 48px;">
+        <div class="cta-box">
+          <div class="cta-box__content">
+            <span class="section-heading__eyebrow">Next Step</span>
+            <h2>Want your website to keep attracting customers through content?</h2>
+            <p>
+              We can help you build an AI SEO content system,
+              from topic planning and article generation to traffic growth and conversion.
+            </p>
+          </div>
+          <div class="cta-box__actions">
+            <a href="./contact.html" class="btn btn--primary btn--lg">Book a Demo</a>
+            <a href="./system.html" class="btn btn--secondary btn--lg">Explore the System</a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../assets/js/layout.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../admin/js/supabase.js"></script>
+
+  <script>
+    const SITE_ORIGIN = "https://www.keysearch-app.com/en";
+
+    async function loadArticles() {
+      const supabase = window.supabaseClient;
+      if (!supabase) {
+        throw new Error("Articles failed to load");
+      }
+
+      const { data, error } = await supabase
+        .from("articles")
+        .select("*")
+        .eq("status", "published")
+        .order("published_at", { ascending: false });
+
+      if (error) throw error;
+
+      return data || [];
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return "";
+      const date = new Date(dateString);
+      if (Number.isNaN(date.getTime())) return "";
+
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function getCardLabel(article) {
+      const category = String(article.category || "").trim();
+      if (category) return escapeHtml(category);
+      return "SEO Article";
+    }
+
+    function getCardBadgeText(article) {
+      const category = String(article.category || "").trim();
+      if (!category) return "SEO";
+      return escapeHtml(category.slice(0, 10).toUpperCase());
+    }
+
+    function buildArticleCard(article) {
+      const title = escapeHtml(article.title || "Untitled Article");
+      const summary = escapeHtml(
+        article.summary || "Read this article to learn more about SEO content strategy and organic traffic growth."
+      );
+      const category = getCardLabel(article);
+      const badgeText = getCardBadgeText(article);
+      const dateText = formatDate(article.published_at || article.created_at);
+      const slug = encodeURIComponent(article.slug || "");
+
+      return `
+        <a class="blog-card" href="./article.html?slug=${slug}&source=blog">
+          <div class="blog-card__thumb">${badgeText}</div>
+          <div class="blog-card__body">
+            <div class="inline-meta">
+              <span>${category}</span>
+              <span>${dateText}</span>
+            </div>
+            <h3>${title}</h3>
+            <p>${summary}</p>
+            <span class="blog-card__more">Read More →</span>
+          </div>
+        </a>
+      `;
+    }
+
+    function injectBlogItemListSchema(articles) {
+      const oldScript = document.getElementById("blog-itemlist-schema");
+      if (oldScript) oldScript.remove();
+
+      const schema = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": articles.map((article, index) => ({
+          "@type": "ListItem",
+          "position": index + 1,
+          "url": `${SITE_ORIGIN}/article.html?slug=${encodeURIComponent(article.slug || "")}`,
+          "name": article.title || "Untitled Article"
+        }))
+      };
+
+      const script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.id = "blog-itemlist-schema";
+      script.textContent = JSON.stringify(schema);
+      document.head.appendChild(script);
+    }
+
+    async function renderBlog() {
+      const listEl = document.getElementById("blog-list");
+      const countEl = document.getElementById("article-count");
+
+      try {
+        const articles = await loadArticles();
+
+        if (countEl) {
+          countEl.textContent = String(articles.length);
+        }
+
+        if (!articles.length) {
+          listEl.innerHTML = `
+            <div class="empty-state">
+              <h3>No articles yet</h3>
+              <p>New SEO and content growth articles will be published here soon.</p>
+            </div>
+          `;
+          return;
+        }
+
+        listEl.innerHTML = articles.map(buildArticleCard).join("");
+        injectBlogItemListSchema(articles);
+      } catch (error) {
+        console.error("Failed to load articles:", error);
+        listEl.innerHTML = `
+          <div class="empty-state">
+            <h3>Failed to load articles</h3>
+            <p>${escapeHtml(error.message)}</p>
+          </div>
+        `;
+      }
+    }
+
+    renderBlog();
+  </script>
+</body>
+</html>
