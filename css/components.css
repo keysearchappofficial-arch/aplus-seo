@@ -94,7 +94,7 @@
 
 .section-heading__title {
   margin-bottom: 16px;
-  color: #fff;
+  color: var(--color-text);
 }
 
 .section-heading__desc {
