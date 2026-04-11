@@ -6,7 +6,7 @@ function mapArticleRow(row) {
     title: row.title || "",
     slug: row.slug || "",
     summary: row.summary || "",
-    content: row.content || "",
+    content: row.content || row.body || "", // 🔥 相容 body
     category: row.category || "",
     status: row.status || "draft",
     seoTitle: row.seo_title || "",
@@ -37,6 +37,10 @@ function mapLeadRow(row) {
   };
 }
 
+/* =========================
+   🔥 Articles
+========================= */
+
 async function getArticles() {
   const supabase = window.supabaseClient;
 
@@ -49,6 +53,46 @@ async function getArticles() {
   return (data || []).map(mapArticleRow);
 }
 
+/* 🔥 真刪除（會從 DB 消失） */
+async function deleteArticle(id) {
+  const supabase = window.supabaseClient;
+
+  const { error } = await supabase
+    .from("articles")
+    .delete()
+    .eq("id", id);
+
+  if (error) throw error;
+
+  return true;
+}
+
+/* 🔥 軟刪除（推薦 SEO 用） */
+async function deleteArticleSoft(id) {
+  const supabase = window.supabaseClient;
+
+  const { data, error } = await supabase
+    .from("articles")
+    .update({
+      status: "deleted",
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", id)
+    .select();
+
+  if (error) throw error;
+
+  if (!data || !data.length) {
+    throw new Error("文章未更新（可能被 RLS 擋住）");
+  }
+
+  return true;
+}
+
+/* =========================
+   🔥 Leads
+========================= */
+
 async function getLeads() {
   const supabase = window.supabaseClient;
 
@@ -60,6 +104,86 @@ async function getLeads() {
   if (error) throw error;
   return (data || []).map(mapLeadRow);
 }
+
+async function createLead({
+  name,
+  contactValue,
+  message = "",
+  sourceArticleId = null,
+  sourceArticleTitle = "",
+  sourceChannel = "direct"
+}) {
+  const supabase = window.supabaseClient;
+
+  const payload = {
+    name: String(name || "").trim(),
+    contact_value: String(contactValue || "").trim(),
+    message: String(message || "").trim(),
+    source_article_id: sourceArticleId,
+    source_article_title: String(sourceArticleTitle || "").trim(),
+    source_channel: String(sourceChannel || "direct").trim(),
+    status: "new",
+    created_at: new Date().toISOString()
+  };
+
+  if (!payload.name) throw new Error("缺少姓名");
+  if (!payload.contact_value) throw new Error("缺少聯絡方式");
+
+  const { data, error } = await supabase
+    .from("leads")
+    .insert([payload])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return mapLeadRow(data);
+}
+
+async function updateLeadStatus(id, status) {
+  const supabase = window.supabaseClient;
+
+  const { data, error } = await supabase
+    .from("leads")
+    .update({
+      status,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", id)
+    .select();
+
+  if (error) throw error;
+
+  if (!data || !data.length) {
+    throw new Error("沒有任何資料被更新（RLS問題）");
+  }
+
+  return data[0];
+}
+
+async function updateLeadNote(id, note) {
+  const supabase = window.supabaseClient;
+
+  const { data, error } = await supabase
+    .from("leads")
+    .update({
+      note: String(note || "").trim(),
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", id)
+    .select();
+
+  if (error) throw error;
+
+  if (!data || !data.length) {
+    throw new Error("沒有任何資料被更新（RLS問題）");
+  }
+
+  return data[0];
+}
+
+/* =========================
+   🔥 Tracking
+========================= */
 
 async function getTrackingEvents() {
   const supabase = window.supabaseClient;
@@ -97,44 +221,9 @@ async function trackEvent({
   return data;
 }
 
-async function createLead({
-  name,
-  contactValue,
-  message = "",
-  sourceArticleId = null,
-  sourceArticleTitle = "",
-  sourceChannel = "direct"
-}) {
-  const supabase = window.supabaseClient;
-
-  const payload = {
-    name: String(name || "").trim(),
-    contact_value: String(contactValue || "").trim(),
-    message: String(message || "").trim(),
-    source_article_id: sourceArticleId,
-    source_article_title: String(sourceArticleTitle || "").trim(),
-    source_channel: String(sourceChannel || "direct").trim(),
-    status: "new",
-    created_at: new Date().toISOString()
-  };
-
-  if (!payload.name) {
-    throw new Error("缺少姓名");
-  }
-
-  if (!payload.contact_value) {
-    throw new Error("缺少聯絡方式");
-  }
-
-  const { data, error } = await supabase
-    .from("leads")
-    .insert([payload])
-    .select()
-    .single();
-
-  if (error) throw error;
-  return mapLeadRow(data);
-}
+/* =========================
+   🔥 Dashboard
+========================= */
 
 async function getDashboardStats() {
   const [articles, leads, events] = await Promise.all([
@@ -143,102 +232,36 @@ async function getDashboardStats() {
     getTrackingEvents()
   ]);
 
-  const published = articles.filter(article => article.status === "published");
-  const drafts = articles.filter(article => article.status === "draft");
-  const scheduled = articles.filter(article => article.status === "scheduled");
+  const published = articles.filter(a => a.status === "published");
+  const drafts = articles.filter(a => a.status === "draft");
 
-  const totalPv = events.filter(event => event.event_type === "page_view").length;
+  const totalPv = events.filter(e => e.event_type === "page_view").length;
   const totalLeads = leads.length;
-
-  const conversionRate =
-    totalPv > 0 ? Number(((totalLeads / totalPv) * 100).toFixed(2)) : 0;
-
-  const topArticles = published
-    .map(article => {
-      const pv = events.filter(
-        event => event.article_id === article.id && event.event_type === "page_view"
-      ).length;
-
-      const articleLeads = leads.filter(
-        lead => lead.sourceArticleId === article.id
-      ).length;
-
-      return {
-        article,
-        analytics: {
-          pv,
-          leads: articleLeads,
-          conversionRate: pv > 0 ? Number(((articleLeads / pv) * 100).toFixed(2)) : 0
-        }
-      };
-    })
-    .sort((a, b) => b.analytics.pv - a.analytics.pv)
-    .slice(0, 5);
 
   return {
     articles,
     published,
     drafts,
-    scheduled,
     leads,
     events,
     totalPv,
-    totalLeads,
-    conversionRate,
-    topArticles,
-    latestLeads: leads.slice(0, 5)
+    totalLeads
   };
 }
 
-async function updateLeadStatus(id, status) {
-  const supabase = window.supabaseClient;
-
-  const { data, error } = await supabase
-    .from("leads")
-    .update({
-      status,
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", id)
-    .select("id, status, updated_at");
-
-  if (error) throw error;
-
-  if (!data || !data.length) {
-    throw new Error("沒有任何資料被更新，請檢查 leads 的 RLS update policy");
-  }
-
-  return data[0];
-}
-
-async function updateLeadNote(id, note) {
-  const supabase = window.supabaseClient;
-
-  const { data, error } = await supabase
-    .from("leads")
-    .update({
-      note: String(note || "").trim(),
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", id)
-    .select("id, note, updated_at");
-
-  if (error) throw error;
-
-  if (!data || !data.length) {
-    throw new Error("沒有任何資料被更新，請檢查 leads 的 RLS update policy");
-  }
-
-  return data[0];
-}
+/* =========================
+   🔥 Export
+========================= */
 
 window.ArticleStore = {
   getArticles,
+  deleteArticle,        // 真刪
+  deleteArticleSoft,    // 軟刪
   getLeads,
-  getTrackingEvents,
-  trackEvent,
   createLead,
   updateLeadStatus,
   updateLeadNote,
+  getTrackingEvents,
+  trackEvent,
   getDashboardStats
 };
