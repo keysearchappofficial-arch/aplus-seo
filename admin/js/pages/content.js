@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                   <input id="select-all" type="checkbox" />
                 </th>
                 <th>標題</th>
-                <th>分類</th>
+                <th>行業分類</th>
                 <th>狀態</th>
                 <th>時間</th>
                 <th>操作</th>
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div id="share-overlay" style="position:absolute;inset:0;background:rgba(15,23,42,.45);"></div>
       <div style="
         position:relative;
-        max-width:520px;
+        max-width:560px;
         margin:80px auto 0;
         background:#fff;
         border-radius:20px;
@@ -75,10 +75,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
           <button class="btn btn--soft share-btn" type="button" data-platform="facebook">Facebook</button>
-          <button class="btn btn--soft share-btn" type="button" data-platform="linkedin">LinkedIn</button>
           <button class="btn btn--soft share-btn" type="button" data-platform="x">X</button>
+          <button class="btn btn--soft share-btn" type="button" data-platform="linkedin">LinkedIn</button>
+          <button class="btn btn--soft share-btn" type="button" data-platform="threads">Threads</button>
           <button class="btn btn--soft share-btn" type="button" data-platform="line">LINE</button>
-          <button class="btn btn--soft share-btn" type="button" data-platform="whatsapp">WhatsApp</button>
+          <button class="btn btn--soft share-btn" type="button" data-platform="full">複製全文</button>
           <button class="btn btn--primary share-btn" type="button" data-platform="copy">複製連結</button>
         </div>
 
@@ -162,17 +163,45 @@ document.addEventListener("DOMContentLoaded", async () => {
     return `${SITE_ORIGIN}/article.html?slug=${encodeURIComponent(article.slug || "")}`;
   }
 
-  function buildShareLinks(article) {
-    const url = encodeURIComponent(getArticleUrl(article));
-    const title = encodeURIComponent(article.title || "文章");
+  function stripMarkdownToPlainText(text = "") {
+    return String(text)
+      .replace(/^##\s+/gm, "")
+      .replace(/^###\s+/gm, "")
+      .replace(/^-\s+/gm, "• ")
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, "$1")
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\n{2,}/g, "\n")
+      .trim();
+  }
 
-    return {
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
-      x: `https://twitter.com/intent/tweet?url=${url}&text=${title}`,
-      line: `https://social-plugins.line.me/lineit/share?url=${url}`,
-      whatsapp: `https://wa.me/?text=${title}%20${url}`
+  function generateFallbackFullText(article) {
+    const title = article.title || "";
+    const body = stripMarkdownToPlainText(article.content || article.body || "");
+    return `${title}\n\n${body}`.trim();
+  }
+
+  async function copyText(text, successMessage) {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert(successMessage);
+    } catch (error) {
+      prompt("請手動複製以下內容：", text);
+    }
+  }
+
+  function openPlatform(name) {
+    const map = {
+      facebook: "https://www.facebook.com/",
+      linkedin: "https://www.linkedin.com/feed/",
+      x: "https://x.com/compose/post",
+      threads: "https://www.threads.net/",
+      line: "https://line.me/"
     };
+
+    const target = map[name];
+    if (!target) return;
+
+    window.open(target, "_blank", "width=900,height=720");
   }
 
   function openShareModal(articleId) {
@@ -190,34 +219,39 @@ document.addEventListener("DOMContentLoaded", async () => {
     shareModal.style.display = "none";
   }
 
-  async function copyShareUrl() {
+  async function handleShare(platform) {
     if (!currentShareArticle) return;
 
-    const url = getArticleUrl(currentShareArticle);
+    const article = currentShareArticle;
+    const articleUrl = getArticleUrl(article);
 
-    try {
-      await navigator.clipboard.writeText(url);
-      alert("已複製文章連結");
-    } catch (error) {
-      shareUrlInput.select();
-      document.execCommand("copy");
-      alert("已複製文章連結");
-    }
-  }
-
-  function openShareWindow(platform) {
-    if (!currentShareArticle) return;
+    const socialTextMap = {
+      facebook: article.social_facebook || article.summary || article.title || "",
+      x: article.social_x || article.summary || article.title || "",
+      linkedin: article.social_linkedin || article.summary || article.title || "",
+      threads: article.social_threads || article.summary || article.title || "",
+      line: article.social_line || article.summary || article.title || ""
+    };
 
     if (platform === "copy") {
-      copyShareUrl();
+      await copyText(articleUrl, "已複製文章連結");
       return;
     }
 
-    const links = buildShareLinks(currentShareArticle);
-    const targetUrl = links[platform];
-    if (!targetUrl) return;
+    if (platform === "full") {
+      const fullText = generateFallbackFullText(article);
+      await copyText(fullText, "已複製全文");
+      return;
+    }
 
-    window.open(targetUrl, "_blank", "width=720,height=640");
+    const socialText = socialTextMap[platform] || "";
+    if (!socialText) {
+      alert("這篇文章目前沒有可用的社群文案");
+      return;
+    }
+
+    await copyText(socialText, `已複製 ${platform.toUpperCase()} 貼文`);
+    openPlatform(platform);
   }
 
   function render() {
@@ -244,7 +278,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           />
         </td>
         <td>${AdminCommon.escapeHtml(a.title)}</td>
-        <td>${AdminCommon.escapeHtml(a.category || "-")}</td>
+        <td>${AdminCommon.escapeHtml(a.industryCategory || a.industry_category || "-")}</td>
         <td><span class="badge">${AdminCommon.escapeHtml(a.status || "-")}</span></td>
         <td>${formatDate(a.publishedAt || a.createdAt)}</td>
         <td style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -417,9 +451,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   shareClose.addEventListener("click", closeShareModal);
 
   document.querySelectorAll(".share-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", async () => {
       const platform = btn.dataset.platform;
-      openShareWindow(platform);
+      await handleShare(platform);
     });
   });
 
