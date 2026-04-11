@@ -6,8 +6,10 @@ function mapArticleRow(row) {
     title: row.title || "",
     slug: row.slug || "",
     summary: row.summary || "",
-    content: row.content || row.body || "", // 🔥 相容 body
+    body: row.body || "",
+    content: row.content || row.body || "",
     category: row.category || "",
+    industryCategory: row.industry_category || "",
     status: row.status || "draft",
     seoTitle: row.seo_title || "",
     seoDescription: row.seo_description || "",
@@ -15,7 +17,12 @@ function mapArticleRow(row) {
     publishedAt: row.published_at || null,
     createdAt: row.created_at || null,
     updatedAt: row.updated_at || null,
-    views: row.views || 0
+    views: row.views || 0,
+    social_facebook: row.social_facebook || "",
+    social_x: row.social_x || "",
+    social_linkedin: row.social_linkedin || "",
+    social_threads: row.social_threads || "",
+    social_line: row.social_line || ""
   };
 }
 
