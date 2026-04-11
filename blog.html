@@ -240,141 +240,151 @@
   <script src="./admin/js/supabase.js"></script>
 
   <script>
-    const SITE_ORIGIN = "https://www.keysearch-app.com";
+  const SITE_ORIGIN = "https://www.keysearch-app.com";
 
-    async function loadArticles() {
-      const supabase = window.supabaseClient;
-      if (!supabase) {
-        throw new Error("文章未載入");
+  async function loadArticles() {
+    const supabase = window.supabaseClient;
+    if (!supabase) {
+      throw new Error("文章未載入");
+    }
+
+    const { data, error } = await supabase
+      .from("articles")
+      .select(`
+        id,
+        title,
+        slug,
+        summary,
+        seo_title,
+        seo_description,
+        status,
+        source,
+        views,
+        published_at,
+        created_at,
+        topic_title
+      `)
+      .eq("status", "published")
+      .order("published_at", { ascending: false });
+
+    if (error) throw error;
+
+    return data || [];
+  }
+
+  function formatDate(dateString) {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return "";
+
+    return date.toLocaleDateString("zh-TW", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    });
+  }
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function buildArticleCard(article) {
+    const title = escapeHtml(article.title || "未命名文章");
+    const summary = escapeHtml(
+      article.summary ||
+      article.seo_description ||
+      "查看這篇文章，了解更多 SEO 內容策略與流量成長方法。"
+    );
+    const category = escapeHtml(article.topic_title || "SEO 文章");
+    const badgeText = "SEO";
+    const dateText = formatDate(article.published_at || article.created_at);
+    const slug = encodeURIComponent(article.slug || "");
+
+    return `
+      <a class="blog-card" href="./article.html?slug=${slug}&source=blog">
+        <div class="blog-card__thumb">${badgeText}</div>
+        <div class="blog-card__body">
+          <div class="inline-meta">
+            <span>${category}</span>
+            <span>${dateText}</span>
+          </div>
+          <h3>${title}</h3>
+          <p>${summary}</p>
+          <span class="blog-card__more">閱讀全文 →</span>
+        </div>
+      </a>
+    `;
+  }
+
+  function injectBlogItemListSchema(articles) {
+    const oldScript = document.getElementById("blog-itemlist-schema");
+    if (oldScript) oldScript.remove();
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Aplus AI SEO 文章列表",
+      "itemListOrder": "https://schema.org/ItemListOrderDescending",
+      "numberOfItems": articles.length,
+      "itemListElement": articles.map((article, index) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "url": `${SITE_ORIGIN}/article.html?slug=${encodeURIComponent(article.slug || "")}`,
+        "name": article.title || "未命名文章",
+        "description":
+          article.summary ||
+          article.seo_description ||
+          "SEO 與內容流量相關文章"
+      }))
+    };
+
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "blog-itemlist-schema";
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
+  }
+
+  async function renderBlog() {
+    const listEl = document.getElementById("blog-list");
+    const countEl = document.getElementById("article-count");
+
+    try {
+      const articles = await loadArticles();
+
+      if (countEl) {
+        countEl.textContent = String(articles.length);
       }
 
-      const { data, error } = await supabase
-        .from("articles")
-        .select("*")
-        .eq("status", "published")
-        .order("published_at", { ascending: false });
-
-      if (error) throw error;
-
-      return data || [];
-    }
-
-    function formatDate(dateString) {
-      if (!dateString) return "";
-      const date = new Date(dateString);
-      if (Number.isNaN(date.getTime())) return "";
-
-      return date.toLocaleDateString("zh-TW", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit"
-      });
-    }
-
-    function escapeHtml(value) {
-      return String(value || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
-    }
-
-    function getCardLabel(article) {
-      const category = String(article.category || "").trim();
-      if (category) return escapeHtml(category);
-      return "SEO 文章";
-    }
-
-    function getCardBadgeText(article) {
-      const category = String(article.category || "").trim();
-      if (!category) return "SEO";
-      return escapeHtml(category.slice(0, 10).toUpperCase());
-    }
-
-    function buildArticleCard(article) {
-      const title = escapeHtml(article.title || "未命名文章");
-      const summary = escapeHtml(
-        article.summary || "查看這篇文章，了解更多 SEO 內容策略與流量成長方法。"
-      );
-      const category = getCardLabel(article);
-      const badgeText = getCardBadgeText(article);
-      const dateText = formatDate(article.published_at || article.created_at);
-      const slug = encodeURIComponent(article.slug || "");
-
-      return `
-        <a class="blog-card" href="./article.html?slug=${slug}&source=blog">
-          <div class="blog-card__thumb">${badgeText}</div>
-          <div class="blog-card__body">
-            <div class="inline-meta">
-              <span>${category}</span>
-              <span>${dateText}</span>
-            </div>
-            <h3>${title}</h3>
-            <p>${summary}</p>
-            <span class="blog-card__more">閱讀全文 →</span>
-          </div>
-        </a>
-      `;
-    }
-
-    function injectBlogItemListSchema(articles) {
-      const oldScript = document.getElementById("blog-itemlist-schema");
-      if (oldScript) oldScript.remove();
-
-      const schema = {
-        "@context": "https://schema.org",
-        "@type": "ItemList",
-        "itemListElement": articles.map((article, index) => ({
-          "@type": "ListItem",
-          "position": index + 1,
-          "url": `${SITE_ORIGIN}/article.html?slug=${encodeURIComponent(article.slug || "")}`,
-          "name": article.title || "未命名文章"
-        }))
-      };
-
-      const script = document.createElement("script");
-      script.type = "application/ld+json";
-      script.id = "blog-itemlist-schema";
-      script.textContent = JSON.stringify(schema);
-      document.head.appendChild(script);
-    }
-
-    async function renderBlog() {
-      const listEl = document.getElementById("blog-list");
-      const countEl = document.getElementById("article-count");
-
-      try {
-        const articles = await loadArticles();
-
-        if (countEl) {
-          countEl.textContent = String(articles.length);
-        }
-
-        if (!articles.length) {
-          listEl.innerHTML = `
-            <div class="empty-state">
-              <h3>目前尚無文章</h3>
-              <p>文章準備中，之後這裡會持續更新 SEO 與內容獲客相關內容。</p>
-            </div>
-          `;
-          return;
-        }
-
-        listEl.innerHTML = articles.map(buildArticleCard).join("");
-        injectBlogItemListSchema(articles);
-      } catch (error) {
-        console.error("載入文章失敗：", error);
+      if (!articles.length) {
         listEl.innerHTML = `
           <div class="empty-state">
-            <h3>文章載入失敗</h3>
-            <p>${escapeHtml(error.message)}</p>
+            <h3>目前尚無文章</h3>
+            <p>文章準備中，之後這裡會持續更新 SEO 與內容獲客相關內容。</p>
           </div>
         `;
+        return;
       }
-    }
 
-    renderBlog();
-  </script>
+      listEl.innerHTML = articles.map(buildArticleCard).join("");
+      injectBlogItemListSchema(articles);
+    } catch (error) {
+      console.error("載入文章失敗：", error);
+      listEl.innerHTML = `
+        <div class="empty-state">
+          <h3>文章載入失敗</h3>
+          <p>${escapeHtml(error.message)}</p>
+        </div>
+      `;
+    }
+  }
+
+  renderBlog();
+</script>
 </body>
 </html>
