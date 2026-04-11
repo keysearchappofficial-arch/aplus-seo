@@ -214,31 +214,44 @@
       return true;
     }
 
-    async function increaseAndFetchViews(slug) {
-      try {
-        const shouldIncrease = shouldCountView(slug);
-        const visitorId = getVisitorId();
+   async function increaseAndFetchViews(article) {
+  try {
+    const supabase = window.supabaseClient;
+    if (!supabase) return 0;
 
-        const res = await fetch(`http://localhost:3000/api/articles/view/${slug}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            visitorId,
-            shouldIncrease
-          })
-        });
+    const slug = article.slug;
+    const visitorId = getVisitorId();
+    const shouldIncrease = shouldCountView(slug);
 
-        if (!res.ok) return 0;
+    // 1. 先拿目前 views
+    let currentViews = article.views || 0;
 
-        const data = await res.json();
-        return data.views || 0;
-      } catch (error) {
-        console.error("取得 PV 失敗", error);
-        return 0;
-      }
+    if (!shouldIncrease) {
+      return currentViews;
     }
+
+    // 2. 更新 views（+1）
+    const { error: updateError } = await supabase
+      .from("articles")
+      .update({ views: currentViews + 1 })
+      .eq("id", article.id);
+
+    if (updateError) throw updateError;
+
+    // 3. 記錄 log（可選，但建議）
+    await supabase
+      .from("article_view_logs")
+      .insert({
+        article_id: article.id,
+        visitor_id: visitorId
+      });
+
+    return currentViews + 1;
+  } catch (error) {
+    console.error("PV 計算失敗", error);
+    return article.views || 0;
+  }
+}
 
     function escapeHtml(value) {
       return String(value || "")
@@ -532,7 +545,7 @@
       if (!article) return;
 
       const viewsEl = document.getElementById("article-views");
-      const views = await increaseAndFetchViews(article.slug);
+      const views = await increaseAndFetchViews(article);
 
       if (viewsEl) {
         viewsEl.textContent = views;
