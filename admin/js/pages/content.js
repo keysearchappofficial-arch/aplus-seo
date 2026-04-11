@@ -53,6 +53,41 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       </div>
     </div>
+
+    <div id="share-modal" style="display:none;position:fixed;inset:0;z-index:9999;">
+      <div id="share-overlay" style="position:absolute;inset:0;background:rgba(15,23,42,.45);"></div>
+      <div style="
+        position:relative;
+        max-width:520px;
+        margin:80px auto 0;
+        background:#fff;
+        border-radius:20px;
+        box-shadow:0 24px 60px rgba(15,23,42,.18);
+        padding:24px;
+      ">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;">
+          <div>
+            <h3 style="margin:0;font-size:22px;color:#0f172a;">分享文章</h3>
+            <p id="share-modal-title" style="margin:6px 0 0;color:#64748b;font-size:14px;"></p>
+          </div>
+          <button id="share-close" class="btn btn--ghost" type="button">關閉</button>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
+          <button class="btn btn--soft share-btn" type="button" data-platform="facebook">Facebook</button>
+          <button class="btn btn--soft share-btn" type="button" data-platform="linkedin">LinkedIn</button>
+          <button class="btn btn--soft share-btn" type="button" data-platform="x">X</button>
+          <button class="btn btn--soft share-btn" type="button" data-platform="line">LINE</button>
+          <button class="btn btn--soft share-btn" type="button" data-platform="whatsapp">WhatsApp</button>
+          <button class="btn btn--primary share-btn" type="button" data-platform="copy">複製連結</button>
+        </div>
+
+        <div style="margin-top:16px;">
+          <label style="display:block;margin-bottom:8px;font-size:13px;color:#64748b;">文章連結</label>
+          <input id="share-url" class="input" type="text" readonly />
+        </div>
+      </div>
+    </div>
   `;
 
   const supabase = window.supabaseClient;
@@ -64,8 +99,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   const bulkDeleteBtn = document.getElementById("bulk-delete-btn");
   const bulkClearBtn = document.getElementById("bulk-clear-btn");
 
+  const shareModal = document.getElementById("share-modal");
+  const shareOverlay = document.getElementById("share-overlay");
+  const shareClose = document.getElementById("share-close");
+  const shareModalTitle = document.getElementById("share-modal-title");
+  const shareUrlInput = document.getElementById("share-url");
+
+  const SITE_ORIGIN = "https://www.keysearch-app.com";
+
   let articles = [];
   let selectedIds = new Set();
+  let currentShareArticle = null;
 
   async function loadArticles() {
     try {
@@ -101,21 +145,79 @@ document.addEventListener("DOMContentLoaded", async () => {
     const visibleIds = filtered.map(a => a.id);
     const visibleSelectedCount = visibleIds.filter(id => selectedIds.has(id)).length;
 
-    if (selectedCountEl) {
-      selectedCountEl.textContent = `已選 ${selectedIds.size} 篇`;
+    selectedCountEl.textContent = `已選 ${selectedIds.size} 篇`;
+
+    if (!visibleIds.length) {
+      selectAllEl.checked = false;
+      selectAllEl.indeterminate = false;
+      return;
     }
 
-    if (selectAllEl) {
-      if (!visibleIds.length) {
-        selectAllEl.checked = false;
-        selectAllEl.indeterminate = false;
-        return;
-      }
+    selectAllEl.checked = visibleSelectedCount === visibleIds.length;
+    selectAllEl.indeterminate =
+      visibleSelectedCount > 0 && visibleSelectedCount < visibleIds.length;
+  }
 
-      selectAllEl.checked = visibleSelectedCount === visibleIds.length;
-      selectAllEl.indeterminate =
-        visibleSelectedCount > 0 && visibleSelectedCount < visibleIds.length;
+  function getArticleUrl(article) {
+    return `${SITE_ORIGIN}/article.html?slug=${encodeURIComponent(article.slug || "")}`;
+  }
+
+  function buildShareLinks(article) {
+    const url = encodeURIComponent(getArticleUrl(article));
+    const title = encodeURIComponent(article.title || "文章");
+
+    return {
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
+      x: `https://twitter.com/intent/tweet?url=${url}&text=${title}`,
+      line: `https://social-plugins.line.me/lineit/share?url=${url}`,
+      whatsapp: `https://wa.me/?text=${title}%20${url}`
+    };
+  }
+
+  function openShareModal(articleId) {
+    const article = articles.find(a => a.id === articleId);
+    if (!article) return;
+
+    currentShareArticle = article;
+    shareModalTitle.textContent = article.title || "";
+    shareUrlInput.value = getArticleUrl(article);
+    shareModal.style.display = "block";
+  }
+
+  function closeShareModal() {
+    currentShareArticle = null;
+    shareModal.style.display = "none";
+  }
+
+  async function copyShareUrl() {
+    if (!currentShareArticle) return;
+
+    const url = getArticleUrl(currentShareArticle);
+
+    try {
+      await navigator.clipboard.writeText(url);
+      alert("已複製文章連結");
+    } catch (error) {
+      shareUrlInput.select();
+      document.execCommand("copy");
+      alert("已複製文章連結");
     }
+  }
+
+  function openShareWindow(platform) {
+    if (!currentShareArticle) return;
+
+    if (platform === "copy") {
+      copyShareUrl();
+      return;
+    }
+
+    const links = buildShareLinks(currentShareArticle);
+    const targetUrl = links[platform];
+    if (!targetUrl) return;
+
+    window.open(targetUrl, "_blank", "width=720,height=640");
   }
 
   function render() {
@@ -155,6 +257,11 @@ document.addEventListener("DOMContentLoaded", async () => {
           ${
             a.status !== "deleted"
               ? `<button class="btn btn--soft" onclick="deleteArticle('${a.id}')">刪除</button>`
+              : ""
+          }
+          ${
+            a.status === "published"
+              ? `<button class="btn btn--soft" onclick="shareArticle('${a.id}')">分享</button>`
               : ""
           }
         </td>
@@ -230,6 +337,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   };
 
+  window.shareArticle = (id) => {
+    openShareModal(id);
+  };
+
   selectAllEl.addEventListener("change", () => {
     const filtered = getFilteredArticles();
     const visibleIds = filtered.map(a => a.id);
@@ -300,6 +411,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   filter.addEventListener("change", () => {
     render();
+  });
+
+  shareOverlay.addEventListener("click", closeShareModal);
+  shareClose.addEventListener("click", closeShareModal);
+
+  document.querySelectorAll(".share-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const platform = btn.dataset.platform;
+      openShareWindow(platform);
+    });
   });
 
   function formatDate(date) {
