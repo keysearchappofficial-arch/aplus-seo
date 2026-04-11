@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             <option value="published">已發布</option>
             <option value="draft">草稿</option>
             <option value="scheduled">排程中</option>
+            <option value="deleted">已刪除</option>
           </select>
 
           <a href="./generate.html" class="btn btn--primary">新增文章</a>
@@ -51,12 +52,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   let articles = [];
 
   async function loadArticles() {
-    const { data, error } = await supabase
-      .from("articles")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
+    try {
+      articles = await ArticleStore.getArticles();
+      render();
+    } catch (error) {
       root.innerHTML = `
         <div class="card">
           <div class="card__body">
@@ -64,11 +63,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           </div>
         </div>
       `;
-      return;
     }
-
-    articles = data || [];
-    render();
   }
 
   function render() {
@@ -93,15 +88,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         <td>${AdminCommon.escapeHtml(a.title)}</td>
         <td>${AdminCommon.escapeHtml(a.category || "-")}</td>
         <td><span class="badge">${AdminCommon.escapeHtml(a.status || "-")}</span></td>
-        <td>${formatDate(a.published_at || a.created_at)}</td>
+        <td>${formatDate(a.publishedAt || a.createdAt)}</td>
         <td style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="btn btn--soft" onclick="editArticle('${a.id}')">編輯</button>
           ${
-            a.status !== "published"
+            a.status !== "published" && a.status !== "deleted"
               ? `<button class="btn btn--primary" onclick="publish('${a.id}')">發布</button>`
               : ""
           }
-          <button class="btn btn--soft" onclick="deleteArticle('${a.id}')">刪除</button>
+          ${
+            a.status !== "deleted"
+              ? `<button class="btn btn--soft" onclick="deleteArticle('${a.id}')">刪除</button>`
+              : ""
+          }
         </td>
       </tr>
     `).join("");
@@ -135,18 +134,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.deleteArticle = async (id) => {
     if (!confirm("確定刪除？")) return;
 
-    const { error } = await supabase
-      .from("articles")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
+    try {
+      await ArticleStore.deleteArticleSoft(id);
+      alert("已刪除");
+      loadArticles();
+    } catch (error) {
       alert("刪除失敗：" + error.message);
-      return;
     }
-
-    alert("已刪除");
-    loadArticles();
   };
 
   filter.addEventListener("change", render);
