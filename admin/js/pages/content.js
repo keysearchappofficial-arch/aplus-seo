@@ -57,6 +57,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 </th>
                 <th>標題</th>
                 <th>行業分類</th>
+                <th>關鍵字策略</th>
                 <th>狀態</th>
                 <th>時間</th>
                 <th>操作</th>
@@ -304,6 +305,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         </td>
         <td>${AdminCommon.escapeHtml(a.title)}</td>
         <td>${AdminCommon.escapeHtml(a.industryCategory || a.industry_category || "-")}</td>
+        <td style="max-width:260px;">
+  <div
+    title="${AdminCommon.escapeHtml(a.keyword_strategy || "")}"
+    style="
+      font-size:12px;
+      color:#64748b;
+      line-height:1.6;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      cursor:pointer;
+    "
+  >
+    ${AdminCommon.escapeHtml(a.keyword_strategy || "-")}
+  </div>
+</td>
         <td><span class="badge">${AdminCommon.escapeHtml(a.status || "-")}</span></td>
         <td>${formatDate(a.publishedAt || a.createdAt)}</td>
         <td style="display:flex;gap:8px;flex-wrap:wrap;">
