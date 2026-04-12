@@ -1,3 +1,33 @@
+const GA_MEASUREMENT_ID = "G-ZWC50XN0X0";
+
+function initGoogleAnalytics() {
+  if (!GA_MEASUREMENT_ID) return;
+
+  // 避免重複插入
+  if (window.__ga_initialized__) return;
+  window.__ga_initialized__ = true;
+
+  const existingScript = document.querySelector(
+    `script[src*="googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"]`
+  );
+
+  if (!existingScript) {
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+    document.head.appendChild(script);
+  }
+
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function () {
+    window.dataLayer.push(arguments);
+  };
+
+  window.gtag("js", new Date());
+  window.gtag("config", GA_MEASUREMENT_ID);
+}
+
+
 async function loadComponent(selector, path) {
   const mountNode = document.querySelector(selector);
   if (!mountNode) return null;
@@ -181,6 +211,8 @@ async function initSharedFooter() {
 }
 
 async function initSharedLayout() {
+  initGoogleAnalytics();
+
   await initSharedHeader();
   await initSharedFooter();
 
