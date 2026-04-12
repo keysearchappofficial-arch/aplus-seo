@@ -1,15 +1,11 @@
 document.addEventListener("DOMContentLoaded", async () => {
-
-  // ✅ 一定要先載入 layout
   await window.loadAdminLayout();
 
-  // ✅ 再做登入驗證
   if (window.__adminGuardPromise) {
     const session = await window.__adminGuardPromise;
     if (!session) return;
   }
 
-  // ✅ 再 render layout
   AdminCommon.renderLayout(
     "dashboard",
     "Dashboard",
@@ -44,13 +40,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       <div class="card">
         <div class="card__body">
+          <h3 class="card__title">關鍵字流量分析</h3>
+          <div id="keyword-analytics"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__body">
           <h3 class="card__title">文章總覽</h3>
           <div class="table-wrap">
             <table class="data-table">
               <thead>
                 <tr>
                   <th>標題</th>
-                  <th>分類</th>
+                  <th>行業</th>
+                  <th>關鍵字策略</th>
                   <th>狀態</th>
                   <th>發布時間</th>
                 </tr>
@@ -63,22 +67,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     </div>
   `;
 
-  // ✅ 等 DOM render 完再抓元素（關鍵）
   requestAnimationFrame(initDashboard);
 
   async function initDashboard() {
     const statsGrid = document.getElementById("stats-grid");
     const topArticlesEl = document.getElementById("top-articles");
     const latestLeadsEl = document.getElementById("latest-leads");
+    const keywordAnalyticsEl = document.getElementById("keyword-analytics");
     const tableBody = document.getElementById("article-table-body");
 
-    if (!statsGrid || !topArticlesEl || !latestLeadsEl || !tableBody) {
+    if (!statsGrid || !topArticlesEl || !latestLeadsEl || !keywordAnalyticsEl || !tableBody) {
       console.warn("⚠️ Dashboard DOM 尚未準備好");
       return;
     }
 
     try {
       const stats = await ArticleStore.getDashboardStats();
+      const keywordStats = buildKeywordAnalytics(stats);
 
       statsGrid.innerHTML = `
         <div class="stat-card">
@@ -104,22 +109,79 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       topArticlesEl.innerHTML = stats.topArticles.length
         ? stats.topArticles.map(item => `
-            <div>
-              ${AdminCommon.escapeHtml(item.article.title)} (${item.analytics.pv})
+            <div style="padding:10px 0;border-bottom:1px solid #e2e8f0;">
+              <div style="font-weight:700;color:#0f172a;">
+                ${AdminCommon.escapeHtml(item.article.title)}
+              </div>
+              <div style="font-size:13px;color:#64748b;margin-top:4px;">
+                PV：${item.analytics.pv} ｜ 名單：${item.analytics.leads}
+              </div>
             </div>
           `).join("")
-        : "沒有資料";
+        : `<div style="color:#64748b;">沒有資料</div>`;
 
-      latestLeadsEl.innerHTML = stats.leads.slice(0, 5).map(l => `
-        <div>${AdminCommon.escapeHtml(l.name || "-")}</div>
-      `).join("");
+      latestLeadsEl.innerHTML = stats.leads.length
+        ? stats.leads.slice(0, 5).map(l => `
+            <div style="padding:10px 0;border-bottom:1px solid #e2e8f0;">
+              <div style="font-weight:700;color:#0f172a;">
+                ${AdminCommon.escapeHtml(l.name || "-")}
+              </div>
+              <div style="font-size:13px;color:#64748b;margin-top:4px;">
+                ${AdminCommon.escapeHtml(l.contact || "-")}
+              </div>
+            </div>
+          `).join("")
+        : `<div style="color:#64748b;">沒有資料</div>`;
+
+      keywordAnalyticsEl.innerHTML = keywordStats.length
+        ? `
+          <div style="display:grid;gap:12px;">
+            ${keywordStats.map((item, index) => `
+              <div style="padding:14px 16px;border:1px solid #e2e8f0;border-radius:14px;background:#fff;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+                  <div>
+                    <div style="font-size:12px;color:#64748b;margin-bottom:6px;">Top ${index + 1}</div>
+                    <div style="font-weight:700;color:#0f172a;line-height:1.7;">
+                      ${AdminCommon.escapeHtml(item.keywordStrategy)}
+                    </div>
+                  </div>
+                  <div style="text-align:right;min-width:80px;">
+                    <div style="font-size:12px;color:#64748b;">PV</div>
+                    <div style="font-size:24px;font-weight:800;color:#0f172a;">${item.pv}</div>
+                  </div>
+                </div>
+                <div style="margin-top:8px;font-size:13px;color:#64748b;">
+                  行業：${AdminCommon.escapeHtml(item.industryCategory || "-")} ｜ 文章數：${item.articleCount}
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        `
+        : `<div style="color:#64748b;">目前尚無關鍵字分析資料</div>`;
 
       tableBody.innerHTML = stats.articles.map(a => `
         <tr>
           <td>${AdminCommon.escapeHtml(a.title)}</td>
-          <td>${AdminCommon.escapeHtml(a.category || "-")}</td>
-          <td>${a.status}</td>
-          <td>${new Date(a.createdAt).toLocaleString()}</td>
+          <td>${AdminCommon.escapeHtml(a.industryCategory || "-")}</td>
+          <td style="max-width:260px;">
+            <div
+              title="${AdminCommon.escapeHtml(a.keyword_strategy || "")}"
+              style="
+                font-size:12px;
+                color:#64748b;
+                line-height:1.6;
+                display:-webkit-box;
+                -webkit-line-clamp:2;
+                -webkit-box-orient:vertical;
+                overflow:hidden;
+                cursor:pointer;
+              "
+            >
+              ${AdminCommon.escapeHtml(a.keyword_strategy || "-")}
+            </div>
+          </td>
+          <td>${AdminCommon.escapeHtml(a.status || "-")}</td>
+          <td>${formatDate(a.publishedAt || a.createdAt)}</td>
         </tr>
       `).join("");
 
@@ -127,5 +189,52 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.error("Dashboard error:", error);
       root.innerHTML = `<p>載入失敗：${error.message}</p>`;
     }
+  }
+
+  function buildKeywordAnalytics(stats) {
+    const publishedArticles = (stats.articles || []).filter(a => a.status === "published");
+
+    const result = publishedArticles.map(article => {
+      const pv = (stats.events || []).filter(event =>
+        event.article_id === article.id && event.event_type === "page_view"
+      ).length;
+
+      return {
+        articleId: article.id,
+        title: article.title || "",
+        industryCategory: article.industryCategory || "",
+        keywordStrategy: article.keyword_strategy || "",
+        pv
+      };
+    });
+
+    const grouped = new Map();
+
+    result.forEach(item => {
+      const key = item.keywordStrategy || "";
+      if (!key) return;
+
+      if (!grouped.has(key)) {
+        grouped.set(key, {
+          keywordStrategy: key,
+          industryCategory: item.industryCategory || "",
+          pv: 0,
+          articleCount: 0
+        });
+      }
+
+      const current = grouped.get(key);
+      current.pv += item.pv;
+      current.articleCount += 1;
+    });
+
+    return [...grouped.values()]
+      .sort((a, b) => b.pv - a.pv)
+      .slice(0, 8);
+  }
+
+  function formatDate(date) {
+    if (!date) return "-";
+    return new Date(date).toLocaleString("zh-TW");
   }
 });
