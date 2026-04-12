@@ -15,16 +15,31 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div class="card__body">
 
         <div style="margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
-          <select id="filter-status" class="input" style="max-width:220px;">
-            <option value="all">全部</option>
-            <option value="published">已發布</option>
-            <option value="draft">草稿</option>
-            <option value="scheduled">排程中</option>
-            <option value="deleted">已刪除</option>
-          </select>
+  
+  <select id="filter-status" class="input" style="max-width:200px;">
+    <option value="all">全部狀態</option>
+    <option value="published">已發布</option>
+    <option value="draft">草稿</option>
+    <option value="scheduled">排程中</option>
+    <option value="deleted">已刪除</option>
+  </select>
 
-          <a href="./generate.html" class="btn btn--primary">新增文章</a>
-        </div>
+  <select id="filter-industry" class="input" style="max-width:220px;">
+    <option value="all">全部行業</option>
+    <option value="企業服務">企業服務</option>
+    <option value="醫美診所">醫美診所</option>
+    <option value="法律顧問">法律顧問</option>
+    <option value="室內設計">室內設計</option>
+    <option value="製造業">製造業</option>
+    <option value="教育培訓">教育培訓</option>
+    <option value="品牌電商">品牌電商</option>
+    <option value="房地產">房地產</option>
+    <option value="金融保險">金融保險</option>
+    <option value="科技服務">科技服務</option>
+  </select>
+
+  <a href="./generate.html" class="btn btn--primary">新增文章</a>
+</div>
 
         <div style="margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
           <span id="selected-count" style="color:#64748b;font-size:14px;">已選 0 篇</span>
@@ -94,6 +109,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const supabase = window.supabaseClient;
   const table = document.getElementById("article-table");
   const filter = document.getElementById("filter-status");
+  const industryFilter = document.getElementById("filter-industry");
   const selectAllEl = document.getElementById("select-all");
   const selectedCountEl = document.getElementById("selected-count");
   const bulkPublishBtn = document.getElementById("bulk-publish-btn");
@@ -129,12 +145,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function getFilteredArticles() {
-    const status = filter.value;
+  const status = filter.value;
+  const industry = industryFilter.value;
 
-    return status === "all"
-      ? articles
-      : articles.filter(a => a.status === status);
-  }
+  return articles.filter(a => {
+    const matchStatus =
+      status === "all" ? true : a.status === status;
+
+    const matchIndustry =
+      industry === "all"
+        ? true
+        : (a.industryCategory || "") === industry;
+
+    return matchStatus && matchIndustry;
+  });
+}
 
   function cleanupSelection() {
     const validIds = new Set(articles.map(a => a.id));
@@ -443,9 +468,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  filter.addEventListener("change", () => {
-    render();
-  });
+  filter.addEventListener("change", render);
+industryFilter.addEventListener("change", render);
 
   shareOverlay.addEventListener("click", closeShareModal);
   shareClose.addEventListener("click", closeShareModal);
