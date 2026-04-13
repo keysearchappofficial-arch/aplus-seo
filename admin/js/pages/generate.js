@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", async () => {
+  const API_BASE =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+      ? "http://localhost:3000"
+      : "https://recall-alternatively-harper-nickel.trycloudflare.com";
+
   await window.loadAdminLayout();
 
   AdminCommon.renderLayout(
@@ -103,51 +109,54 @@ document.addEventListener("DOMContentLoaded", async () => {
     const fd = new FormData(form);
 
     const params = {
-  industry: fd.get("industry"),
-  location: fd.get("location"),
-  topic: fd.get("topic"),
-  tone: fd.get("tone"),
-  cta: fd.get("cta"),
-  category: fd.get("category")
-};
+      topic: fd.get("topic")?.toString().trim() || "",
+      industry: fd.get("industry")?.toString().trim() || "",
+      service: fd.get("category")?.toString().trim() || "", // 先用分類代替 service，避免你後端缺值
+      region: fd.get("location")?.toString().trim() || "",
+      audience: "",
+      tone: fd.get("tone")?.toString().trim() || "專業",
+      length: "中",
+      keywords: fd.get("topic")?.toString().trim() || ""
+    };
 
-progress.start();
+    progress.start();
 
-try {
-  const res = await window.OllamaClient.generateWithOllama(params);
+    try {
+      const res = await generateArticle(params);
 
-generated = {
-  title: res.title || "",
-  summary: res.summary || "",
-  content: res.content || "",
-  seoTitle: res.seoTitle || "",
-  seoDescription: res.seoDescription || "",
-  category: fd.get("category"),
-  slug: slugify(res.title || "")
-};
+      const article = res?.article || {};
 
-  await progress.finishSmooth();
+      generated = {
+        title: article.title || "",
+        summary: article.summary || "",
+        content: article.body || "",
+        seoTitle: article.seoTitle || "",
+        seoDescription: article.seoDescription || "",
+        category: article.industryCategory || fd.get("category") || "AI SEO",
+        slug: slugify(article.title || "")
+      };
 
-  preview.innerHTML = `
-    <h2>${escape(generated.title)}</h2>
-    <p>${escape(generated.summary)}</p>
+      await progress.finishSmooth();
 
-    <div class="generated-article">
-  ${renderArticleBody(generated.content)}
-</div>
+      preview.innerHTML = `
+        <h2>${escape(generated.title)}</h2>
+        <p>${escape(generated.summary)}</p>
 
-    <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
-      <button id="go-edit-draft" class="btn btn--soft">編輯草稿</button>
-      <button id="go-edit-publish" class="btn btn--primary">編輯後發布</button>
-    </div>
-  `;
+        <div class="generated-article">
+          ${renderArticleBody(generated.content)}
+        </div>
+
+        <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
+          <button id="go-edit-draft" class="btn btn--soft">編輯草稿</button>
+          <button id="go-edit-publish" class="btn btn--primary">編輯後發布</button>
+        </div>
+      `;
 
       document.getElementById("go-edit-draft")
         ?.addEventListener("click", () => goEdit("draft"));
 
       document.getElementById("go-edit-publish")
         ?.addEventListener("click", () => goEdit("published"));
-
     } catch (err) {
       progress.stop();
 
@@ -161,6 +170,29 @@ generated = {
       btn.textContent = "生成內容";
     }
   });
+
+  async function generateArticle(payload) {
+    const response = await fetch(`${API_BASE}/api/ollama/article`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    let result = {};
+    try {
+      result = await response.json();
+    } catch (error) {
+      throw new Error("API 回傳格式錯誤，請稍後再試。");
+    }
+
+    if (!response.ok) {
+      throw new Error(result?.message || "產文失敗，請稍後再試。");
+    }
+
+    return result;
+  }
 
   function fillGenerateFormFromTopicLibrary() {
     const raw = localStorage.getItem("selected_topic_for_generate");
@@ -226,61 +258,60 @@ generated = {
   }
 
   function formatInline(text = "") {
-  return escape(text)
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-}
+    return escape(text).replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+  }
 
-function renderArticleBody(content = "") {
-  const lines = String(content)
-    .split("\n")
-    .map(line => line.trim())
-    .filter(Boolean);
+  function renderArticleBody(content = "") {
+    const lines = String(content)
+      .split("\n")
+      .map(line => line.trim())
+      .filter(Boolean);
 
-  let html = "";
-  let inList = false;
+    let html = "";
+    let inList = false;
 
-  for (const line of lines) {
-    if (line.startsWith("## ")) {
+    for (const line of lines) {
+      if (line.startsWith("## ")) {
+        if (inList) {
+          html += "</ul>";
+          inList = false;
+        }
+        html += `<h2 style="margin:28px 0 12px;">${formatInline(line.replace(/^## /, ""))}</h2>`;
+        continue;
+      }
+
+      if (line.startsWith("### ")) {
+        if (inList) {
+          html += "</ul>";
+          inList = false;
+        }
+        html += `<h3 style="margin:20px 0 10px;">${formatInline(line.replace(/^### /, ""))}</h3>`;
+        continue;
+      }
+
+      if (line.startsWith("- ") || line.startsWith("* ")) {
+        if (!inList) {
+          html += `<ul style="padding-left:20px;line-height:1.8;margin:0 0 16px;">`;
+          inList = true;
+        }
+        html += `<li>${formatInline(line.replace(/^[-*] /, ""))}</li>`;
+        continue;
+      }
+
       if (inList) {
         html += "</ul>";
         inList = false;
       }
-      html += `<h2 style="margin:28px 0 12px;">${formatInline(line.replace(/^## /, ""))}</h2>`;
-      continue;
-    }
 
-    if (line.startsWith("### ")) {
-      if (inList) {
-        html += "</ul>";
-        inList = false;
-      }
-      html += `<h3 style="margin:20px 0 10px;">${formatInline(line.replace(/^### /, ""))}</h3>`;
-      continue;
-    }
-
-    if (line.startsWith("- ") || line.startsWith("* ")) {
-      if (!inList) {
-        html += `<ul style="padding-left:20px;line-height:1.8;margin:0 0 16px;">`;
-        inList = true;
-      }
-      html += `<li>${formatInline(line.replace(/^[-*] /, ""))}</li>`;
-      continue;
+      html += `<p style="line-height:1.9;margin:0 0 14px;">${formatInline(line)}</p>`;
     }
 
     if (inList) {
       html += "</ul>";
-      inList = false;
     }
 
-    html += `<p style="line-height:1.9;margin:0 0 14px;">${formatInline(line)}</p>`;
+    return html;
   }
-
-  if (inList) {
-    html += "</ul>";
-  }
-
-  return html;
-}
 
   function goEdit(status) {
     if (!generated) return;
@@ -295,14 +326,16 @@ function renderArticleBody(content = "") {
   }
 
   function slugify(text = "") {
-    return text.toLowerCase().replace(/\s+/g, "-");
+    return String(text)
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-");
   }
 
   function escape(str = "") {
-  return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
-}
-
+    return String(str)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;");
+  }
 });
