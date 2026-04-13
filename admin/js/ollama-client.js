@@ -1,4 +1,10 @@
-const OLLAMA_PROXY_API = "http://localhost:3000/api/ollama/generate";
+const OLLAMA_PROXY_API =
+  (window.API_BASE || (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+      ? "http://localhost:3000"
+      : "https://recall-alternatively-harper-nickel.trycloudflare.com"
+  )) + "/api/ollama/generate";
 
 async function generateWithOllama({
   industry = "",
@@ -15,33 +21,36 @@ async function generateWithOllama({
     },
     body: JSON.stringify({
       industry,
-      region: location,         // 後端吃 region，不是 location
+      region: location,
       topic,
       tone,
-      service: category || cta || "", // 先用 category 或 cta 補 service
+      service: category || cta || "",
       keywords: "",
       audience: ""
     })
   });
 
+  let parsed = {};
+  try {
+    parsed = await response.json();
+  } catch (error) {
+    throw new Error("API 回傳格式錯誤，請稍後再試。");
+  }
+
   if (!response.ok) {
     let message = `Node API 錯誤：${response.status}`;
 
-    try {
-      const err = await response.json();
-      if (err?.detail) {
-        message += ` - ${err.detail}`;
-      } else if (err?.message) {
-        message += ` - ${err.message}`;
-      } else if (err?.error) {
-        message += ` - ${err.error}`;
-      }
-    } catch (_) {}
+    if (parsed?.detail) {
+      message += ` - ${parsed.detail}`;
+    } else if (parsed?.message) {
+      message += ` - ${parsed.message}`;
+    } else if (parsed?.error) {
+      message += ` - ${parsed.error}`;
+    }
 
     throw new Error(message);
   }
 
-  const parsed = await response.json();
   const article = parsed?.article || null;
 
   if (
@@ -61,7 +70,8 @@ async function generateWithOllama({
     summary: String(article.summary).trim(),
     content: String(article.body).trim(),
     seoTitle: String(article.seoTitle).trim(),
-    seoDescription: String(article.seoDescription).trim()
+    seoDescription: String(article.seoDescription).trim(),
+    industryCategory: String(article.industryCategory || "").trim()
   };
 }
 
