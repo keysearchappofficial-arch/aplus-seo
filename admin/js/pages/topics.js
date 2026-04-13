@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", async () => {
+  const API_BASE =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+      ? "http://localhost:3000"
+      : "https://recall-alternatively-harper-nickel.trycloudflare.com";
+
   try {
     if (window.__adminGuardPromise) {
       const session = await window.__adminGuardPromise;
@@ -138,15 +144,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       finishedText: "生成完成"
     });
 
+    async function parseJsonSafe(response) {
+      try {
+        return await response.json();
+      } catch (error) {
+        throw new Error("API 回傳格式錯誤，請稍後再試。");
+      }
+    }
+
     async function fetchTopics() {
-      const response = await fetch("http://localhost:3000/api/topics");
-      if (!response.ok) throw new Error(`讀取題庫失敗：${response.status}`);
-      const data = await response.json();
+      const response = await fetch(`${API_BASE}/api/topics`);
+      const data = await parseJsonSafe(response);
+
+      if (!response.ok) {
+        throw new Error(data?.message || `讀取題庫失敗：${response.status}`);
+      }
+
       return Array.isArray(data.topics) ? data.topics : [];
     }
 
     async function generateTopics({ industry, location, tone, category, cta, count }) {
-      const response = await fetch("http://localhost:3000/api/topics/generate", {
+      const response = await fetch(`${API_BASE}/api/topics/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -161,32 +179,48 @@ document.addEventListener("DOMContentLoaded", async () => {
         })
       });
 
+      const data = await parseJsonSafe(response);
+
       if (!response.ok) {
-        let message = `主題生成失敗：${response.status}`;
-        try {
-          const err = await response.json();
-          if (err?.detail) message += ` - ${err.detail}`;
-          else if (err?.error) message += ` - ${err.error}`;
-        } catch (_) {}
+        const message =
+          data?.detail ||
+          data?.error ||
+          data?.message ||
+          `主題生成失敗：${response.status}`;
         throw new Error(message);
       }
 
-      const data = await response.json();
       return Array.isArray(data.topics) ? data.topics : [];
     }
 
     async function deleteTopic(id) {
-      const response = await fetch(`http://localhost:3000/api/topics/${id}`, {
+      const response = await fetch(`${API_BASE}/api/topics/${id}`, {
         method: "DELETE"
       });
-      if (!response.ok) throw new Error(`刪除失敗：${response.status}`);
+
+      let data = {};
+      try {
+        data = await response.json();
+      } catch (_) {}
+
+      if (!response.ok) {
+        throw new Error(data?.message || `刪除失敗：${response.status}`);
+      }
     }
 
     async function clearTopics() {
-      const response = await fetch("http://localhost:3000/api/topics", {
+      const response = await fetch(`${API_BASE}/api/topics`, {
         method: "DELETE"
       });
-      if (!response.ok) throw new Error(`清空失敗：${response.status}`);
+
+      let data = {};
+      try {
+        data = await response.json();
+      } catch (_) {}
+
+      if (!response.ok) {
+        throw new Error(data?.message || `清空失敗：${response.status}`);
+      }
     }
 
     async function renderTopics() {
