@@ -26,7 +26,66 @@ document.addEventListener("DOMContentLoaded", async () => {
     const root = document.getElementById("page-root");
     if (!root) return;
 
-    root.innerHTML = `...（UI不用改）...`;
+    root.innerHTML = 
+      `<section class="card">
+        <div class="card__body">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
+            <div>
+              <label class="form-label">產業</label>
+              <input id="topic-industry" class="input" type="text" value="企業服務" />
+            </div>
+
+            <div>
+              <label class="form-label">地區</label>
+              <input id="topic-location" class="input" type="text" value="台灣" />
+            </div>
+
+            <div>
+              <label class="form-label">語氣</label>
+              <select id="topic-tone" class="select">
+                <option value="專業">專業</option>
+                <option value="商務">商務</option>
+                <option value="清楚易懂">清楚易懂</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="form-label">分類</label>
+              <input id="topic-category" class="input" type="text" value="AI SEO" />
+            </div>
+
+            <div style="grid-column:1 / -1;">
+              <label class="form-label">CTA</label>
+              <input id="topic-cta" class="input" type="text" value="預約 AI SEO 系統展示" />
+            </div>
+
+            <div>
+              <label class="form-label">主題數量</label>
+              <input id="topic-count" class="input" type="number" min="1" max="20" value="10" />
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;">
+            <button id="generate-topics-btn" class="btn btn--primary">AI 自動產主題</button>
+            <button id="clear-topics-btn" class="btn btn--ghost">清空題庫</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:20px;">
+        <div class="card__body">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+            <div>
+              <h3 style="margin:0;font-size:18px;">主題列表</h3>
+              <p style="margin:6px 0 0;color:#64748b;font-size:14px;">AI 生成的主題會直接存進題庫。</p>
+            </div>
+            <div id="topic-total" style="font-size:14px;color:#64748b;">共 0 筆</div>
+          </div>
+
+          <div id="topic-list"></div>
+        </div>
+      </section>
+      `;
 
     // =========================
     // API 基礎工具
