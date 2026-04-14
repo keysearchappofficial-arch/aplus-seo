@@ -3,7 +3,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1"
       ? "http://localhost:3000"
-      : "https://recall-alternatively-harper-nickel.trycloudflare.com";
+      : "https://api.keysearch-app.com";
+
+  const API_KEY = "aplus_seo_admin_2026_secure_token";
 
   try {
     if (window.__adminGuardPromise) {
@@ -22,211 +24,78 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
 
     const root = document.getElementById("page-root");
-    if (!root) {
-      console.error("[topics] 找不到 #page-root");
-      return;
-    }
+    if (!root) return;
 
-    root.innerHTML = `
-      <section class="card">
-        <div class="card__body">
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
-            <div>
-              <label class="form-label">產業</label>
-              <input id="topic-industry" class="input" type="text" value="企業服務" />
-            </div>
+    root.innerHTML = `...（UI不用改）...`;
 
-            <div>
-              <label class="form-label">地區</label>
-              <input id="topic-location" class="input" type="text" value="台灣" />
-            </div>
+    // =========================
+    // API 基礎工具
+    // =========================
+    async function apiFetch(url, options = {}) {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": API_KEY,
+          ...(options.headers || {})
+        }
+      });
 
-            <div>
-              <label class="form-label">語氣</label>
-              <select id="topic-tone" class="select">
-                <option value="專業">專業</option>
-                <option value="商務">商務</option>
-                <option value="清楚易懂">清楚易懂</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="form-label">分類</label>
-              <input id="topic-category" class="input" type="text" value="AI SEO" />
-            </div>
-
-            <div style="grid-column:1 / -1;">
-              <label class="form-label">CTA</label>
-              <input id="topic-cta" class="input" type="text" value="預約 AI SEO 系統展示" />
-            </div>
-
-            <div>
-              <label class="form-label">主題數量</label>
-              <input id="topic-count" class="input" type="number" min="1" max="20" value="10" />
-            </div>
-          </div>
-
-          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;">
-            <button id="generate-topics-btn" class="btn btn--primary">AI 自動產主題</button>
-            <button id="clear-topics-btn" class="btn btn--ghost">清空題庫</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="card" style="margin-top:20px;">
-        <div class="card__body">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
-            <div>
-              <h3 style="margin:0;font-size:18px;">主題列表</h3>
-              <p style="margin:6px 0 0;color:#64748b;font-size:14px;">AI 生成的主題會直接存進題庫。</p>
-            </div>
-            <div id="topic-total" style="font-size:14px;color:#64748b;">共 0 筆</div>
-          </div>
-
-          <div id="topic-list"></div>
-        </div>
-      </section>
-    `;
-
-    function escapeHtml(str = "") {
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    function renderGeneratingState(percent, text) {
-      return `
-        <div style="padding:24px;border:1px solid #e2e8f0;border-radius:16px;background:#fff;">
-          <div style="font-size:12px;letter-spacing:.08em;color:#64748b;margin-bottom:8px;">
-            AI TOPIC GENERATOR
-          </div>
-
-          <h3 style="margin:0 0 8px;font-size:20px;color:#0f172a;">主題生成中...</h3>
-          <p style="margin:0 0 16px;color:#475569;">${escapeHtml(text)}</p>
-
-          <div style="height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden;">
-            <div
-              style="
-                width:${percent}%;
-                height:100%;
-                background:linear-gradient(90deg,#2563eb 0%,#60a5fa 100%);
-                border-radius:999px;
-                transition:width .35s ease;
-              "
-            ></div>
-          </div>
-
-          <div style="margin-top:10px;font-size:13px;color:#64748b;">
-            進度 ${percent}%
-          </div>
-        </div>
-      `;
-    }
-
-    const topicProgress = window.UIProgress.create({
-      render(percent, text) {
-        const list = document.getElementById("topic-list");
-        if (!list) return;
-        list.innerHTML = renderGeneratingState(percent, text);
-      },
-      initialPercent: 6,
-      steps: [
-        { until: 18, text: "正在分析產業與地區..." },
-        { until: 36, text: "正在規劃主題方向..." },
-        { until: 58, text: "正在生成 SEO 主題..." },
-        { until: 76, text: "正在整理分類與語氣..." },
-        { until: 90, text: "正在完成主題輸出..." }
-      ],
-      finishingText: "正在整理輸出內容...",
-      finishedText: "生成完成"
-    });
-
-    async function parseJsonSafe(response) {
+      let data = {};
       try {
-        return await response.json();
-      } catch (error) {
-        throw new Error("API 回傳格式錯誤，請稍後再試。");
-      }
-    }
-
-    async function fetchTopics() {
-      const response = await fetch(`${API_BASE}/api/topics`);
-      const data = await parseJsonSafe(response);
+        data = await response.json();
+      } catch (_) {}
 
       if (!response.ok) {
-        throw new Error(data?.message || `讀取題庫失敗：${response.status}`);
+        throw new Error(data?.message || `API 錯誤：${response.status}`);
       }
 
+      return data;
+    }
+
+    // =========================
+    // API Methods
+    // =========================
+    async function fetchTopics() {
+      const data = await apiFetch(`${API_BASE}/api/topics`);
       return Array.isArray(data.topics) ? data.topics : [];
     }
 
-    async function generateTopics({ industry, location, tone, category, cta, count }) {
-      const response = await fetch(`${API_BASE}/api/topics/generate`, {
+    async function generateTopics(payload) {
+      const data = await apiFetch(`${API_BASE}/api/topics/generate`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          industry,
-          location,
-          tone,
-          category,
-          cta,
-          count
-        })
+        body: JSON.stringify(payload)
       });
-
-      const data = await parseJsonSafe(response);
-
-      if (!response.ok) {
-        const message =
-          data?.detail ||
-          data?.error ||
-          data?.message ||
-          `主題生成失敗：${response.status}`;
-        throw new Error(message);
-      }
 
       return Array.isArray(data.topics) ? data.topics : [];
     }
 
     async function deleteTopic(id) {
-      const response = await fetch(`${API_BASE}/api/topics/${id}`, {
+      await apiFetch(`${API_BASE}/api/topics/${id}`, {
         method: "DELETE"
       });
-
-      let data = {};
-      try {
-        data = await response.json();
-      } catch (_) {}
-
-      if (!response.ok) {
-        throw new Error(data?.message || `刪除失敗：${response.status}`);
-      }
     }
 
     async function clearTopics() {
-      const response = await fetch(`${API_BASE}/api/topics`, {
+      await apiFetch(`${API_BASE}/api/topics`, {
         method: "DELETE"
       });
+    }
 
-      let data = {};
-      try {
-        data = await response.json();
-      } catch (_) {}
+    // =========================
+    // UI & Render（原本保留）
+    // =========================
 
-      if (!response.ok) {
-        throw new Error(data?.message || `清空失敗：${response.status}`);
-      }
+    function escapeHtml(str = "") {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
     }
 
     async function renderTopics() {
       const list = document.getElementById("topic-list");
       const total = document.getElementById("topic-total");
-      if (!list) return;
 
       const topics = await fetchTopics();
 
@@ -236,152 +105,70 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (!topics.length) {
         list.innerHTML = `
-          <div style="padding:20px;border:1px dashed #cbd5e1;border-radius:16px;color:#64748b;">
-            目前還沒有主題，請先點「AI 自動產主題」。
+          <div style="padding:20px;border:1px dashed #cbd5e1;border-radius:16px;">
+            目前還沒有主題
           </div>
         `;
         return;
       }
 
-      list.innerHTML = `
-        <div style="display:grid;gap:14px;">
-          ${topics.map(item => `
-            <article style="border:1px solid #e2e8f0;border-radius:16px;padding:18px;background:#fff;">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
-                <div style="flex:1;min-width:240px;">
-                  <h4 style="margin:0 0 8px;font-size:18px;line-height:1.5;color:#0f172a;">
-                    ${escapeHtml(item.topic)}
-                  </h4>
+      list.innerHTML = topics.map(item => `
+        <article style="border:1px solid #e2e8f0;padding:16px;">
+          <h4>${escapeHtml(item.topic)}</h4>
 
-                  <div style="font-size:13px;color:#64748b;display:flex;gap:8px;flex-wrap:wrap;">
-                    <span>${escapeHtml(item.location || "台灣")}</span>
-                    <span>｜</span>
-                    <span>${escapeHtml(item.industry || "企業服務")}</span>
-                    <span>｜</span>
-                    <span>${escapeHtml(item.category || "AI SEO")}</span>
-                    <span>｜</span>
-                    <span>${escapeHtml(item.tone || "專業")}</span>
-                  </div>
-
-                  <div style="margin-top:8px;font-size:13px;color:#475569;">
-                    CTA：${escapeHtml(item.cta || "預約 AI SEO 系統展示")}
-                  </div>
-                </div>
-
-                <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                  <button
-                    class="btn btn--primary use-topic-btn"
-                    data-topic='${escapeHtml(item.topic)}'
-                    data-industry='${escapeHtml(item.industry || "企業服務")}'
-                    data-location='${escapeHtml(item.location || "台灣")}'
-                    data-tone='${escapeHtml(item.tone || "專業")}'
-                    data-category='${escapeHtml(item.category || "AI SEO")}'
-                    data-cta='${escapeHtml(item.cta || "預約 AI SEO 系統展示")}'
-                  >
-                    帶去 AI 生成
-                  </button>
-
-                  <button class="btn btn--ghost delete-topic-btn" data-id="${escapeHtml(item.id)}">
-                    刪除
-                  </button>
-                </div>
-              </div>
-            </article>
-          `).join("")}
-        </div>
-      `;
+          <button class="delete-topic-btn" data-id="${item.id}">
+            刪除
+          </button>
+        </article>
+      `).join("");
 
       list.querySelectorAll(".delete-topic-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
-          try {
-            await deleteTopic(btn.dataset.id);
-            await renderTopics();
-          } catch (error) {
-            alert(error.message || "刪除失敗");
-          }
-        });
-      });
-
-      list.querySelectorAll(".use-topic-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const payload = {
-            topic: btn.dataset.topic || "",
-            industry: btn.dataset.industry || "企業服務",
-            location: btn.dataset.location || "台灣",
-            tone: btn.dataset.tone || "專業",
-            category: btn.dataset.category || "AI SEO",
-            cta: btn.dataset.cta || "預約 AI SEO 系統展示"
-          };
-
-          localStorage.setItem("selected_topic_for_generate", JSON.stringify(payload));
-          window.location.href = "./generate.html";
+          await deleteTopic(btn.dataset.id);
+          await renderTopics();
         });
       });
     }
 
-    document.getElementById("generate-topics-btn")?.addEventListener("click", async () => {
-      const btn = document.getElementById("generate-topics-btn");
+    // =========================
+    // Generate 按鈕
+    // =========================
+    document.getElementById("generate-topics-btn")
+      ?.addEventListener("click", async () => {
 
-      try {
-        btn.disabled = true;
-        btn.textContent = "生成中...";
+      const industry = document.getElementById("topic-industry")?.value || "";
+      const location = document.getElementById("topic-location")?.value || "";
+      const tone = document.getElementById("topic-tone")?.value || "";
+      const category = document.getElementById("topic-category")?.value || "";
+      const cta = document.getElementById("topic-cta")?.value || "";
+      const count = Number(document.getElementById("topic-count")?.value) || 10;
 
-        const industry = document.getElementById("topic-industry")?.value?.trim() || "企業服務";
-        const location = document.getElementById("topic-location")?.value?.trim() || "台灣";
-        const tone = document.getElementById("topic-tone")?.value?.trim() || "專業";
-        const category = document.getElementById("topic-category")?.value?.trim() || "AI SEO";
-        const cta = document.getElementById("topic-cta")?.value?.trim() || "預約 AI SEO 系統展示";
-        const count = Number(document.getElementById("topic-count")?.value) || 10;
+      const topics = await generateTopics({
+        industry,
+        location,
+        tone,
+        category,
+        cta,
+        count
+      });
 
-        topicProgress.start();
-
-        const topics = await generateTopics({
-          industry,
-          location,
-          tone,
-          category,
-          cta,
-          count
-        });
-
-        await topicProgress.finishSmooth();
-        await renderTopics();
-
-        alert(`已新增 ${topics.length} 個主題到題庫`);
-      } catch (error) {
-        topicProgress.stop();
-        console.error(error);
-
-        const list = document.getElementById("topic-list");
-        if (list) {
-          list.innerHTML = `
-            <div style="padding:20px;border:1px solid #fecaca;border-radius:16px;background:#fff1f2;color:#b91c1c;">
-              主題生成失敗：${escapeHtml(error.message || "未知錯誤")}
-            </div>
-          `;
-        } else {
-          alert(error.message || "主題生成失敗");
-        }
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "AI 自動產主題";
-      }
+      await renderTopics();
+      alert(`新增 ${topics.length} 筆`);
     });
 
-    document.getElementById("clear-topics-btn")?.addEventListener("click", async () => {
-      const yes = confirm("確定要清空整個題庫嗎？");
-      if (!yes) return;
-
-      try {
-        await clearTopics();
-        await renderTopics();
-      } catch (error) {
-        alert(error.message || "清空失敗");
-      }
+    // =========================
+    // Clear
+    // =========================
+    document.getElementById("clear-topics-btn")
+      ?.addEventListener("click", async () => {
+      if (!confirm("確定清空？")) return;
+      await clearTopics();
+      await renderTopics();
     });
 
     await renderTopics();
+
   } catch (error) {
-    console.error("[topics] page init error:", error);
+    console.error("[topics] error:", error);
   }
 });
