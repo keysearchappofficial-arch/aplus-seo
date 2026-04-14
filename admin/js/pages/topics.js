@@ -5,8 +5,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       ? "http://localhost:3000"
       : "https://api.keysearch-app.com";
 
-  const API_KEY = "aplus_seo_admin_2026_secure_token";
-
   try {
     if (window.__adminGuardPromise) {
       const session = await window.__adminGuardPromise;
@@ -26,8 +24,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const root = document.getElementById("page-root");
     if (!root) return;
 
-    root.innerHTML = 
-      `<section class="card">
+    root.innerHTML = `
+      <section class="card">
         <div class="card__body">
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
             <div>
@@ -85,17 +83,13 @@ document.addEventListener("DOMContentLoaded", async () => {
           <div id="topic-list"></div>
         </div>
       </section>
-      `;
+    `;
 
-    // =========================
-    // API 基礎工具
-    // =========================
     async function apiFetch(url, options = {}) {
       const response = await fetch(url, {
         ...options,
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY,
           ...(options.headers || {})
         }
       });
@@ -112,9 +106,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       return data;
     }
 
-    // =========================
-    // API Methods
-    // =========================
     async function fetchTopics() {
       const data = await apiFetch(`${API_BASE}/api/topics`);
       return Array.isArray(data.topics) ? data.topics : [];
@@ -141,20 +132,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     }
 
-    // =========================
-    // UI & Render（原本保留）
-    // =========================
-
     function escapeHtml(str = "") {
       return String(str)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
     async function renderTopics() {
       const list = document.getElementById("topic-list");
       const total = document.getElementById("topic-total");
+      if (!list) return;
 
       const topics = await fetchTopics();
 
@@ -172,61 +162,65 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       list.innerHTML = topics.map(item => `
-        <article style="border:1px solid #e2e8f0;padding:16px;">
-          <h4>${escapeHtml(item.topic)}</h4>
-
-          <button class="delete-topic-btn" data-id="${item.id}">
-            刪除
-          </button>
+        <article style="border:1px solid #e2e8f0;padding:16px;border-radius:12px;background:#fff;">
+          <h4 style="margin:0 0 10px;">${escapeHtml(item.topic)}</h4>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn--ghost delete-topic-btn" data-id="${escapeHtml(item.id)}">
+              刪除
+            </button>
+          </div>
         </article>
       `).join("");
 
       list.querySelectorAll(".delete-topic-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
-          await deleteTopic(btn.dataset.id);
-          await renderTopics();
+          try {
+            await deleteTopic(btn.dataset.id);
+            await renderTopics();
+          } catch (error) {
+            alert(error.message || "刪除失敗");
+          }
         });
       });
     }
 
-    // =========================
-    // Generate 按鈕
-    // =========================
-    document.getElementById("generate-topics-btn")
-      ?.addEventListener("click", async () => {
+    document.getElementById("generate-topics-btn")?.addEventListener("click", async () => {
+      try {
+        const industry = document.getElementById("topic-industry")?.value?.trim() || "";
+        const location = document.getElementById("topic-location")?.value?.trim() || "";
+        const tone = document.getElementById("topic-tone")?.value?.trim() || "";
+        const category = document.getElementById("topic-category")?.value?.trim() || "";
+        const cta = document.getElementById("topic-cta")?.value?.trim() || "";
+        const count = Number(document.getElementById("topic-count")?.value) || 10;
 
-      const industry = document.getElementById("topic-industry")?.value || "";
-      const location = document.getElementById("topic-location")?.value || "";
-      const tone = document.getElementById("topic-tone")?.value || "";
-      const category = document.getElementById("topic-category")?.value || "";
-      const cta = document.getElementById("topic-cta")?.value || "";
-      const count = Number(document.getElementById("topic-count")?.value) || 10;
+        const topics = await generateTopics({
+          industry,
+          location,
+          tone,
+          category,
+          cta,
+          count
+        });
 
-      const topics = await generateTopics({
-        industry,
-        location,
-        tone,
-        category,
-        cta,
-        count
-      });
-
-      await renderTopics();
-      alert(`新增 ${topics.length} 筆`);
+        await renderTopics();
+        alert(`新增 ${topics.length} 筆`);
+      } catch (error) {
+        alert(error.message || "生成失敗");
+      }
     });
 
-    // =========================
-    // Clear
-    // =========================
-    document.getElementById("clear-topics-btn")
-      ?.addEventListener("click", async () => {
+    document.getElementById("clear-topics-btn")?.addEventListener("click", async () => {
       if (!confirm("確定清空？")) return;
-      await clearTopics();
-      await renderTopics();
+
+      try {
+        await clearTopics();
+        await renderTopics();
+      } catch (error) {
+        alert(error.message || "清空失敗");
+      }
     });
 
     await renderTopics();
-
   } catch (error) {
     console.error("[topics] error:", error);
   }
