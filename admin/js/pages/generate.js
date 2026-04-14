@@ -5,12 +5,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       ? "http://localhost:3000"
       : "https://api.keysearch-app.com";
 
-  const API_KEY =
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1"
-      ? "aplus_seo_admin_2026_secure_token"
-      : "aplus_seo_admin_2026_secure_token";
-
   await window.loadAdminLayout();
 
   AdminCommon.renderLayout(
@@ -178,28 +172,28 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   async function generateArticle(payload) {
-    const response = await fetch(`${API_BASE}/api/ollama/article`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": API_KEY
-      },
-      body: JSON.stringify(payload)
-    });
+  const response = await fetch(`${API_BASE}/api/ollama/article`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+      // ❌ 不要 API KEY
+    },
+    body: JSON.stringify(payload)
+  });
 
-    let result = {};
-    try {
-      result = await response.json();
-    } catch (error) {
-      throw new Error("API 回傳格式錯誤，請稍後再試。");
-    }
-
-    if (!response.ok) {
-      throw new Error(result?.message || "產文失敗，請稍後再試。");
-    }
-
-    return result;
+  let result = {};
+  try {
+    result = await response.json();
+  } catch (error) {
+    throw new Error("API 回傳格式錯誤，請稍後再試。");
   }
+
+  if (!response.ok) {
+    throw new Error(result?.message || "產文失敗，請稍後再試。");
+  }
+
+  return result;
+}
 
   function fillGenerateFormFromTopicLibrary() {
     const raw = localStorage.getItem("selected_topic_for_generate");
