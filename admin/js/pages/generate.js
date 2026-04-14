@@ -3,7 +3,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1"
       ? "http://localhost:3000"
-      : "https://recall-alternatively-harper-nickel.trycloudflare.com";
+      : "https://api.keysearch-app.com";
+
+  const API_KEY =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+      ? "aplus_seo_admin_2026_secure_token"
+      : "aplus_seo_admin_2026_secure_token";
 
   await window.loadAdminLayout();
 
@@ -111,7 +117,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const params = {
       topic: fd.get("topic")?.toString().trim() || "",
       industry: fd.get("industry")?.toString().trim() || "",
-      service: fd.get("category")?.toString().trim() || "", // 先用分類代替 service，避免你後端缺值
+      service: fd.get("category")?.toString().trim() || "",
       region: fd.get("location")?.toString().trim() || "",
       audience: "",
       tone: fd.get("tone")?.toString().trim() || "專業",
@@ -175,7 +181,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const response = await fetch(`${API_BASE}/api/ollama/article`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "x-api-key": API_KEY
       },
       body: JSON.stringify(payload)
     });
